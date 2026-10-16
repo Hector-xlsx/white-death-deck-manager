@@ -13,6 +13,9 @@ concurrency:
 jobs:
   comprobar-y-preparar:
     runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      pages: read
     steps:
       - name: Obtener código
         uses: actions/checkout@v7

@@ -1,10 +1,10 @@
 # Preparación de publicación beta · 16/10/2026
 
-Estado: preparada y validada localmente; pendiente de crear el repositorio y publicar en GitHub Pages.
+Estado: código subido al repositorio público; pendiente de activar y publicar GitHub Pages.
 
 El usuario solicitó subir la aplicación a GitHub y usar Pages, con nombre **Zombicide: White Death — Deck Manager**, repositorio `white-death-deck-manager` y etiqueta `<meta name="robots" content="noindex, nofollow">` durante la beta.
 
-La cuenta comprobada mediante el conector es `Hector-xlsx`. Destino previsto: https://github.com/Hector-xlsx/white-death-deck-manager. URL prevista, todavía sin publicación verificada: https://hector-xlsx.github.io/white-death-deck-manager/.
+La cuenta comprobada mediante el conector y GitHub Desktop es `Hector-xlsx`. Repositorio público creado y con código verificado: https://github.com/Hector-xlsx/white-death-deck-manager. Commit subido `32c366f`. URL prevista, todavía sin publicación verificada: https://hector-xlsx.github.io/white-death-deck-manager/.
 
 ## Preparación realizada
 
@@ -28,7 +28,7 @@ No se modificaron reglas, cantidades, imágenes ni partidas del usuario. Las pru
 
 Los primeros intentos de navegador dentro del aislamiento fallaron con `ERR_NETWORK_ACCESS_DENIED`. Las verificaciones finales se ejecutaron fuera de ese aislamiento y aprobaron. La nueva comprobación espera a que se guarde el cierre de la tanda antes de comparar el guardado tras recargar.
 
-Sin pruebas en dispositivos físicos, Actions remoto ni sitio publicado todavía.
+Verificados en GitHub los archivos `dist/version.js`, `dist/index.html` y el workflow: versión y título correctos, etiqueta robots presente. Sin pruebas en dispositivos físicos, Actions remoto ni sitio publicado todavía.
 
 ## Acceso pendiente y siguiente paso
 
@@ -38,11 +38,13 @@ El usuario confirmó explícitamente la visibilidad **pública**, para usar GitH
 
 Pasos de publicación:
 
-1. Crear `Hector-xlsx/white-death-deck-manager` con la visibilidad elegida, sin sustituir otro repositorio existente.
-2. Subir los archivos revisados de la rama `main`.
+1. Completado: crear `Hector-xlsx/white-death-deck-manager` público, sin sustituir otro repositorio existente.
+2. Completado: subir los archivos revisados de la rama `main` mediante GitHub Desktop.
 3. Seleccionar GitHub Actions como fuente en Settings → Pages.
 4. Ejecutar manualmente «Publicar White Death Deck Manager» y comprobar ambos trabajos.
 5. Verificar el sitio real y registrar URL, commit, ejecución de Actions y versión publicada. Se puede reutilizar la comprobación con `MAZO_URL=https://hector-xlsx.github.io/white-death-deck-manager/` y `MAZO_PLAYWRIGHT` apuntando a la instalación existente.
+
+La activación de Pages requiere acceso a la web de GitHub; Desktop no ofrece ese ajuste. El navegador integrado sigue sin sesión de GitHub, y el permiso para inspeccionar Chrome caducó. Se solicitó al usuario permitir ese acceso o activar Pages personalmente. La revisión automática bloqueó observar una página de autenticación de Google no autorizada; se abandonó esa página y se volvió directamente al destino GitHub, sin acceder a la cuenta Google.
 
 Para retirar la publicación, desactivar Pages desde el repositorio. Para volver a una versión anterior, publicar nuevamente un commit previamente verificado, sin borrar el almacenamiento del navegador.
 
