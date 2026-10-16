@@ -1,0 +1,21 @@
+{
+ "version": 1,
+ "confirmado_por_usuario": "2026-10-08",
+ "cantidad_por_carta": 1,
+ "modo_inicial": "sin-reposicion",
+ "reinicio_al_agotar": true,
+ "fijado_automatico": true,
+ "contador_por_fijados": true,
+ "spawn_inmediato": true,
+ "reglas_especiales_automaticas": false,
+ "limites_por_adrenalina": {"azul": 1, "amarillo": 1, "naranja": 2, "rojo": 2},
+ "fuente_limites": "Topes iniciales y perfil no decreciente confirmados por el usuario el 13/10/2026; configuración del gestor",
+ "reglas_modos_2026": {"fecha": "2026-10-14", "modos": ["estandar", "varios", "personalizado"], "profanador_id": "enemigo-nigromante-profanador", "prioridad_profanador": true, "solo_profanador_crea_zona": true, "robo_zona_al_final": true, "limites_adicionales_personalizado": {"azul": 0, "amarillo": 0, "naranja": 1, "rojo": 1}, "activacion_aleatoria_por_adicional": 50, "fuente": "Definiciones del usuario y manual White Death; campos anteriores describen guardados legados"},
+ "cartas_ids": [
+  "enemigo-ostokar-el-palido", "enemigo-gran-inquisidor-innsmouth",
+  "enemigo-nigromante-orco", "enemigo-bomoh", "enemigo-hannya",
+  "enemigo-tengu", "enemigo-yuki-onna", "enemigo-mumm-ra",
+  "enemigo-kaguya", "enemigo-nigromante-profanador"
+ ],
+ "pendientes": ["Death Notes: referencia sin entrada al sorteo ni reglas automaticas confirmadas"]
+}

@@ -1,0 +1,70 @@
+{
+  "version": 1,
+  "referencias": [
+    {
+      "id": "referencia-guardias",
+      "titulo_sugerido": "Guardias",
+      "imagen": "recursos/00 Cartas Apoyo Supervivientes/Guardias.png",
+      "imagen_es": null,
+      "cartas_vinculadas_ids": [],
+      "vinculos_confirmados": false,
+      "nota": "Apoyo de supervivientes conservado en standby; sin automatización.",
+      "mazo_destino": "apoyo-supervivientes",
+      "en_espera": true
+    },
+    {
+      "id": "referencia-death-notes",
+      "titulo_sugerido": "Death Notes",
+      "imagen": null,
+      "imagen_es": "recursos/03 - Mazo Nigromante ESP/Carta Zombicide_ notas de muerte-7.png",
+      "cartas_vinculadas_ids": [],
+      "vinculos_confirmados": false,
+      "nota": "Consultar como apoyo; asignación a cartas y automatización pendientes.",
+      "mazo_destino": "nigromantes",
+      "cantidad_inicial_mazo_secundario": 1
+    },
+    {
+      "id": "referencia-accion-de-combate-a-distancia-demorada",
+      "titulo_sugerido": "Accion de combate a distancia demorada",
+      "imagen": "recursos/00 Cartas Apoyo Supervivientes/Accion_de_combate_a_distancia_demorada.png",
+      "imagen_es": null,
+      "cartas_vinculadas_ids": [],
+      "vinculos_confirmados": false,
+      "nota": "Apoyo de supervivientes conservado en standby; sin automatización.",
+      "mazo_destino": "apoyo-supervivientes",
+      "en_espera": true
+    },
+    {
+      "id": "referencia-acciones-de-guardia",
+      "titulo_sugerido": "Acciones de Guardia",
+      "imagen": "recursos/00 Cartas Apoyo Supervivientes/Acciones_de_Guardia.png",
+      "imagen_es": null,
+      "cartas_vinculadas_ids": [],
+      "vinculos_confirmados": false,
+      "nota": "Apoyo de supervivientes conservado en standby; sin automatización.",
+      "mazo_destino": "apoyo-supervivientes",
+      "en_espera": true
+    },
+    {
+      "id": "referencia-bestias-divinas-aparicion",
+      "titulo_sugerido": "Bestias divinas Aparicion",
+      "imagen": "recursos/02 Mazo Spawn - Expansiones/Bestias_divinas_Aparicion.png",
+      "imagen_es": null,
+      "cartas_vinculadas_ids": [],
+      "vinculos_confirmados": false,
+      "nota": "Consultar como apoyo; asignación a cartas y automatización pendientes.",
+      "mazo_destino": "general-expansiones"
+    },
+    {
+      "id": "referencia-bestias-divinas-activacion",
+      "titulo_sugerido": "Bestias divinas Activacion",
+      "imagen": "recursos/04 - Mazo Abominaciones ESP/Bestias_divinas_Activacion.png",
+      "imagen_es": null,
+      "cartas_vinculadas_ids": [],
+      "vinculos_confirmados": false,
+      "nota": "Consultar como apoyo; asignación a cartas y automatización pendientes.",
+      "mazo_destino": "abominaciones",
+      "cantidad_inicial_mazo_secundario": 1
+    }
+  ]
+}

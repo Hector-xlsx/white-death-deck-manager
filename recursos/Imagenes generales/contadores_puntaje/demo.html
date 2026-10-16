@@ -1,0 +1,42 @@
+<!doctype html>
+<html lang="es">
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Contadores de puntaje · prueba de integración</title>
+<link rel="stylesheet" href="score-counter.css">
+<style>
+*{box-sizing:border-box}body{margin:0;background:#142733;color:#e9f2f5;font:16px system-ui,sans-serif}
+main{max-width:1100px;margin:30px auto;padding:24px}h1{font-size:26px;margin:0 0 10px}p{color:#a8bdc8;line-height:1.5}
+.controls{display:flex;flex-wrap:wrap;gap:18px;align-items:center;padding:16px;background:#203844;border:1px solid #355362;border-radius:12px}
+label{display:flex;gap:8px;align-items:center}input,select,button.control{font:inherit;padding:8px;border:1px solid #547582;border-radius:6px;background:#10212c;color:#eff9fc}
+input[type=number]{width:135px}input[type=range]{width:145px}.grid{display:grid;gap:14px;margin-top:20px}
+section{border:1px solid #355362;border-radius:12px;padding:18px;overflow:hidden}h2{font-size:16px;margin:0 0 14px;color:#bdd0d8}
+.stage{display:flex;justify-content:center;align-items:center;min-height:145px}.note{font-size:13px}.light{background:#e9dfcf}
+</style>
+<main>
+<h1>Contadores de puntaje</h1>
+<p>Las cifras de esta página son trazados dinámicos. Los tres fondos PNG no contienen números.</p>
+<div class="controls">
+ <label>Puntaje <input id="value" type="number" min="-999999999" max="999999999" value="999" step="1"></label>
+ <label><input id="plus" type="checkbox" checked> Mostrar +</label>
+ <label>Ancho <input id="size" type="range" min="180" max="750" value="520"><span id="sizeLabel">520 px</span></label>
+ <label><input id="light" type="checkbox"> Fondo claro</label>
+ <button id="random" class="control">Probar cifra aleatoria</button>
+</div>
+<div class="grid">
+ <section><h2>Dragón · dorado de fuego</h2><div class="stage" id="dragon"></div></section>
+ <section><h2>Cabeza · dorado sobre boca negra opaca</h2><div class="stage" id="cabeza"></div></section>
+ <section><h2>Kang · tinta oscura con borde dorado</h2><div class="stage" id="kang"></div></section>
+</div>
+<p class="note">Para un total acumulado puedes ocultar «+»; para una bonificación puedes mostrarlo. El ancho cambia uniformemente y las cifras largas se ajustan dentro del espacio disponible.</p>
+</main>
+<script src="digits.js"></script><script src="score-counter.js"></script>
+<script>
+const counters=['dragon','cabeza','kang'].map(theme=>ScoreCounter.create(document.getElementById(theme),{theme,value:999,showPlus:true,width:520,onClick(){}}));
+const value=document.getElementById('value'),plus=document.getElementById('plus'),size=document.getElementById('size');
+function update(){if(!/^-?\d+$/.test(value.value))return;const n=Number(value.value);if(!Number.isSafeInteger(n))return;counters.forEach(c=>{c.setValue(n);c.setShowPlus(plus.checked);c.element.style.setProperty('--score-width',size.value+'px')});document.getElementById('sizeLabel').textContent=size.value+' px'}
+value.addEventListener('input',update);plus.addEventListener('change',update);size.addEventListener('input',update);
+document.getElementById('light').addEventListener('change',e=>document.querySelectorAll('.stage').forEach(s=>s.classList.toggle('light',e.target.checked)));
+document.getElementById('random').addEventListener('click',()=>{value.value=Math.floor(Math.random()*100000);update()});
+</script>
+</html>

@@ -1,0 +1,44 @@
+import {createRequire} from 'node:module';
+import assert from 'node:assert/strict';
+import {mkdir} from 'node:fs/promises';
+import {newGame,spawn,unpinCard,isValid} from '../dist/engine.js';
+import {limitesIniciales} from '../dist/limites.js';
+import {PROFANADOR,presentes} from '../dist/modos-enemigos.js';
+const require=createRequire(import.meta.url),{chromium}=require(process.env.MAZO_PLAYWRIGHT||'playwright');
+const key='white-death-gestor-v2',url=process.env.MAZO_URL||'http://127.0.0.1:8080/mazo/';
+const browser=await chromium.launch({headless:true,channel:'chrome'}),errores=[];
+await mkdir('docs/verificacion',{recursive:true});
+const kan='enemigo-abominacion-kan',orca='enemigo-abominacion-orca',trofeo='enemigo-red-hare';
+const config={easy:true,normal:true,threshold:0,selectedIds:['abominacion','nigromante','asedio'],modoNigromantes:'sin-reposicion',reglaNigromantes:'personalizado',reglaAbominaciones:'personalizado',selectedNigromantesIds:['enemigo-ostokar-el-palido','enemigo-bomoh'],selectedAbominacionesIds:[kan,orca,trofeo],abominacionEstandarId:kan,limitesPorAdrenalina:limitesIniciales(true)};
+const sembrar=(s,id)=>{for(const k of Object.keys(s.remaining))s.remaining[k]=Number(k===id);};
+const estado=p=>p.evaluate(k=>JSON.parse(localStorage.getItem(k)),key);
+async function abrir(semilla){
+ const context=await browser.newContext({viewport:{width:844,height:390},reducedMotion:'reduce'});
+ await context.addInitScript(({key,semilla})=>{if(semilla&&!localStorage.getItem(key))localStorage.setItem(key,JSON.stringify(semilla));Math.random=()=>window.azarConfig?.shift()??.99;},{key,semilla});
+ const p=await context.newPage();p.on('pageerror',e=>errores.push(e.message));await p.goto(url);return {context,p};
+}
+const ajustes=p=>p.getByRole('button',{name:'Configuración',exact:true}).click();
+const cerrar=async p=>{await p.locator('#batch-dialog [data-action="close"]').click();await p.waitForFunction(k=>!JSON.parse(localStorage.getItem(k)).openBatch,key);};
+async function revelar(p){await p.locator('#spawn').click();await p.locator('#batch-dialog[data-revelacion="lista"]').waitFor();assert.ok(isValid(await estado(p)));}
+async function marcar(p,id,valor){await p.locator('[name="filtro-contenido"][value="abominaciones"]').check();await p.locator(`[name="carta"][value="${id}"]`).setChecked(valor);}
+try{
+ const s=newGame(config,1);s.config.limitesPorAdrenalina.abominaciones={azul:3,amarillo:3,naranja:3,rojo:3};s.proximaConfig.limitesPorAdrenalina=structuredClone(s.config.limitesPorAdrenalina);s.accionesPredeterminadas={abominacion:'spawn',nigromante:'spawn'};
+ sembrar(s,'abominacion');spawn(s,()=>.99);sembrar(s,'abominacion');spawn(s,()=>0);s.openBatch=false;sembrar(s,'abominacion');assert.equal(presentes(s,'abominaciones').length,2);
+ const {context,p}=await abrir(s);const historia=structuredClone((await estado(p)).history);await ajustes(p);await p.locator('#regla-abominaciones').selectOption('estandar');assert.equal(await p.locator(`#abominacion-estandar option[value="${trofeo}"]`).count(),0);await p.locator('#abominacion-estandar').selectOption(orca);await p.locator('#save-settings').click();assert.equal((await estado(p)).config.reglaAbominaciones,'personalizado');assert.deepEqual((await estado(p)).history,historia);assert.equal(await p.locator('#accion-abominacion').inputValue(),'estandar');
+ await p.locator('#reopen').click();assert.deepEqual((await estado(p)).history,historia);await cerrar(p);await p.evaluate(()=>window.azarConfig=[0,.99]);await revelar(p);let actual=await estado(p);const carta=actual.history.at(-1).slots[0].draws[0];assert.equal(carta.resolucionAbominacion,'activacion');assert.equal(carta.activaciones.length,2);assert.equal(actual.config.reglaAbominaciones,'estandar');assert.equal(presentes(actual,'abominaciones').length,2);await cerrar(p);
+ const topes=structuredClone(actual.config.limitesPorAdrenalina);await ajustes(p);await p.locator('#regla-abominaciones').selectOption('personalizado');await marcar(p,kan,false);await p.locator('#save-settings').click();assert.equal((await estado(p)).configuracionPendiente,true);await revelar(p);actual=await estado(p);assert.ok(!actual.abominaciones.habilitadasIds.includes(kan));assert.deepEqual(actual.config.limitesPorAdrenalina,topes);await cerrar(p);
+ // Trofeo ya derrotado: quitar y volver a marcar no devuelve la carta.
+ const t=newGame(config,1),indice=t.abominaciones.cartas.findIndex(a=>a.id===trofeo);sembrar(t,'abominacion');let rng=[0,(indice+.01)/t.abominaciones.cartas.length];spawn(t,()=>rng.shift()??.99);unpinCard(t,t.pins[0].uid);t.openBatch=false;sembrar(t,'asedio');const otras=await abrir(t),q=otras.p;
+ await ajustes(q);await marcar(q,trofeo,false);await q.locator('#save-settings').click();await revelar(q);await cerrar(q);await ajustes(q);await marcar(q,trofeo,true);await q.locator('#save-settings').click();await revelar(q);let reintegrado=await estado(q);assert.equal(reintegrado.abominaciones.remaining[trofeo],0);assert.ok(Object.hasOwn(reintegrado.abominaciones.trofeos,trofeo));await cerrar(q);
+ for(const [nombre,width,height] of [['escritorio',1440,900],['tablet',1024,768],['horizontal',844,390],['vertical',390,844],['estrecho',320,568]]){
+  await q.setViewportSize({width,height});await ajustes(q);await q.locator('#regla-abominaciones').selectOption('estandar');await q.locator('#abominacion-estandar-label').scrollIntoViewIfNeeded();assert.equal(await q.locator(`#abominacion-estandar option[value="${trofeo}"]`).count(),0);assert.equal(await q.evaluate(()=>document.documentElement.scrollWidth>innerWidth),false);await q.locator('#settings-dialog').screenshot({path:`docs/verificacion/config-partida-${nombre}.png`});await q.locator('#settings-dialog [data-action="close"]').click();await q.locator('#confirm-actions [data-value="salir"]').click();
+ }
+ await q.setViewportSize({width:844,height:390});await ajustes(q);await q.locator('#regla-nigromantes').selectOption('varios');const previo=await estado(q);await q.evaluate(()=>{window.originalSet=Storage.prototype.setItem;Storage.prototype.setItem=()=>{throw new DOMException('quota','QuotaExceededError');};});await q.locator('#save-settings').click();assert.deepEqual(await estado(q),previo);await q.evaluate(()=>Storage.prototype.setItem=window.originalSet);await q.locator('#save-settings').click();const pendiente=await estado(q);assert.equal(pendiente.configuracionPendiente,true);
+ const otra=await otras.context.newPage();otra.on('pageerror',e=>errores.push(e.message));await otra.goto(url);assert.deepEqual(await estado(otra),pendiente);await otra.close();
+ await q.locator('#offline-status').filter({hasText:'Disponible offline'}).waitFor({timeout:90000});await otras.context.setOffline(true);await q.reload();assert.deepEqual(await estado(q),pendiente);await revelar(q);assert.equal((await estado(q)).config.reglaNigromantes,'varios');await q.locator('#anular-tanda').click();await q.locator('#confirm-actions [data-value="yes"]').click();assert.equal((await estado(q)).configuracionPendiente,true);assert.equal((await estado(q)).config.reglaNigromantes,'personalizado');
+ // Nueva partida conserva los topes y limpia todas las banderas pendientes.
+ await ajustes(q);const cupos=(await estado(q)).proximaConfig.limitesPorAdrenalina;await q.locator('#new-game').click();await q.locator('#confirm-actions [data-value="yes"]').click();assert.deepEqual((await estado(q)).config.limitesPorAdrenalina,cupos);assert.equal((await estado(q)).history.length,0);assert.equal((await estado(q)).configuracionPendiente,undefined);await otras.context.close();await context.close();
+ // Actualización de pruebas una sola vez, sin reset repetido al recargar.
+ const viejo=newGame(config,1);sembrar(viejo,'nigromante');spawn(viejo,()=>.99);delete viejo.revisionReglas;viejo.config.limitesPorAdrenalina.nigromantes={azul:2,amarillo:2,naranja:4,rojo:4};viejo.proximaConfig.limitesPorAdrenalina=structuredClone(viejo.config.limitesPorAdrenalina);const reset=await abrir(viejo);assert.equal((await estado(reset.p)).history.length,0);assert.equal((await estado(reset.p)).revisionReglas,2);assert.deepEqual((await estado(reset.p)).config.limitesPorAdrenalina,viejo.config.limitesPorAdrenalina);await revelar(reset.p);const bytes=await estado(reset.p);await reset.p.reload();assert.deepEqual(await estado(reset.p),bytes);await reset.context.close();
+ assert.deepEqual(errores,[]);console.log('Configuración durante partida: modos y contenido próxima tanda, presencia preservada, trofeos, cinco tamaños, cuota, pestañas, offline, anulación, topes y reset único aprobados.');
+}finally{await browser.close();}

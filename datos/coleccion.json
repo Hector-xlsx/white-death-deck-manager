@@ -1,0 +1,270 @@
+{
+  "version": 1,
+  "fuente": "input referencia cartas.xlsx",
+  "cajas": [
+    {
+      "id": "core",
+      "nombre": "Core",
+      "obligatoria": true
+    },
+    {
+      "id": "climbers-terrorcotta-walkers",
+      "nombre": "Climbers terrorcotta walkers",
+      "obligatoria": false
+    },
+    {
+      "id": "crossfire-pack",
+      "nombre": "Crossfire pack",
+      "obligatoria": false
+    },
+    {
+      "id": "divine-beasts",
+      "nombre": "Divine Beasts",
+      "obligatoria": false
+    },
+    {
+      "id": "frozen-fortress",
+      "nombre": "Frozen Fortress",
+      "obligatoria": false
+    },
+    {
+      "id": "core-retrocompatibilidad",
+      "nombre": "Core retrocompatibilidad",
+      "obligatoria": false
+    }
+  ],
+  "cartas": [
+    {
+      "id": "nigromante",
+      "cajaId": "core"
+    },
+    {
+      "id": "abominacion",
+      "cajaId": "core"
+    },
+    {
+      "id": "asedio",
+      "cajaId": "core"
+    },
+    {
+      "id": "activacion-corredor",
+      "cajaId": "core"
+    },
+    {
+      "id": "activacion-brutos",
+      "cajaId": "core"
+    },
+    {
+      "id": "activacion-caminantes",
+      "cajaId": "core"
+    },
+    {
+      "id": "brutos-normal",
+      "cajaId": "core"
+    },
+    {
+      "id": "brutos-facil",
+      "cajaId": "core"
+    },
+    {
+      "id": "caminantes-normal",
+      "cajaId": "core"
+    },
+    {
+      "id": "caminantes-facil",
+      "cajaId": "core"
+    },
+    {
+      "id": "corredores-normal",
+      "cajaId": "core"
+    },
+    {
+      "id": "corredores-facil",
+      "cajaId": "core"
+    },
+    {
+      "id": "enemigo-ostokar-el-palido",
+      "cajaId": "core-retrocompatibilidad"
+    },
+    {
+      "id": "enemigo-gran-inquisidor-innsmouth",
+      "cajaId": "core-retrocompatibilidad"
+    },
+    {
+      "id": "enemigo-abominacion-orca",
+      "cajaId": "core-retrocompatibilidad"
+    },
+    {
+      "id": "enemigo-mumm-ra-abominacion",
+      "cajaId": "core-retrocompatibilidad"
+    },
+    {
+      "id": "enemigo-nigromante-orco",
+      "cajaId": "core-retrocompatibilidad"
+    },
+    {
+      "id": "enemigo-dragon-nigromantico",
+      "cajaId": "core-retrocompatibilidad"
+    },
+    {
+      "id": "enemigo-kumiho",
+      "cajaId": "frozen-fortress"
+    },
+    {
+      "id": "enemigo-kijin",
+      "cajaId": "frozen-fortress"
+    },
+    {
+      "id": "enemigo-toyol",
+      "cajaId": "frozen-fortress"
+    },
+    {
+      "id": "enemigo-takemikazuchi",
+      "cajaId": "frozen-fortress"
+    },
+    {
+      "id": "enemigo-yeti",
+      "cajaId": "frozen-fortress"
+    },
+    {
+      "id": "enemigo-sojobo",
+      "cajaId": "frozen-fortress"
+    },
+    {
+      "id": "enemigo-qilin",
+      "cajaId": "frozen-fortress"
+    },
+    {
+      "id": "enemigo-susano-wo",
+      "cajaId": "frozen-fortress"
+    },
+    {
+      "id": "enemigo-red-hare",
+      "cajaId": "frozen-fortress"
+    },
+    {
+      "id": "enemigo-shakoki-dogu",
+      "cajaId": "frozen-fortress"
+    },
+    {
+      "id": "enemigo-nian",
+      "cajaId": "frozen-fortress"
+    },
+    {
+      "id": "enemigo-hachiman",
+      "cajaId": "frozen-fortress"
+    },
+    {
+      "id": "enemigo-amaterasu",
+      "cajaId": "frozen-fortress"
+    },
+    {
+      "id": "enemigo-bomoh",
+      "cajaId": "frozen-fortress"
+    },
+    {
+      "id": "enemigo-hannya",
+      "cajaId": "frozen-fortress"
+    },
+    {
+      "id": "enemigo-chimimoryo",
+      "cajaId": "frozen-fortress"
+    },
+    {
+      "id": "enemigo-asura",
+      "cajaId": "frozen-fortress"
+    },
+    {
+      "id": "enemigo-tengu",
+      "cajaId": "frozen-fortress"
+    },
+    {
+      "id": "enemigo-yuki-onna",
+      "cajaId": "frozen-fortress"
+    },
+    {
+      "id": "enemigo-bishamon",
+      "cajaId": "frozen-fortress"
+    },
+    {
+      "id": "enemigo-mumm-ra",
+      "cajaId": "core-retrocompatibilidad"
+    },
+    {
+      "id": "enemigo-kaguya",
+      "cajaId": "frozen-fortress"
+    },
+    {
+      "id": "enemigo-nigromante-profanador",
+      "cajaId": "core"
+    },
+    {
+      "id": "enemigo-abominacion-kan",
+      "cajaId": "core"
+    },
+    {
+      "id": "spawn-559",
+      "cajaId": "climbers-terrorcotta-walkers"
+    },
+    {
+      "id": "spawn-565",
+      "cajaId": "climbers-terrorcotta-walkers"
+    },
+    {
+      "id": "spawn-571",
+      "cajaId": "climbers-terrorcotta-walkers"
+    },
+    {
+      "id": "spawn-577",
+      "cajaId": "crossfire-pack"
+    },
+    {
+      "id": "spawn-580",
+      "cajaId": "crossfire-pack"
+    },
+    {
+      "id": "especial-bestias-divinas-aparicion",
+      "cajaId": "divine-beasts"
+    },
+    {
+      "id": "referencia-death-notes",
+      "cajaId": "frozen-fortress"
+    },
+    {
+      "id": "referencia-bestias-divinas-aparicion",
+      "cajaId": "divine-beasts"
+    },
+    {
+      "id": "referencia-bestias-divinas-activacion",
+      "cajaId": "divine-beasts"
+    },
+    {
+      "id": "daily-du02",
+      "cajaId": "frozen-fortress"
+    },
+    {
+      "id": "daily-du01",
+      "cajaId": "frozen-fortress"
+    },
+    {
+      "id": "daily-du03",
+      "cajaId": "frozen-fortress"
+    },
+    {
+      "id": "daily-du04",
+      "cajaId": "frozen-fortress"
+    },
+    {
+      "id": "daily-du05",
+      "cajaId": "frozen-fortress"
+    },
+    {
+      "id": "daily-du06",
+      "cajaId": "frozen-fortress"
+    },
+    {
+      "id": "daily-du07",
+      "cajaId": "frozen-fortress"
+    }
+  ]
+}

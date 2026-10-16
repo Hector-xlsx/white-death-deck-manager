@@ -1,0 +1,36 @@
+{
+  "sitio_referencia": "https://white-death-pruebas.hector-xlsx.chatgpt.site",
+  "version_publicada": 3,
+  "commit_fuente": "d4ccbe677403906c4f5e8dcd76bf4cafff58d868",
+  "archivos_fuente_copiados": {
+    "dist/engine.js": "b1cbe899ddef619760e9a504a7176cb106aa4cfaee33458c5e659560b8fda30b",
+    "dist/style.css": "cb5efc403aba0ad583a4408ba22cc25e5713ff3955612fbd3e945a3280cede12",
+    "dist/icon.svg": "9cc3b65dc72dce8a03633e0347c6b1a1f35610a128531b08cdc1bbbcc22d62cf",
+    "dist/icon-512.png": "ea00be2b444b6150339bcf147dd4b37b4efc5e56fc5d6a8fcec6ce55df1f6042",
+    "dist/index.html": "17132ebf4dfe93293e4d9753ba0188689d210fd16d2ea1009d0c58392b735df6",
+    "dist/icon-192.png": "036f011bc0ced717e2406e88b333bc7f08fab7c62b66f0b58a4161a2bdbb897e",
+    "dist/sw.js": "cecf72643b6e0f0d07a3dc8b0de5ea576c26651a61453bed5e45591c892dc838",
+    "dist/manifest.webmanifest": "52d528ee5f3b38b5a8aa96c968e1a04924ce9511856bc28d8e9f615eb89e4054",
+    "dist/app.js": "2d60b8fac42cc4993458e8ba0ba6bce62401f15a9993f75b8b969f0433586bb9",
+    "dist/assets/455_Corredores.png": "01316bd1b153d6f15c917bfa24671fbb23a9651541e731d8e146800d89c70a8e",
+    "dist/assets/471_Nigromante.png": "b3a76bcd970e0952c0db90245676e8f779e8523dbb0ee121ff86f0952cd9dcc7",
+    "dist/assets/474_Asedio_zombi.png": "a41797405365792d4161e1771fee92d8eb18f945f10b21a50c1911416bb7fe50",
+    "dist/assets/484_Activacion_adicional_Corredores.png": "2be2b290dfc0076b2368ba596028df2001c262db12c4675dd24228272c98482b",
+    "dist/assets/429_Caminantes.png": "043f34b76e497972b7a7f804f64087c3044084adc4337bac63e426421d39f29f",
+    "dist/assets/442_Corredores.png": "3d2390e94060ff2c01114ac9d05c356bfed346613eb9793e73118c9b788bb9a5",
+    "dist/assets/481_Activacion_adicional_Caminantes.png": "92c7f3a17f8b7d2bb573d785dd4bff411c68ec03613707fdf096b393d767d082",
+    "dist/assets/444_Caminantes.png": "917bab677e30c35937a11e8abed5bdda7b7a80bd0566633a0539d20e98b0bfd0",
+    "dist/assets/483_Activacion_adicional_Brutos.png": "f64c1b1cc9ec113acd01422a1bc7228f47349a014fb9675dd5dbdc0083453d76",
+    "dist/assets/435_Brutos.png": "b92f79dfd5b54466379634297337f612863d6296e33bca7199309f022d22770d",
+    "dist/assets/461_Abominacion.png": "9d9c31418e1275e9cf1b3e7d6f5e3d8f7688d82bc37ddefd070e0bce1bd26bc3",
+    "dist/assets/451_Brutos.png": "b5be6922fa064ef9330edab36066990e11be0754af6294c2f50ecca0d4923971",
+    "tests/engine.test.js": "980696d1f66f5bcfe6b0d004e015d83ad99cec5157fb044c2734547aa5c630c1"
+  },
+  "pruebas_motor": {
+    "ejecutadas": 13,
+    "pasaron": 13,
+    "fallaron": 0
+  },
+  "qa_visual_en_esta_entrega": false,
+  "qa_offline_en_esta_entrega": false
+}

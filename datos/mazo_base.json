@@ -1,0 +1,316 @@
+{
+  "version": 1,
+  "fuente": "cantidades entregadas por Héctor e IDs de la web actual",
+  "total_copias": 56,
+  "cartas": [
+    {
+      "id": "nigromante",
+      "nombre": "Nigromante",
+      "clase": "spawn_general",
+      "cantidad_inicial": 9,
+      "dificultad": null,
+      "tipo_zombi": "nigromante",
+      "juego_id": "white-death",
+      "expansion_id": "core-white-death",
+      "numero_carta_imagen": 471,
+      "imagen": "recursos/01 Mazo Spawn - Juego base/471_Nigromante.png",
+      "nombre_imagen_efectiva": "471_Nigromante.png",
+      "niveles_orden": [
+        "Azul",
+        "Amarillo",
+        "Naranja",
+        "Rojo"
+      ],
+      "efectos_por_nivel": null,
+      "datos_confirmados": true,
+      "referencias_ids": []
+    },
+    {
+      "id": "abominacion",
+      "nombre": "Abominación",
+      "clase": "spawn_general",
+      "cantidad_inicial": 6,
+      "dificultad": null,
+      "tipo_zombi": "abominacion",
+      "juego_id": "white-death",
+      "expansion_id": "core-white-death",
+      "numero_carta_imagen": 461,
+      "imagen": "recursos/01 Mazo Spawn - Juego base/461_Abominacion.png",
+      "nombre_imagen_efectiva": "461_Abominacion.png",
+      "niveles_orden": [
+        "Azul",
+        "Amarillo",
+        "Naranja",
+        "Rojo"
+      ],
+      "efectos_por_nivel": null,
+      "datos_confirmados": true,
+      "referencias_ids": []
+    },
+    {
+      "id": "asedio",
+      "nombre": "Asedio zombi",
+      "clase": "spawn_general",
+      "cantidad_inicial": 9,
+      "dificultad": null,
+      "tipo_zombi": "asedio",
+      "juego_id": "white-death",
+      "expansion_id": "core-white-death",
+      "numero_carta_imagen": 474,
+      "imagen": "recursos/01 Mazo Spawn - Juego base/474_Asedio_zombi.png",
+      "nombre_imagen_efectiva": "474_Asedio_zombi.png",
+      "niveles_orden": [
+        "Azul",
+        "Amarillo",
+        "Naranja",
+        "Rojo"
+      ],
+      "efectos_por_nivel": null,
+      "datos_confirmados": true,
+      "referencias_ids": []
+    },
+    {
+      "id": "activacion-corredor",
+      "nombre": "Activación adicional corredor",
+      "clase": "spawn_general",
+      "cantidad_inicial": 1,
+      "dificultad": null,
+      "tipo_zombi": "corredores",
+      "juego_id": "white-death",
+      "expansion_id": "core-white-death",
+      "numero_carta_imagen": 484,
+      "imagen": "recursos/01 Mazo Spawn - Juego base/484_Activacion_adicional_Corredores.png",
+      "nombre_imagen_efectiva": "484_Activacion_adicional_Corredores.png",
+      "niveles_orden": [
+        "Azul",
+        "Amarillo",
+        "Naranja",
+        "Rojo"
+      ],
+      "efectos_por_nivel": [
+        "Sin efecto",
+        "Activación adicional",
+        "Activación adicional",
+        "Activación adicional"
+      ],
+      "datos_confirmados": true,
+      "referencias_ids": []
+    },
+    {
+      "id": "activacion-brutos",
+      "nombre": "Activación adicional brutos",
+      "clase": "spawn_general",
+      "cantidad_inicial": 1,
+      "dificultad": null,
+      "tipo_zombi": "brutos",
+      "juego_id": "white-death",
+      "expansion_id": "core-white-death",
+      "numero_carta_imagen": 483,
+      "imagen": "recursos/01 Mazo Spawn - Juego base/483_Activacion_adicional_Brutos.png",
+      "nombre_imagen_efectiva": "483_Activacion_adicional_Brutos.png",
+      "niveles_orden": [
+        "Azul",
+        "Amarillo",
+        "Naranja",
+        "Rojo"
+      ],
+      "efectos_por_nivel": [
+        "Sin efecto",
+        "Activación adicional",
+        "Activación adicional",
+        "Activación adicional"
+      ],
+      "datos_confirmados": true,
+      "referencias_ids": []
+    },
+    {
+      "id": "activacion-caminantes",
+      "nombre": "Activación adicional caminantes",
+      "clase": "spawn_general",
+      "cantidad_inicial": 2,
+      "dificultad": null,
+      "tipo_zombi": "caminantes",
+      "juego_id": "white-death",
+      "expansion_id": "core-white-death",
+      "numero_carta_imagen": 481,
+      "imagen": "recursos/01 Mazo Spawn - Juego base/481_Activacion_adicional_Caminantes.png",
+      "nombre_imagen_efectiva": "481_Activacion_adicional_Caminantes.png",
+      "niveles_orden": [
+        "Azul",
+        "Amarillo",
+        "Naranja",
+        "Rojo"
+      ],
+      "efectos_por_nivel": [
+        "Sin efecto",
+        "Activación adicional",
+        "Activación adicional",
+        "Activación adicional"
+      ],
+      "datos_confirmados": true,
+      "referencias_ids": []
+    },
+    {
+      "id": "brutos-normal",
+      "nombre": "Brutos normal",
+      "clase": "spawn_general",
+      "cantidad_inicial": 4,
+      "dificultad": "Normal",
+      "tipo_zombi": "brutos",
+      "juego_id": "white-death",
+      "expansion_id": "core-white-death",
+      "numero_carta_imagen": 451,
+      "imagen": "recursos/01 Mazo Spawn - Juego base/451_Brutos.png",
+      "nombre_imagen_efectiva": "451_Brutos.png",
+      "niveles_orden": [
+        "Azul",
+        "Amarillo",
+        "Naranja",
+        "Rojo"
+      ],
+      "efectos_por_nivel": [
+        4,
+        4,
+        6,
+        8
+      ],
+      "datos_confirmados": true,
+      "referencias_ids": []
+    },
+    {
+      "id": "brutos-facil",
+      "nombre": "Brutos fácil",
+      "clase": "spawn_general",
+      "cantidad_inicial": 4,
+      "dificultad": "Fácil",
+      "tipo_zombi": "brutos",
+      "juego_id": "white-death",
+      "expansion_id": "core-white-death",
+      "numero_carta_imagen": 435,
+      "imagen": "recursos/01 Mazo Spawn - Juego base/435_Brutos.png",
+      "nombre_imagen_efectiva": "435_Brutos.png",
+      "niveles_orden": [
+        "Azul",
+        "Amarillo",
+        "Naranja",
+        "Rojo"
+      ],
+      "efectos_por_nivel": [
+        2,
+        2,
+        6,
+        8
+      ],
+      "datos_confirmados": true,
+      "referencias_ids": []
+    },
+    {
+      "id": "caminantes-normal",
+      "nombre": "Caminantes normal",
+      "clase": "spawn_general",
+      "cantidad_inicial": 6,
+      "dificultad": "Normal",
+      "tipo_zombi": "caminantes",
+      "juego_id": "white-death",
+      "expansion_id": "core-white-death",
+      "numero_carta_imagen": 444,
+      "imagen": "recursos/01 Mazo Spawn - Juego base/444_Caminantes.png",
+      "nombre_imagen_efectiva": "444_Caminantes.png",
+      "niveles_orden": [
+        "Azul",
+        "Amarillo",
+        "Naranja",
+        "Rojo"
+      ],
+      "efectos_por_nivel": [
+        4,
+        6,
+        8,
+        10
+      ],
+      "datos_confirmados": true,
+      "referencias_ids": []
+    },
+    {
+      "id": "caminantes-facil",
+      "nombre": "Caminantes fácil",
+      "clase": "spawn_general",
+      "cantidad_inicial": 6,
+      "dificultad": "Fácil",
+      "tipo_zombi": "caminantes",
+      "juego_id": "white-death",
+      "expansion_id": "core-white-death",
+      "numero_carta_imagen": 429,
+      "imagen": "recursos/01 Mazo Spawn - Juego base/429_Caminantes.png",
+      "nombre_imagen_efectiva": "429_Caminantes.png",
+      "niveles_orden": [
+        "Azul",
+        "Amarillo",
+        "Naranja",
+        "Rojo"
+      ],
+      "efectos_por_nivel": [
+        2,
+        4,
+        6,
+        8
+      ],
+      "datos_confirmados": true,
+      "referencias_ids": []
+    },
+    {
+      "id": "corredores-normal",
+      "nombre": "Corredores normal",
+      "clase": "spawn_general",
+      "cantidad_inicial": 4,
+      "dificultad": "Normal",
+      "tipo_zombi": "corredores",
+      "juego_id": "white-death",
+      "expansion_id": "core-white-death",
+      "numero_carta_imagen": 455,
+      "imagen": "recursos/01 Mazo Spawn - Juego base/455_Corredores.png",
+      "nombre_imagen_efectiva": "455_Corredores.png",
+      "niveles_orden": [
+        "Azul",
+        "Amarillo",
+        "Naranja",
+        "Rojo"
+      ],
+      "efectos_por_nivel": [
+        4,
+        4,
+        6,
+        8
+      ],
+      "datos_confirmados": true,
+      "referencias_ids": []
+    },
+    {
+      "id": "corredores-facil",
+      "nombre": "Corredores fácil",
+      "clase": "spawn_general",
+      "cantidad_inicial": 4,
+      "dificultad": "Fácil",
+      "tipo_zombi": "corredores",
+      "juego_id": "white-death",
+      "expansion_id": "core-white-death",
+      "numero_carta_imagen": 442,
+      "imagen": "recursos/01 Mazo Spawn - Juego base/442_Corredores.png",
+      "nombre_imagen_efectiva": "442_Corredores.png",
+      "niveles_orden": [
+        "Azul",
+        "Amarillo",
+        "Naranja",
+        "Rojo"
+      ],
+      "efectos_por_nivel": [
+        2,
+        2,
+        6,
+        8
+      ],
+      "datos_confirmados": true,
+      "referencias_ids": []
+    }
+  ]
+}

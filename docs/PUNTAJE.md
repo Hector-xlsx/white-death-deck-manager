@@ -1,0 +1,27 @@
+# Puntaje y contador de zombis · estado vigente 16/10/2026
+
+## Tabla de puntajes y turnos implementada · 16/10/2026
+
+Fuente vigente: input referencia cartas.xlsx, hoja TABLA PUNTAJES, A1:G19. Instantánea con SHA-256 en dist/tabla-puntajes.js; Excel conservado sin modificaciones. Caminante/Bruto/Corredor al aparecer: 3/4/4; Daily al aparecer: 6, salvo Bake-Danuki. Abominación base 12 y Nigromante base 10 al ser eliminados; multiplicadores por turnos completados 0/1/2/3/4/5/6+: 5/4/3/2,5/2/1,5/1. Resultado Abominaciones: 60/48/36/30/24/18/12; Nigromantes: 50/40/30/25/20/15/10. La tabla de reeliminación ya existe y todos sus valores actuales son 1; se aplica como factor adicional desde la segunda eliminación de la misma presencia/forma.
+
+Turnos: diferencia entre tandas principales aceptadas. Antes del siguiente SPAWN son 0; añadir zona, reemplazar o reabrir no incrementa. Una nueva extracción después de retirar al enemigo tiene nuevo uid, turno 0 y primera eliminación. Una reaparición que conserva presencia conserva antigüedad y cuenta una derrota más. Mumm-Ra vincula las formas: solo acumula mientras está en cada forma, pausa Nigromante durante Abominación y lo retoma al volver; una forma derrotada reinicia su reloj al regresar. Puede puntuar ambas formas en una misma ronda. Para reeliminación se cuenta por presencia vinculada y tipo/forma. Bake-Danuki siempre puntúa al retirarlo según la forma vigente: Caminante 3, Bruto/Corredor 4, Abominación usa la tabla y antigüedad desde su aparición original (incluye intervalos en otras formas).
+
+Cada derrota nueva congela versión de fórmula, tipo, turnos, número de eliminación, base, ambos multiplicadores y puntos. Recarga no recalcula la derrota con otra tabla. Registros antiguos sin estos campos siguen válidos y conservan su ponderación anterior 25/12/5; no se reconstruyen derrotas ausentes. Los valores de apariciones generales/Daily se derivan de la tabla vigente. Anulación y cancelación de orígenes mantienen los filtros y respaldo ya existentes; guardado atómico sin duplicados ante fallo. Las correcciones no puntúan.
+
+Implementado en tabla-puntajes.js y formula-puntaje.js, conectado a derrotas.js/puntaje.js y descripción del panel; ambos módulos incluidos en el precache PWA. No se modifica Excel ni se implementa cierre/historial de partidas. La variación por adrenalina continúa pendiente.
+
+Validación: 305/305 pruebas. Nuevas pruebas por cada tramo y 6+, reinicio tras nueva aparición, antigüedad y segunda eliminación, factor de reeliminación distinto de 1 en prueba aislada (sin modificar fuente), pausa/reanudación y derrota doble de Mumm-Ra, todas las formas de Bake-Danuki, snapshots de puntos, legado, fórmula alterada, cuota, recarga, descarte y anulación. QA verificar-puntaje.mjs, verificar-puntos-derrota.mjs, verificar-zonas-pulso.mjs y verificar-reglas-cartas.mjs: interfaz/animación, cantidades, temas, cinco tamaños, reglas especiales, guardado y módulos nuevos offline. Contextos aislados, sin dispositivos físicos.
+
+## Panel y ajustes manuales
+
+Marcador Kang inicial; Dragón y Cabeza seleccionables en Configuración. Recursos originales y trazados vectoriales del paquete contadores_puntaje, con sus licencias y proporción. Adrenalina centrada respecto de la página; marcador hasta 300 px centrado entre ella y Configuración, debajo en pantallas estrechas. El pulso al confirmar una eliminación crece 10% en 750 ms y regresa en otros 750 ms, sin modificar puntos por sí mismo ni mover controles; respeta movimiento reducido y cancelaciones.
+
+El panel muestra puntaje y zombis generados. Tres borradores independientes de Caminantes, Brutos y Corredores, con −1/+1/+5/+10, teclado y Agregar. Solo confirmar crea una entrada con tipo, fecha, tanda y adrenalina. Fallar el guardado conserva el borrador y los totales. Registros antiguos sin tipo son Caminantes. Las cantidades variables de cartas de objetos/corrupción se ingresan manualmente según lo ocurrido en la mesa. No se implementa un contador de corrupción.
+
+El total de zombis generados se deriva de extracciones y acompañantes vigentes, más ajustes manuales. No disminuye al eliminar. Los acompañantes de Rakshasa y Shakōki puntúan por su tipo. Activaciones, referencias visuales y transformaciones por sí solas no duplican apariciones. Trepadores, Terracota, Ballesteros y Ninja del Pie usan prioridad de Caminante para estas pruebas.
+
+La tabla es una instantánea incorporada en la aplicación: guardar otra versión del Excel no actualiza por sí solo una PWA ya preparada. Para otra fórmula hay que releer la hoja, actualizar la instantánea y preparar/verificar otra versión. No se autoriza publicación externa.
+
+## Pendientes
+
+El punto 28 queda parcialmente realizado: fórmula temporal y registro de derrotas implementados. Siguen pendientes Finalizar partida, puntaje perfecto/porcentaje, tratamiento visual del cierre, historial entre partidas y criterio de cajas utilizadas. La puntuación al cerrar de quienes sigan presentes continúa acordada pero sin botón de cierre. Ver PROPUESTA_CIERRE_E_HISTORIAL.md.

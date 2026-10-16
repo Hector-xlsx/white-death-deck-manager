@@ -1,0 +1,41 @@
+{
+  "estado": "configuración base confirmada; ampliaciones no habilitadas",
+  "juego_partida_id": "white-death",
+  "contenido_incluido_ids": [
+    "core-white-death"
+  ],
+  "dificultades_incluidas": [
+    "Fácil",
+    "Normal"
+  ],
+  "umbral_reinicio_general_porcentaje": 20,
+  "zonas_normales": 3,
+  "zonas_nigromante": 0,
+  "modo_general": "sin_reposicion",
+  "selector_adrenalina": false,
+  "modo_nigromantes": null,
+  "modo_abominaciones": null,
+  "autofijar_enemigos": null,
+  "recursion_nigromantes": null,
+  "juegos": [
+    {
+      "id": "white-death",
+      "nombre": "White Death",
+      "core_mazo_general_confirmado": true
+    },
+    {
+      "id": "green-horde",
+      "nombre": "Green Horde",
+      "core_mazo_general_confirmado": false
+    }
+  ],
+  "expansiones_mencionadas": [
+    {
+      "id": "frozen-fortress",
+      "nombre": "Frozen Fortress",
+      "juego_id": "white-death",
+      "asignaciones_de_cartas_confirmadas": false
+    }
+  ],
+  "expansiones_restantes_por_confirmar": true
+}

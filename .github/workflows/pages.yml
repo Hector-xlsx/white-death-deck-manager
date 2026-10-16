@@ -1,0 +1,49 @@
+name: Publicar White Death Deck Manager
+
+on:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: pages
+  cancel-in-progress: false
+
+jobs:
+  comprobar-y-preparar:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Obtener código
+        uses: actions/checkout@v7
+      - name: Preparar Node.js
+        uses: actions/setup-node@v7
+        with:
+          node-version: '24'
+          package-manager-cache: false
+      - name: Comprobar base original
+        run: node --test base-web/tests/engine.test.js
+      - name: Preparar catálogo y recursos offline
+        run: node scripts/preparar.mjs
+      - name: Comprobar aplicación
+        run: node --test tests/*.test.js
+      - name: Preparar Pages
+        uses: actions/configure-pages@v5
+      - name: Empaquetar aplicación estática
+        uses: actions/upload-pages-artifact@v4
+        with:
+          path: ./dist
+
+  publicar:
+    needs: comprobar-y-preparar
+    runs-on: ubuntu-latest
+    permissions:
+      pages: write
+      id-token: write
+    environment:
+      name: github-pages
+      url: ${{ steps.publicacion.outputs.page_url }}
+    steps:
+      - name: Publicar
+        id: publicacion
+        uses: actions/deploy-pages@v4

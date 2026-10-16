@@ -1,0 +1,11 @@
+node_modules/
+servidor*.log
+docs/verificacion/*.png
+docs/verificacion/*.log
+docs/verificacion/*.txt
+outputs/
+.env
+.env.*
+!.env.example
+/input referencia cartas.xlsx
+/MANIFIESTO_ENTREGA.json

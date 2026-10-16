@@ -1,0 +1,121 @@
+{
+  "version": 1,
+  "fuente": "input referencia cartas.xlsx / Mazo Custom Daily Spawn",
+  "politica_probabilidad": {
+    "fuente": "Decisión del usuario del 13/10/2026; configuración del gestor, no regla oficial de las cartas",
+    "base_e_incremento_por": "nivel_adrenalina",
+    "niveles": [
+      "azul",
+      "amarillo",
+      "naranja",
+      "rojo"
+    ],
+    "cambio_de_nivel": "conservar_puntos_acumulados",
+    "aparicion": "reiniciar_aumento",
+    "probabilidad_maxima": 100
+  },
+  "cartas_ids": [
+    "daily-du02",
+    "daily-du01",
+    "daily-du03",
+    "daily-du04",
+    "daily-du05",
+    "daily-du06",
+    "daily-du07"
+  ],
+  "cartas": [
+    {
+      "id": "daily-du02",
+      "id_carta": "DU02",
+      "nombre": "Rakshasa",
+      "tipo_zombi": "caminantes",
+      "imagen": "recursos/05 - Custom Daily Spawn ESP/DU02 Rakshasa en español V2.png",
+      "cantidad_inicial": 1,
+      "caja_id": "frozen-fortress",
+      "reglas_texto": "Reglas normales de Caminante. Siempre es el último en el orden de prioridad de blancos. Al activarse, todos los supervivientes de su zona sufren 2 heridas. Aparece junto a 3 Caminantes.",
+      "regla_programable": "programada",
+      "automatizacion": {
+        "alcance": "Aparición acompañada de tres Caminantes: referencia +3 y contador. Ataques y prioridad se resuelven en mesa.",
+        "fecha": "2026-10-15"
+      }
+    },
+    {
+      "id": "daily-du01",
+      "id_carta": "Du01",
+      "nombre": "Yaksha",
+      "tipo_zombi": "caminantes",
+      "imagen": "recursos/05 - Custom Daily Spawn ESP/DU01 Yaksha en español.png",
+      "cantidad_inicial": 1,
+      "caja_id": "frozen-fortress",
+      "reglas_texto": "Reglas normales de Caminante. El ataque de Yaksha inflige 3 heridas. Cuando Yaksha es eliminado, el superviviente que lo eliminó recibe un objeto de cámara secreta.",
+      "regla_programable": null
+    },
+    {
+      "id": "daily-du03",
+      "id_carta": "Du03",
+      "nombre": "Meng Huo",
+      "tipo_zombi": "brutos",
+      "imagen": "recursos/05 - Custom Daily Spawn ESP/DU03 Meng Huo en español.png",
+      "cantidad_inicial": 1,
+      "caja_id": "frozen-fortress",
+      "reglas_texto": "Reglas normales de Bruto. Cuando Meng Huo vaya a ser eliminado, colócalo en la primera zona de aparición en su lugar.",
+      "regla_programable": "programada",
+      "automatizacion": {
+        "alcance": "Derrota muestra recordatorio de mover a primera zona y conserva presencia; correcciones mediante regenerar/descartar origen.",
+        "fecha": "2026-10-15"
+      }
+    },
+    {
+      "id": "daily-du04",
+      "id_carta": "Du04",
+      "nombre": "Zhu Bajie",
+      "tipo_zombi": "brutos",
+      "imagen": "recursos/05 - Custom Daily Spawn ESP/DU04 de Bruto en español.png",
+      "cantidad_inicial": 1,
+      "caja_id": "frozen-fortress",
+      "reglas_texto": "Reglas normales de Bruto. No puede realizar acciones de movimiento. Al comienzo de cada fase de los zombis, todos los demás zombis de su zona obtienen 1 activación.",
+      "regla_programable": null
+    },
+    {
+      "id": "daily-du05",
+      "id_carta": "Du05",
+      "nombre": "Onryo",
+      "tipo_zombi": "corredores",
+      "imagen": "recursos/05 - Custom Daily Spawn ESP/DU05 Onryo en español.png",
+      "cantidad_inicial": 1,
+      "caja_id": "frozen-fortress",
+      "reglas_texto": "Reglas normales de Corredor. Onryo siempre tiene como objetivo al superviviente con más puntos de adrenalina.",
+      "regla_programable": null
+    },
+    {
+      "id": "daily-du06",
+      "id_carta": "Du06",
+      "nombre": "Kappa",
+      "tipo_zombi": "caminantes",
+      "imagen": "recursos/05 - Custom Daily Spawn ESP/DU06 Kappa en español.png",
+      "cantidad_inicial": 1,
+      "caja_id": "frozen-fortress",
+      "reglas_texto": "Reglas normales de Caminante. Es el último en el orden de prioridad de blancos. Los ataques de Kappa infligen 3 heridas. Al comienzo de la fase de los zombis, 1 superviviente de su misma zona puede descartar una Manzana o Carne Salada. A cambio, Kappa no se activa esta ronda.",
+      "regla_programable": null
+    },
+    {
+      "id": "daily-du07",
+      "id_carta": "Du07",
+      "nombre": "Bake-Danuki",
+      "tipo_zombi": "caminantes",
+      "imagen": "recursos/05 - Custom Daily Spawn ESP/DU07 Bake-Danuki en español.png",
+      "cantidad_inicial": 1,
+      "caja_id": "frozen-fortress",
+      "reglas_texto": "Reglas normales de Caminante. Al comienzo de la fase de los jugadores, tira 1 dado. Hasta el final de la ronda, Bake-Danuki es: 1, una Abominación; 2–3, un Corredor; 4–5, un Bruto; 6, un Caminante.",
+      "regla_programable": "programada",
+      "automatizacion": {
+        "tipo": "regla_personalizada_confirmada",
+        "momento": "SPAWN, solo si ya estaba en juego al inicio",
+        "efecto": "D6 guardado por tanda y estandarte: 1 Abominación; 2-3 Corredor; 4-5 Bruto; 6 Caminante",
+        "presentacion": "Referencia al final, sin zona ni nueva aparición",
+        "alcance": "Cambia el estandarte; conserva su identidad Daily, sin cambiar topes ni crear activaciones",
+        "nota": "El texto original de la carta indica comienzo de la fase de los jugadores; esta automatización usa el momento personalizado solicitado por el usuario."
+      }
+    }
+  ]
+}

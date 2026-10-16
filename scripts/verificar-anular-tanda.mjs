@@ -1,0 +1,70 @@
+import {createRequire} from 'node:module';
+import {mkdir} from 'node:fs/promises';
+import {fileURLToPath} from 'node:url';
+import assert from 'node:assert/strict';
+import {newGame,spawn,unpinCard} from '../dist/engine.js';
+const require=createRequire(import.meta.url),{chromium}=require(process.env.MAZO_PLAYWRIGHT||'playwright');
+const url=process.env.MAZO_URL||'http://127.0.0.1:8080/mazo/',key='white-death-gestor-v2';
+const semilla=newGame({easy:true,normal:true,threshold:99,selectedIds:['nigromante','abominacion'],modoNigromantes:'sin-reposicion'},1);
+spawn(semilla,()=>.99);unpinCard(semilla,semilla.pins[0].uid);semilla.openBatch=false;delete semilla.respaldoTanda;
+const salida=new URL('../docs/verificacion/',import.meta.url);await mkdir(salida,{recursive:true});
+const browser=await chromium.launch({headless:true,channel:'chrome'}),errores=[];
+const estado=p=>p.evaluate(k=>JSON.parse(localStorage.getItem(k)),key);
+async function abrir(semilla){
+ const context=await browser.newContext();
+ await context.addInitScript(({key,semilla})=>{if(!localStorage.getItem(key))localStorage.setItem(key,JSON.stringify(semilla));Math.random=()=>0;},{key,semilla});
+ const p=await context.newPage();p.on('pageerror',e=>errores.push(e.message));
+ await p.goto(url);await p.locator('#offline-status').filter({hasText:'Disponible offline'}).waitFor({timeout:90000});
+ return {context,p};
+}
+try{
+ const {context,p}=await abrir(semilla);
+ await p.locator('[data-action="reopen"]').click();assert.equal(await p.locator('#anular-tanda').isDisabled(),true);
+ await p.locator('#batch-dialog [data-action="close"]').click();
+ await p.waitForFunction(k=>JSON.parse(localStorage.getItem(k)).openBatch===false,key);
+ const antes={...await estado(p),respaldoTanda:null};
+ await p.locator('#spawn').click();assert.equal((await estado(p)).necro,1);
+ await p.evaluate(()=>Math.random=()=>.99);
+ await p.locator('#batch-grid article').last().locator('[data-action="replace"]').click();
+ assert.equal((await estado(p)).pins.length,2);
+ const actual=await estado(p);
+ for(const [nombre,tamano] of [['horizontal',{width:844,height:390}],['vertical',{width:390,height:844}],['estrecho',{width:320,height:568}],['tablet',{width:1024,height:768}]]){
+  await p.setViewportSize(tamano);await p.locator('#anular-tanda').scrollIntoViewIfNeeded();
+  assert.ok(await p.locator('#anular-tanda').evaluate(e=>{const r=e.getBoundingClientRect();return r.width>=44&&r.height>=44&&r.left>=0&&r.right<=innerWidth&&e.scrollWidth<=e.clientWidth+1;}));
+  await p.screenshot({path:fileURLToPath(new URL(`anular-tanda-${nombre}.png`,salida)),fullPage:true});
+ }
+ await p.locator('#anular-tanda').click();await p.locator('[data-action="confirm"][data-value="cancel"]').click();
+ assert.deepEqual(await estado(p),actual);assert.equal(await p.locator('#batch-dialog').isVisible(),true);
+ await p.locator('#batch-dialog [data-action="close"]').click();
+ await p.waitForFunction(k=>JSON.parse(localStorage.getItem(k)).openBatch===false,key);await p.reload();
+ await p.locator('[data-action="reopen"]').click();assert.equal(await p.locator('#anular-tanda').isEnabled(),true);
+ await context.setOffline(true);await p.reload();
+ await p.locator('#anular-tanda').click();await p.locator('[data-action="confirm"][data-value="yes"]').click();
+ assert.deepEqual(await estado(p),antes);assert.equal(await p.locator('#batch-dialog').isVisible(),false);
+ assert.ok((await p.locator('#last-preview').textContent()).includes('Tanda 1'));
+ await p.locator('[data-action="reopen"]').click();assert.equal(await p.locator('#anular-tanda').isDisabled(),true);
+ await p.locator('#batch-dialog [data-action="close"]').click();
+ await p.waitForFunction(k=>JSON.parse(localStorage.getItem(k)).openBatch===false,key);
+ await p.locator('[data-action="counter"][data-kind="normal"][data-delta="1"]').click();
+ await p.locator('#spawn').click();assert.equal((await estado(p)).history.at(-1).normal,2);
+ const sinRed=await estado(p);await p.reload();assert.deepEqual(await estado(p),sinRed);
+ await p.evaluate(()=>{Storage.prototype.setItem=function(){throw new DOMException('Sin espacio','QuotaExceededError');};});
+ await p.locator('#anular-tanda').click();await p.locator('[data-action="confirm"][data-value="yes"]').click();
+ assert.deepEqual(await estado(p),sinRed);assert.equal(await p.locator('#batch-dialog').isVisible(),true);
+ await context.close();
+ const primera=await abrir(newGame());await primera.p.locator('#spawn').click();
+ await primera.p.locator('#anular-tanda').click();await primera.p.locator('[data-action="confirm"][data-value="yes"]').click();
+ assert.deepEqual(await estado(primera.p),newGame());assert.equal(await primera.p.locator('[data-action="reopen"]').isVisible(),false);
+ await primera.context.close();
+ const compartida=await abrir(newGame());await compartida.p.locator('#spawn').click();
+ await compartida.p.locator('#anular-tanda').click();
+ const otra=await compartida.context.newPage();await otra.goto(url);
+ await otra.locator('#batch-dialog [data-action="close"]').click();
+ await otra.waitForFunction(k=>JSON.parse(localStorage.getItem(k)).openBatch===false,key);await otra.locator('#spawn').click();
+ await compartida.p.waitForFunction(()=>document.getElementById('batch-title').textContent.startsWith('Tanda 2'));
+ const nueva=await estado(otra);
+ assert.equal(await compartida.p.locator('#confirm-dialog').isVisible(),false);
+ assert.deepEqual(await estado(compartida.p),nueva);await compartida.context.close();
+ assert.deepEqual(errores,[]);
+ console.log('Anular tanda: 4 viewports, cancelacion, primera/ultima, reapertura, recarga, offline, devoluciones, cuota y confirmacion desactualizada comprobados.');
+}finally{await browser.close();}

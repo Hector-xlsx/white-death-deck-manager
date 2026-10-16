@@ -1,0 +1,38 @@
+.score-counter {
+  position: relative;
+  display: inline-block;
+  width: var(--score-width, 280px);
+  max-width: 100%;
+  padding: 0;
+  border: 0;
+  margin: 0;
+  background: transparent;
+  color: inherit;
+  cursor: pointer;
+  vertical-align: middle;
+  isolation: isolate;
+  -webkit-tap-highlight-color: transparent;
+}
+.score-counter__base {
+  display: block;
+  width: 100%;
+  height: auto;
+  pointer-events: none;
+  user-select: none;
+}
+.score-counter__digits {
+  position: absolute;
+  inset: 0;
+  display: block;
+  width: 100%;
+  height: 100%;
+  overflow: visible;
+  pointer-events: none;
+  user-select: none;
+}
+.score-counter:focus-visible {
+  outline: 2px solid #8bdcf2;
+  outline-offset: 5px;
+  border-radius: 10px;
+}
+.score-counter[data-theme="cabeza"] { --score-width: 280px; }

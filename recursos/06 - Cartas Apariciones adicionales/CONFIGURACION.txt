@@ -1,0 +1,12 @@
+Las tres cartas miden 1004 x 1567 px.
+El cuadro de pergamino inferior es idéntico en tamaño, posición y textura en los tres PNG.
+El tramo unificado comienza en y=1074 px y llega al borde inferior.
+Las cantidades no están impresas.
+
+Misma configuración de superposición para los tres tipos:
+.carta { position: relative; }
+.carta img { display: block; width: 100%; height: auto; }
+.cantidad { position: absolute; left: 50%; top: 84.5%; transform: translate(-50%, -50%); }
+
+El tamaño del texto se define en la aplicación.
+Los nombres y las ilustraciones de cada tipo se conservan; se amplió el cuadro de Caminante y Bruto para igualarlo al de Corredor.

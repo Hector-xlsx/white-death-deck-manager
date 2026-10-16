@@ -1,0 +1,16 @@
+Marcos corregidos para cartas 280 x 437.
+PNG transparente: 1120 x 1748. Misma proporción exterior en ambos archivos.
+Abertura interior exacta: 560 x 874, ubicada en x=280, y=437.
+La abertura conserva exactamente la proporción 280:437 y está centrada.
+SVG autocontenido: ilustración incrustada; no requiere recursos externos.
+Los adornos y el brillo se mantienen por fuera de la abertura.
+La imagen de comprobación usa el archivo original de la carta, sin regenerar su contenido.
+
+Montaje sobre cualquier carta con proporción 280:437:
+.contenedor-carta { position: relative; aspect-ratio: 280 / 437; overflow: visible; }
+.carta { display: block; width: 100%; height: auto; }
+.marco { position: absolute; width: 200%; height: auto; max-width: none; left: -50%; top: -50%; pointer-events: none; }
+Renderizar la imagen del marco después de la carta, por encima.
+No aplicar object-fit: contain a una caja con proporción diferente.
+No modificar ancho y alto por separado: el PNG ya está corregido.
+El 200% corresponde al espacio exterior de los adornos, no a un ajuste de proporciones.

@@ -1,0 +1,77 @@
+{
+  "dragon": {
+    "label": "Dragón",
+    "file": "dragon.png",
+    "width": 1984,
+    "height": 793,
+    "box": {
+      "x": 1020,
+      "y": 178,
+      "width": 815,
+      "height": 305
+    },
+    "glyphStyle": "angular",
+    "tracking": -12,
+    "palette": {
+      "top": "#fff2b6",
+      "upper": "#ffe08c",
+      "middle": "#f0b64f",
+      "lower": "#d88e29",
+      "bottom": "#f6c667",
+      "outer": "#170803",
+      "rim": "#c77920",
+      "highlight": "#fff1bb",
+      "depth": "#56230a"
+    }
+  },
+  "cabeza": {
+    "label": "Cabeza",
+    "file": "cabeza.png",
+    "width": 1947,
+    "height": 808,
+    "box": {
+      "x": 600,
+      "y": 424,
+      "width": 745,
+      "height": 218
+    },
+    "glyphStyle": "block",
+    "tracking": -18,
+    "palette": {
+      "top": "#fff3c4",
+      "upper": "#ffe5a1",
+      "middle": "#f2c15f",
+      "lower": "#d99b38",
+      "bottom": "#f3cb76",
+      "outer": "#160802",
+      "rim": "#a96320",
+      "highlight": "#fff1c5",
+      "depth": "#623008"
+    }
+  },
+  "kang": {
+    "label": "Kang",
+    "file": "kang.png",
+    "width": 1984,
+    "height": 793,
+    "box": {
+      "x": 865,
+      "y": 354,
+      "width": 930,
+      "height": 300
+    },
+    "glyphStyle": "medieval",
+    "tracking": -18,
+    "palette": {
+      "top": "#48200c",
+      "upper": "#311105",
+      "middle": "#1c0802",
+      "lower": "#260b02",
+      "bottom": "#431a06",
+      "outer": "#6e3a1a",
+      "rim": "#e2a84c",
+      "highlight": "#fff0b5",
+      "depth": "#693b1e"
+    }
+  }
+}

@@ -1,0 +1,131 @@
+{
+  "version": 1,
+  "estado": "borrador",
+  "cartas": [
+    {
+      "id": "spawn-559",
+      "nombre_sugerido": "Caminantes de terrorcota",
+      "numero_carta_imagen": 559,
+      "imagen": "recursos/02 Mazo Spawn - Expansiones/559_Caminantes_de_terrorcota.png",
+      "clase_sugerida": "spawn_general",
+      "tipo_zombi_sugerido": "caminantes-terrorcota",
+      "juego_id": "white-death",
+      "expansion_id": "climbers-terrorcotta-walkers",
+      "cantidad_inicial": 6,
+      "dificultad": "Normal",
+      "efectos_por_nivel": [
+        5,
+        5,
+        5,
+        5
+      ],
+      "datos_confirmados": true,
+      "habilitada_para_sorteo": true,
+      "pendientes": []
+    },
+    {
+      "id": "spawn-565",
+      "nombre_sugerido": "Trepadores",
+      "numero_carta_imagen": 565,
+      "imagen": "recursos/02 Mazo Spawn - Expansiones/565_Trepadores.png",
+      "clase_sugerida": "spawn_general",
+      "tipo_zombi_sugerido": "trepadores",
+      "juego_id": "white-death",
+      "expansion_id": "climbers-terrorcotta-walkers",
+      "cantidad_inicial": 6,
+      "dificultad": "Fácil",
+      "efectos_por_nivel": [
+        2,
+        4,
+        6,
+        8
+      ],
+      "datos_confirmados": true,
+      "habilitada_para_sorteo": true,
+      "pendientes": []
+    },
+    {
+      "id": "spawn-571",
+      "nombre_sugerido": "Trepadores",
+      "numero_carta_imagen": 571,
+      "imagen": "recursos/02 Mazo Spawn - Expansiones/571_Trepadores.png",
+      "clase_sugerida": "spawn_general",
+      "tipo_zombi_sugerido": "trepadores",
+      "juego_id": "white-death",
+      "expansion_id": "climbers-terrorcotta-walkers",
+      "cantidad_inicial": 6,
+      "dificultad": "Normal",
+      "efectos_por_nivel": [
+        4,
+        6,
+        8,
+        10
+      ],
+      "datos_confirmados": true,
+      "habilitada_para_sorteo": true,
+      "pendientes": []
+    },
+    {
+      "id": "spawn-577",
+      "nombre_sugerido": "Caminantes ballesteros",
+      "numero_carta_imagen": 577,
+      "imagen": "recursos/02 Mazo Spawn - Expansiones/577_Caminantes_ballesteros.png",
+      "clase_sugerida": "spawn_general",
+      "tipo_zombi_sugerido": "caminantes-ballesteros",
+      "juego_id": "white-death",
+      "expansion_id": "crossfire-pack",
+      "cantidad_inicial": 3,
+      "dificultad": "Fácil",
+      "efectos_por_nivel": [
+        2,
+        4,
+        6,
+        8
+      ],
+      "datos_confirmados": true,
+      "habilitada_para_sorteo": true,
+      "pendientes": []
+    },
+    {
+      "id": "spawn-580",
+      "nombre_sugerido": "Caminantes ballesteros",
+      "numero_carta_imagen": 580,
+      "imagen": "recursos/02 Mazo Spawn - Expansiones/580_Caminantes_ballesteros.png",
+      "clase_sugerida": "spawn_general",
+      "tipo_zombi_sugerido": "caminantes-ballesteros",
+      "juego_id": "white-death",
+      "expansion_id": "crossfire-pack",
+      "cantidad_inicial": 3,
+      "dificultad": "Normal",
+      "efectos_por_nivel": [
+        4,
+        6,
+        8,
+        10
+      ],
+      "datos_confirmados": true,
+      "habilitada_para_sorteo": true,
+      "pendientes": []
+    },
+    {
+      "id": "especial-bestias-divinas-aparicion",
+      "nombre_sugerido": "Bestias divinas (Aparición)",
+      "numero_carta_imagen": null,
+      "imagen": "recursos/02 Mazo Spawn - Expansiones/Bestias_divinas_Aparicion.png",
+      "clase_sugerida": null,
+      "tipo_zombi_sugerido": "bestias-divinas",
+      "juego_id": null,
+      "expansion_id": null,
+      "cantidad_inicial": 1,
+      "dificultad": "Normal",
+      "efectos_por_nivel": null,
+      "datos_confirmados": false,
+      "habilitada_para_sorteo": false,
+      "pendientes": [
+        "confirmar si es spawn, mazo específico o referencia",
+        "cantidades y reglas",
+        "compatibilidad"
+      ]
+    }
+  ]
+}

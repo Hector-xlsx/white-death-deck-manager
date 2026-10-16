@@ -1,0 +1,20 @@
+import {createRequire} from 'node:module';
+import assert from 'node:assert/strict';
+import {newGame,spawn} from '../dist/engine.js';
+const require=createRequire(import.meta.url),{chromium}=require(process.env.MAZO_PLAYWRIGHT||'playwright'),key='white-death-gestor-v2';
+const semilla=newGame({easy:true,normal:true,threshold:0,selectedIds:['caminantes-normal'],modoNigromantes:'sin-reposicion',reglaNigromantes:'varios',reglaAbominaciones:'festival',dailyHabilitado:true,dailyBase:100,dailyIncremento:0,dailyIncrementoPor:'carta'},7);spawn(semilla,()=>0);semilla.openBatch=false;
+const esperados=['Caminante','Caminante','Bruto','Bruto','Corredor','Caminante','Caminante'];
+const browser=await chromium.launch({headless:true,channel:'chrome'}),errores=[];
+try{
+ const context=await browser.newContext({viewport:{width:1440,height:900},reducedMotion:'reduce'});await context.addInitScript(({key,semilla})=>{if(!localStorage.getItem(key))localStorage.setItem(key,JSON.stringify(semilla));Math.random=()=>0;},{key,semilla});const p=await context.newPage();p.on('pageerror',e=>errores.push(e.message));await p.goto(process.env.MAZO_URL||'http://127.0.0.1:8080/mazo/');
+ async function comprobar(selector){
+  const tags=p.locator(selector+' .enemy-tag');assert.equal(await tags.count(),7);assert.deepEqual(await tags.evaluateAll(es=>es.map(e=>e.getAttribute('aria-label'))),esperados);
+  const correcto=await tags.evaluateAll(async es=>{for(const e of es){const img=e.querySelector('img');await img.decode();const r=e.getBoundingClientRect(),b=e.parentElement.getBoundingClientRect(),i=img.getBoundingClientRect();if(e.parentElement.querySelectorAll('.enemy-tag').length!==1||Math.abs(r.height/(b.height-2)-.2)>.003||Math.abs(r.top-b.top-1)>1||Math.abs(r.left-b.left-5)>1||getComputedStyle(e).pointerEvents!=='none'||Math.abs(i.width/i.height-img.naturalWidth/img.naturalHeight)>.003)return false;}return true;});assert.ok(correcto);
+ }
+ await comprobar('#last-preview');await p.locator('#reopen').click();const original=await p.evaluate(k=>localStorage.getItem(k),key);
+ for(const [nombre,width,height] of [['escritorio',1440,900],['tablet',1024,768],['horizontal',844,390],['vertical',390,844],['estrecho',320,568]]){await p.setViewportSize({width,height});await comprobar('#batch-grid');await comprobar('#last-preview');assert.equal(await p.evaluate(()=>document.documentElement.scrollWidth>innerWidth),false);assert.equal(await p.evaluate(k=>localStorage.getItem(k),key),original);await p.locator('#batch-dialog').screenshot({path:`docs/verificacion/daily-banderines-${nombre}.png`});}
+ await p.setViewportSize({width:1440,height:900});const tag=p.locator('#batch-grid .enemy-tag').first(),r=await tag.boundingBox();await p.mouse.click(r.x+r.width/2,r.y+r.height/2);assert.ok(await p.locator('#zoom-dialog').isVisible());await p.locator('#zoom-dialog [data-action="close"]').click();
+ await p.locator('#batch-dialog [data-action="close"]').click();await p.locator('#spawn').click();await p.locator('#batch-dialog[data-revelacion="lista"]').waitFor();assert.equal(await p.locator('#batch-grid [data-extraccion^="b-"] .enemy-tag').count(),1);assert.equal(await p.locator('#batch-grid [data-extraccion^="b-"] .enemy-tag-abominaciones').count(),1);assert.equal(await p.locator('#batch-grid [data-extraccion^="b-"] .spawn-zone-token').count(),0);assert.equal(await p.locator('#pins .enemy-tag-abominaciones').count(),1);
+ const antes=await p.evaluate(k=>localStorage.getItem(k),key);await p.locator('#offline-status').filter({hasText:'Disponible offline'}).waitFor({timeout:90000});await context.setOffline(true);await p.reload();assert.equal(await p.evaluate(k=>localStorage.getItem(k),key),antes);assert.equal(await p.locator('#batch-grid [data-extraccion^="b-"] .enemy-tag').count(),1);assert.deepEqual(errores,[]);
+ console.log('Pendiente 27: siete Daily con banderín por familia en Aparición/Última tanda, altura 20%, una sola insignia, cinco tamaños, zoom, Bake-Danuki por dado sin zona, offline y guardado intacto.');
+}finally{await browser.close();}

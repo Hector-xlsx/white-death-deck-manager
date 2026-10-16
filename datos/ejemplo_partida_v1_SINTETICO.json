@@ -1,0 +1,96 @@
+{
+  "version": 1,
+  "config": {
+    "easy": true,
+    "normal": true,
+    "threshold": 20
+  },
+  "initial": {
+    "nigromante": 9,
+    "abominacion": 6,
+    "asedio": 9,
+    "activacion-corredor": 1,
+    "activacion-brutos": 1,
+    "activacion-caminantes": 2,
+    "brutos-normal": 4,
+    "brutos-facil": 4,
+    "caminantes-normal": 6,
+    "caminantes-facil": 6,
+    "corredores-normal": 4,
+    "corredores-facil": 4
+  },
+  "remaining": {
+    "nigromante": 9,
+    "abominacion": 6,
+    "asedio": 9,
+    "activacion-corredor": 1,
+    "activacion-brutos": 1,
+    "activacion-caminantes": 1,
+    "brutos-normal": 2,
+    "brutos-facil": 4,
+    "caminantes-normal": 6,
+    "caminantes-facil": 6,
+    "corredores-normal": 4,
+    "corredores-facil": 4
+  },
+  "normal": 3,
+  "necro": 0,
+  "history": [
+    {
+      "number": 1,
+      "date": 1791338441334,
+      "normal": 3,
+      "necro": 0,
+      "slots": [
+        {
+          "zone": "Zona 1",
+          "kind": "normal",
+          "draws": [
+            {
+              "uid": 1,
+              "cardId": "brutos-normal",
+              "discarded": false,
+              "cycle": 1
+            }
+          ]
+        },
+        {
+          "zone": "Zona 2",
+          "kind": "normal",
+          "draws": [
+            {
+              "uid": 2,
+              "cardId": "activacion-caminantes",
+              "discarded": false,
+              "cycle": 1
+            }
+          ]
+        },
+        {
+          "zone": "Zona 3",
+          "kind": "normal",
+          "draws": [
+            {
+              "uid": 3,
+              "cardId": "brutos-normal",
+              "discarded": false,
+              "cycle": 1
+            }
+          ]
+        }
+      ]
+    }
+  ],
+  "pins": [
+    {
+      "uid": 1,
+      "cardId": "brutos-normal",
+      "discarded": false,
+      "cycle": 1
+    }
+  ],
+  "unpinned": [],
+  "cycle": 1,
+  "sequence": 3,
+  "openBatch": true
+}

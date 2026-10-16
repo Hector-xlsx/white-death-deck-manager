@@ -1,0 +1,26 @@
+{
+ "version": 1,
+ "confirmado_por_usuario": "2026-10-08",
+ "cantidad_por_carta": 1,
+ "modo_inicial": "sin-reposicion",
+ "reinicio_al_agotar": true,
+ "fijado_automatico": true,
+ "reglas_especiales_automaticas": false,
+ "limites_por_adrenalina": {"azul": 1, "amarillo": 2, "naranja": 3, "rojo": 4},
+ "fuente_limites": "Topes iniciales y perfil no decreciente confirmados por el usuario el 13/10/2026; configuración del gestor",
+ "reglas_modos_2026": {"fecha": "2026-10-14", "modos": ["estandar", "festival", "personalizado"], "modo_inicial": "personalizado", "cambios_desde_proxima_tanda": true, "estandar_sin_trofeos": true, "respaldo_estandar": "enemigo-abominacion-kan", "topes_solo_personalizado": true, "fuente": "Definiciones y correcciones del usuario y extracto del manual White Death"},
+ "cartas_ids": [
+  "enemigo-abominacion-orca", "enemigo-mumm-ra-abominacion",
+  "enemigo-dragon-nigromantico", "enemigo-kumiho", "enemigo-kijin",
+  "enemigo-toyol", "enemigo-takemikazuchi", "enemigo-yeti",
+  "enemigo-sojobo", "enemigo-qilin", "enemigo-susano-wo",
+  "enemigo-red-hare", "enemigo-shakoki-dogu", "enemigo-nian",
+  "enemigo-hachiman", "enemigo-amaterasu", "enemigo-chimimoryo",
+  "enemigo-asura", "enemigo-bishamon", "enemigo-abominacion-kan"
+ ],
+ "pendientes": [
+  "Campo de input para impedir reaparicion por regla particular",
+  "Bestias divinas Activacion: confirmar participacion en sorteo",
+  "Kijin conserva una sola identidad y la imagen corregida"
+ ]
+}
