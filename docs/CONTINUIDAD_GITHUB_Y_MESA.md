@@ -1,5 +1,9 @@
 # Continuidad: GitHub y pruebas en mesa · 16/10/2026
 
+## Estado posterior: beta publicada
+
+Publicado https://hector-xlsx.github.io/white-death-deck-manager/ desde `Hector-xlsx/white-death-deck-manager`, público. Versión `ada49f64804d89a4`; workflow manual activo y Actions `38983701923` aprobado sobre `ccba96a`. Etiqueta `noindex, nofollow`, sin contraseña. Evidencia y estado vigente en [PUBLICACION_GITHUB.md](PUBLICACION_GITHUB.md). Los apartados siguientes conservan el punto de partida anterior a esta publicación; sus menciones a ausencia de Git/Pages son históricas.
+
 ## Punto de partida verificado
 
 - Carpeta de trabajo: C:/Users/hecto/OneDrive/Escritorio/Aplicaciones/Mazo White death.

@@ -1,10 +1,12 @@
-# Preparación de publicación beta · 16/10/2026
+# Publicación beta · 16/10/2026
 
-Estado: código subido al repositorio público; pendiente de activar y publicar GitHub Pages.
+Estado: aplicación publicada en GitHub Pages; preparación y despliegue aprobados.
 
 El usuario solicitó subir la aplicación a GitHub y usar Pages, con nombre **Zombicide: White Death — Deck Manager**, repositorio `white-death-deck-manager` y etiqueta `<meta name="robots" content="noindex, nofollow">` durante la beta.
 
-La cuenta comprobada mediante el conector y GitHub Desktop es `Hector-xlsx`. Repositorio público creado y con código verificado: https://github.com/Hector-xlsx/white-death-deck-manager. Commit subido `32c366f`. URL prevista, todavía sin publicación verificada: https://hector-xlsx.github.io/white-death-deck-manager/.
+La cuenta comprobada mediante el conector y GitHub Desktop es `Hector-xlsx`. Repositorio público: https://github.com/Hector-xlsx/white-death-deck-manager. Sitio: https://hector-xlsx.github.io/white-death-deck-manager/.
+
+Commit desplegado: `ccba96aed71a0b8e25b635626a9de951b3f3c84a`. [Ejecución de publicación aprobada](https://github.com/Hector-xlsx/white-death-deck-manager/actions/runs/38983701923), trabajos `comprobar-y-preparar` y `publicar` correctos. El despliegue confirmó la URL indicada. Los ajustes documentales posteriores no cambian el paquete servido ni necesitan otro despliegue.
 
 ## Preparación realizada
 
@@ -28,23 +30,29 @@ No se modificaron reglas, cantidades, imágenes ni partidas del usuario. Las pru
 
 Los primeros intentos de navegador dentro del aislamiento fallaron con `ERR_NETWORK_ACCESS_DENIED`. Las verificaciones finales se ejecutaron fuera de ese aislamiento y aprobaron. La nueva comprobación espera a que se guarde el cierre de la tanda antes de comparar el guardado tras recargar.
 
-Verificados en GitHub los archivos `dist/version.js`, `dist/index.html` y el workflow: versión y título correctos, etiqueta robots presente. Sin pruebas en dispositivos físicos, Actions remoto ni sitio publicado todavía.
+Verificados en GitHub los archivos `dist/version.js`, `dist/index.html` y el workflow: versión y título correctos, etiqueta robots presente. También aprobaron en el runner Linux de Actions las 13 pruebas originales, las 305 de la aplicación, la preparación del catálogo/recursos, el empaquetado y el despliegue. Sin pruebas en dispositivos físicos.
 
-## Acceso pendiente y siguiente paso
+Validación final del sitio público: `scripts/verificar-publicacion.mjs` con `MAZO_URL=https://hector-xlsx.github.io/white-death-deck-manager/` aprobó en Chrome aislado. HTTP 200, versión `ada49f64804d89a4`, título, etiqueta robots, manifest y scope correctos; imágenes/módulos cargados, SPAWN persistido, cinco tamaños sin desbordamiento y recarga sin conexión con el mismo guardado. Salida en `outputs/verificacion-pages-publicado.txt` y capturas en `outputs/publicacion/app-*.png` (actualizadas con el sitio real). La prueba no toca las partidas del navegador habitual del usuario.
 
-El conector de GitHub permite consultar la cuenta y administrar contenidos, pero las herramientas disponibles no permiten crear repositorios ni configurar Pages. No había credencial CLI no interactiva y el navegador integrado solicitó inicio de sesión. El usuario indicó que tenía GitHub Desktop instalado: se comprobó allí la sesión de `Hector-xlsx` y se agregó la carpeta existente. La creación/subida se prepara desde Desktop, sin extraer sus credenciales.
+Siguiente paso: abrir esta URL en teléfono/tablet reales, esperar «Disponible offline» antes de desconectar y realizar las pruebas de mesa de CONTINUIDAD_GITHUB_Y_MESA.md. Las comprobaciones automatizadas de escritorio no sustituyen esa prueba física.
+
+## Publicación y próximos despliegues
+
+La creación del repositorio y subida inicial se realizaron mediante GitHub Desktop, con la sesión de `Hector-xlsx` comprobada y sin extraer sus credenciales. Los reintentos de publicación se ejecutaron mediante el conector de GitHub.
 
 El usuario confirmó explícitamente la visibilidad **pública**, para usar GitHub Pages gratis.
 
-Pasos de publicación:
+Pasos completados:
 
 1. Completado: crear `Hector-xlsx/white-death-deck-manager` público, sin sustituir otro repositorio existente.
 2. Completado: subir los archivos revisados de la rama `main` mediante GitHub Desktop.
-3. Seleccionar GitHub Actions como fuente en Settings → Pages.
-4. Ejecutar manualmente «Publicar White Death Deck Manager» y comprobar ambos trabajos.
-5. Verificar el sitio real y registrar URL, commit, ejecución de Actions y versión publicada. Se puede reutilizar la comprobación con `MAZO_URL=https://hector-xlsx.github.io/white-death-deck-manager/` y `MAZO_PLAYWRIGHT` apuntando a la instalación existente.
+3. Completado por el usuario: seleccionar GitHub Actions como fuente en Settings → Pages.
+4. Completado: ejecutar «Publicar White Death Deck Manager» y comprobar ambos trabajos aprobados.
+5. URL, commit y ejecución registrados arriba. Para comprobar el sitio se usa `MAZO_URL=https://hector-xlsx.github.io/white-death-deck-manager/` y `MAZO_PLAYWRIGHT` apuntando a la instalación existente.
 
-La activación de Pages requiere acceso a la web de GitHub; Desktop no ofrece ese ajuste. El navegador integrado sigue sin sesión de GitHub, y el permiso para inspeccionar Chrome caducó. Se solicitó al usuario permitir ese acceso o activar Pages personalmente. La revisión automática bloqueó observar una página de autenticación de Google no autorizada; se abandonó esa página y se volvió directamente al destino GitHub, sin acceder a la cuenta Google.
+Los primeros intentos fallaron con `Get Pages site failed / Not Found` al preparar Pages. El usuario cambió Source de «Deploy from a branch» a «GitHub Actions» y proporcionó capturas de la configuración; tras ese cambio el reintento aprobó sin modificar código ni workflow. El control de Chrome no pudo verificar la URL en este entorno; la validación y los reintentos finales se realizaron mediante API/conector. No se accedió a la autenticación de Google.
+
+Para versiones futuras: preparar los cambios, probar, subir a `main` y ejecutar manualmente el workflow. No volver a activar Pages ni crear otro workflow desde los botones Configure. Una subida de código por sí sola no despliega con esta configuración.
 
 Para retirar la publicación, desactivar Pages desde el repositorio. Para volver a una versión anterior, publicar nuevamente un commit previamente verificado, sin borrar el almacenamiento del navegador.
 

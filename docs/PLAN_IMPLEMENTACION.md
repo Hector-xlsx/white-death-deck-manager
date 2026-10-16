@@ -1,5 +1,9 @@
 # Plan de implementación por capas
 
+## Publicación beta completada · 16/10/2026
+
+Sitio: https://hector-xlsx.github.io/white-death-deck-manager/. Versión `ada49f64804d89a4`, commit desplegado `ccba96a`, Actions `38983701923` aprobado. Fuente GitHub Actions, workflow manual y etiqueta `noindex, nofollow`. Estado y validaciones en [PUBLICACION_GITHUB.md](PUBLICACION_GITHUB.md). Siguiente paso: pruebas físicas en teléfono/tablet y mesa; pendientes funcionales conservados, sin añadir reglas en esta publicación. Los cierres inferiores describen antecedentes anteriores a la publicación.
+
 ## Cierre y continuidad para GitHub/mesa · 16/10/2026
 
 Guía consolidada: [CONTINUIDAD_GITHUB_Y_MESA.md](CONTINUIDAD_GITHUB_Y_MESA.md). Versión preparada 13d36a64c0299dd4; última suite completa 305/305 y QA posterior de fichas, sin dispositivos físicos ni Pages publicado. README y tabla de pendientes corregidos para evitar referencias obsoletas. Solo documentación en este cierre; no repositorio, push, publicación, cambios al código/Excel ni partidas. La próxima etapa se realizará cuando el usuario la solicite en el otro chat.
