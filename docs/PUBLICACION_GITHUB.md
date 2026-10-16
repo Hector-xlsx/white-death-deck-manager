@@ -32,11 +32,11 @@ Sin pruebas en dispositivos físicos, Actions remoto ni sitio publicado todavía
 
 ## Acceso pendiente y siguiente paso
 
-El conector de GitHub permite consultar la cuenta y administrar contenidos, pero las herramientas disponibles no permiten crear repositorios ni configurar Pages. No había credencial CLI no interactiva; la pestaña web abierta en https://github.com/new solicita inicio de sesión. El usuario debe iniciar sesión allí sin compartir contraseñas ni códigos en el chat.
+El conector de GitHub permite consultar la cuenta y administrar contenidos, pero las herramientas disponibles no permiten crear repositorios ni configurar Pages. No había credencial CLI no interactiva y el navegador integrado solicitó inicio de sesión. El usuario indicó que tenía GitHub Desktop instalado: se comprobó allí la sesión de `Hector-xlsx` y se agregó la carpeta existente. La creación/subida se prepara desde Desktop, sin extraer sus credenciales.
 
-También está pendiente la elección de visibilidad. Se consultó si prefiere un repositorio privado cuando su plan lo permita o uno público para Pages gratuito. No se creó un repositorio público por defecto.
+El usuario confirmó explícitamente la visibilidad **pública**, para usar GitHub Pages gratis.
 
-Una vez resueltos esos puntos:
+Pasos de publicación:
 
 1. Crear `Hector-xlsx/white-death-deck-manager` con la visibilidad elegida, sin sustituir otro repositorio existente.
 2. Subir los archivos revisados de la rama `main`.

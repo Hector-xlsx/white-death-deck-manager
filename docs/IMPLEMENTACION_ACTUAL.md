@@ -2,7 +2,7 @@
 
 ## Preparación beta para GitHub · 16/10/2026
 
-Nombre Zombicide: White Death — Deck Manager y etiqueta robots `noindex, nofollow` incorporados. Versión preparada `ada49f64804d89a4`; 13 pruebas originales y 305 actuales aprobadas, QA local de subruta exacta en cinco tamaños, persistencia/offline y actualización con pestañas abiertas. Git local y workflow manual preparados. Pendiente crear repositorio y publicar: se necesita inicio de sesión web y elección de visibilidad. Evidencia y pasos en [PUBLICACION_GITHUB.md](PUBLICACION_GITHUB.md). No cambian reglas ni partidas.
+Nombre Zombicide: White Death — Deck Manager y etiqueta robots `noindex, nofollow` incorporados. Versión preparada `ada49f64804d89a4`; 13 pruebas originales y 305 actuales aprobadas, QA local de subruta exacta en cinco tamaños, persistencia/offline y actualización con pestañas abiertas. Git local y workflow manual preparados. Creación/subida en preparación mediante GitHub Desktop, sesión `Hector-xlsx` comprobada y visibilidad pública confirmada por el usuario. Evidencia y pasos en [PUBLICACION_GITHUB.md](PUBLICACION_GITHUB.md). No cambian reglas ni partidas.
 
 ## Cierre y continuidad para GitHub/mesa · 16/10/2026
 
