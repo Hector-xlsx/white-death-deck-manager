@@ -1,5 +1,9 @@
 # Publicación beta · 16/10/2026
 
+## Actualización preparada: vista de mesa · 16/10/2026
+
+Versión 47847e6c461f9bb7: principal sin resúmenes de depuración ni pie de Última tanda, porcentaje de mazo restante y acciones de enemigos en Configuración. 305/305 pruebas y QA verificar-vista-mesa.mjs. Subida a main solicitada por el usuario; el workflow de Pages permanece manual y no se despacha como parte de esta subida. La evidencia de publicación inferior corresponde a la versión beta anterior.
+
 Estado: aplicación publicada en GitHub Pages; preparación y despliegue aprobados.
 
 El usuario solicitó subir la aplicación a GitHub y usar Pages, con nombre **Zombicide: White Death — Deck Manager**, repositorio `white-death-deck-manager` y etiqueta `<meta name="robots" content="noindex, nofollow">` durante la beta.

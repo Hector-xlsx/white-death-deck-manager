@@ -1,5 +1,16 @@
 # Plan de implementación por capas
 
+## Vista de mesa simplificada · 16/10/2026
+
+Retirados de la pantalla principal los resúmenes Daily/Próxima tanda y la información de ciclo/reinicio junto al mazo. Mazo general muestra porcentaje restante redondeado a entero (0% si no hay cartas elegibles) y conserva la barra con color de adrenalina. Retirado el pie «Tanda N · Z zonas iniciales» de Última tanda; el diálogo Aparición e Historial conservan su identificación.
+
+Los selectores de acciones de Nigromante/Abominación se trasladan desde Última tanda a Configuración, en «Acciones de aparición». Conservan el guardado automático al seleccionar y aplicación a la siguiente tanda; una nota lo indica. Se mantienen las restricciones de modos oficiales y tanda en curso. No se modifican reglas, composición ni partidas.
+
+Versión preparada: 47847e6c461f9bb7. Validación: 305/305 pruebas, más scripts/verificar-vista-mesa.mjs en cinco tamaños, porcentaje correcto, resúmenes/pie ausentes, selectores disponibles solo en Configuración, guardado automático, historial intacto, fallo de cuota conservando selección previa y recarga offline. Capturas vista-mesa-*.png revisadas. Sin dispositivos físicos.
+
+Subida autorizada por el usuario al repositorio ya conectado Hector-xlsx/white-death-deck-manager, rama main. El workflow Pages existente es manual: subir código no publica automáticamente una nueva versión. Esta solicitud de subida no modifica el workflow ni la configuración de Pages.
+
+
 ## Publicación beta completada · 16/10/2026
 
 Sitio: https://hector-xlsx.github.io/white-death-deck-manager/. Versión `ada49f64804d89a4`, commit desplegado `ccba96a`, Actions `38983701923` aprobado. Fuente GitHub Actions, workflow manual y etiqueta `noindex, nofollow`. Estado y validaciones en [PUBLICACION_GITHUB.md](PUBLICACION_GITHUB.md). Siguiente paso: pruebas físicas en teléfono/tablet y mesa; pendientes funcionales conservados, sin añadir reglas en esta publicación. Los cierres inferiores describen antecedentes anteriores a la publicación.

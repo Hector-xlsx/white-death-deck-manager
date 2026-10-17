@@ -8,7 +8,7 @@ import {tipoActualBakeDanuki,referenciaBakeDanuki} from './bake-danuki.js';
 import {resumenZombis,ajustarZombis,NOMBRES_AJUSTE} from './contador-zombis.js';
 import {CATALOG,newGame,spawn,replaceCard,discardCard,addZoneCard,pinCard,unpinCard,total,isValid,elegirAbominacion,regenerarAbominacion,elegirNigromante,regenerarNigromante,regenerarDaily,puedeAnularTanda,anularTanda,volverAlMazo} from './engine.js';
 import {escapar as esc,referenciasPorCarta,rutaRecurso,componer,normalizarConfig,idsSecundarios,dificultadVisible,nombreVisible} from './catalogo.js';
-import {probabilidadEfectivaDaily,parametrosDaily} from './daily.js';
+import {parametrosDaily} from './daily.js';
 import {KEY,recuperar,guardarAccion} from './persistencia.js';
 import {selectorContenido,selectorColeccion,iniciarInformacion,informacionCarta} from './informacion.js';
 import {configContenido,marcarContenido,visiblesContenido,erroresContenido,firmaContenido,marcarCaja,resumenCaja,seleccionarContenido} from './contenido.js';
@@ -18,7 +18,7 @@ import {OPCIONES_ENEMIGOS,NOMBRES_ACCIONES} from './acciones-enemigos.js';
 import {DURACION_ACTIVACION} from './volteo.js';
 import {crearRevelacion,avanzarRevelacion} from './revelacion.js';
 import {NIVELES_ADRENALINA,NOMBRES_ADRENALINA,nivelAdrenalina,cambiarNivelAdrenalina} from './adrenalina.js';
-import {FAMILIAS_LIMITES,limitesIniciales,topesDelNivel,adoptarLimites} from './limites.js';
+import {FAMILIAS_LIMITES,limitesIniciales,adoptarLimites} from './limites.js';
 import {PROFANADOR,NOMBRES_MODOS,ACCIONES_NIGROMANTES,NOMBRES_ACCIONES_NIGROMANTES} from './modos-enemigos.js';
 import {referenciasActivacion} from './presentacion.js';
 import {programarConfiguracion,actualizarPartidaDePrueba} from './engine.js';
@@ -271,10 +271,7 @@ function renderContadorZombis(){
 function render(){
  renderContadorZombis();
  const nivel=nivelAdrenalina(state),indice=NIVELES_ADRENALINA.indexOf(nivel);
- const siguiente=state.configuracionPendiente?state.proximaConfig:state.config;const topes=topesDelNivel(siguiente.limitesPorAdrenalina??limitesIniciales(true),nivel);
- const moderno=state.config.reglaNigromantes!==undefined;
- $('enemy-limits-status').textContent=moderno?`Próxima tanda · ${NOMBRES_ADRENALINA[nivel]}${siguiente.reglaNigromantes==='personalizado'?` · Adicionales ${topes.nigromantes} + Profanador`:''}${siguiente.reglaAbominaciones==='personalizado'?` · Abominaciones ${topes.abominaciones}`:''}`:`Topes próxima tanda · ${NOMBRES_ADRENALINA[nivel]} · Nigromantes ${topes.nigromantes} · Abominaciones ${topes.abominaciones}`;
- const resumenLimites=$('enemy-limits-status').textContent;$('enemy-limits-status').title=resumenLimites;$('enemy-limits-status').setAttribute('aria-label',resumenLimites);$('enemy-limits-status').textContent=resumenLimites.replace('Adicionales ','Adic. ').replace('Profanador','Prof.').replace('Abominaciones ','Abom. ').replace('Nigromantes ','Nigro. ');
+ const siguiente=state.configuracionPendiente?state.proximaConfig:state.config;
  $('nivel-adrenalina').textContent=NOMBRES_ADRENALINA[nivel];$('nivel-adrenalina').dataset.nivel=nivel;$('deck-progress').dataset.nivel=nivel;
  for(const boton of document.querySelectorAll('[data-action="adrenalina"]'))boton.disabled=storageBlocked||state.openBatch||(Number(boton.dataset.delta)<0?indice===0:indice===NIVELES_ADRENALINA.length-1);
  for(const tipo of ['nigromante','abominacion']){
@@ -295,15 +292,13 @@ function render(){
  document.querySelectorAll('[data-action="counter"][data-delta="-1"]').forEach(b=>b.disabled=state[b.dataset.kind]===0);
  document.querySelectorAll('[data-action="counter"][data-kind="necro"]').forEach(b=>b.hidden=Boolean(state.nigromantes));
  const extraNigromante=document.querySelector('[data-action="add-zone"][data-kind="necro"]');extraNigromante.parentElement.hidden=Boolean(state.nigromantes);
- $('deck-count').textContent=`${left} / ${size}`;$('deck-progress').style.width=`${size?left/size*100:0}%`;
- $('deck-meta').textContent=size?`Ciclo ${state.cycle} · ${state.config.threshold===0?'Reinicio al agotar el mazo':`Reinicio bajo el ${state.config.threshold}%`}`:'No hay cartas elegibles. Revisa el contenido en Configuración.';
+ $('deck-count').textContent=`${size?Math.round(left/size*100):0}%`;
+ $('deck-count').setAttribute('aria-label',`${size?Math.round(left/size*100):0}% del mazo general restante`);$('deck-progress').style.width=`${size?left/size*100:0}%`;
+
  $('history-count').textContent=state.history.length;$('pin-count').textContent=state.pins.length;
  const batch=state.history.at(-1);$('reopen').hidden=!batch;
- $('last-preview').innerHTML=batch?`<div class="last-strip">${gruposZonaHTML(cartasTanda(batch),({c,zone,slot})=>miniHTML(c,zone,slot),true)}</div><small>Tanda ${batch.number} · ${batch.normal+batch.necro} zonas iniciales</small>`:'<div class="empty-state"><strong>El mazo está listo.</strong><p>Pulsa SPAWN para revelar una carta por zona.</p></div>';
+ $('last-preview').innerHTML=batch?`<div class="last-strip">${gruposZonaHTML(cartasTanda(batch),({c,zone,slot})=>miniHTML(c,zone,slot),true)}</div>`:'<div class="empty-state"><strong>El mazo está listo.</strong><p>Pulsa SPAWN para revelar una carta por zona.</p></div>';
  renderFijados();
- $('daily-active-status').hidden=!state.daily;
- if(state.daily)$('daily-active-status').textContent=`Daily Spawn · ${NOMBRES_ADRENALINA[nivelAdrenalina(state)]} · ${disponiblesSecundario(state,'daily').length} / ${state.daily.habilitadasIds?.length??state.daily.cartas.length} disponibles · ${probabilidadEfectivaDaily(state)}% · Ciclo ${state.daily.cycle}`;
- if(state.daily){const r=$('daily-active-status').textContent;$('daily-active-status').title=r;$('daily-active-status').setAttribute('aria-label',r);$('daily-active-status').textContent=r.replace(/ (\/) /g,'$1').replace(' disponibles','').replace('Ciclo ','C');}
  if($('batch-dialog').open)renderBatch();if($('history-dialog').open)renderHistory();
  
 }
