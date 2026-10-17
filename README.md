@@ -94,6 +94,8 @@ Los scripts de interfaz requieren el servidor local. `verificar-actualizacion.mj
 
 ## GitHub Pages
 
+Actualización 16/10/2026: el workflow activo publica automáticamente al subir cambios a `main`, después de preparar recursos y aprobar las pruebas. También conserva **Run workflow** manual. Los apartados históricos inferiores de preparación inicial no describen este estado vigente.
+
 Workflow preparado en `.github/workflows/pages.yml`, con ejecución manual. Comprueba la base original y la aplicación antes de publicar exclusivamente `dist/`. Configurar Pages con GitHub Actions y ejecutar «Publicar White Death Deck Manager» después de subir los archivos.
 
 Publicación beta del 16/10/2026 completada mediante GitHub Actions, después de seleccionar esa fuente en Pages. Nombre solicitado y etiqueta `noindex, nofollow` incluidos. Versión `ada49f64804d89a4`, commit desplegado `ccba96a`; [ejecución aprobada](https://github.com/Hector-xlsx/white-death-deck-manager/actions/runs/38983701923). La web y el repositorio son públicos; la etiqueta no constituye control de acceso. Las partidas de localhost/Sites no se transfieren automáticamente a este origen. Detalle, validaciones y límites en [PUBLICACION_GITHUB.md](docs/PUBLICACION_GITHUB.md).

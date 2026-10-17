@@ -1,5 +1,12 @@
 # Plan de implementación por capas
 
+## Despliegue automático autorizado · 16/10/2026
+
+El workflow .github/workflows/pages.yml se ejecuta ahora con cada push a main y conserva workflow_dispatch para ejecución manual. Se mantienen las 13 pruebas de base-web, la preparación de recursos, las 305 pruebas actuales y la dependencia publicar → comprobar-y-preparar: solo se publica si el trabajo previo termina correctamente. No cambian permisos, destino, entorno ni artefacto dist/. La subida de este cambio debe iniciar la primera ejecución automática, incluida la vista de mesa del commit anterior.
+
+Esta decisión sustituye las instrucciones históricas inferiores que indicaban publicación exclusivamente manual. Los cambios a otras ramas no disparan este evento push.
+
+
 ## Vista de mesa simplificada · 16/10/2026
 
 Retirados de la pantalla principal los resúmenes Daily/Próxima tanda y la información de ciclo/reinicio junto al mazo. Mazo general muestra porcentaje restante redondeado a entero (0% si no hay cartas elegibles) y conserva la barra con color de adrenalina. Retirado el pie «Tanda N · Z zonas iniciales» de Última tanda; el diálogo Aparición e Historial conservan su identificación.

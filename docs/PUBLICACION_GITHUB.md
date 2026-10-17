@@ -1,5 +1,12 @@
 # Publicación beta · 16/10/2026
 
+## Despliegue automático autorizado · 16/10/2026
+
+El workflow .github/workflows/pages.yml se ejecuta ahora con cada push a main y conserva workflow_dispatch para ejecución manual. Se mantienen las 13 pruebas de base-web, la preparación de recursos, las 305 pruebas actuales y la dependencia publicar → comprobar-y-preparar: solo se publica si el trabajo previo termina correctamente. No cambian permisos, destino, entorno ni artefacto dist/. La subida de este cambio debe iniciar la primera ejecución automática, incluida la vista de mesa del commit anterior.
+
+Esta decisión sustituye las instrucciones históricas inferiores que indicaban publicación exclusivamente manual. Los cambios a otras ramas no disparan este evento push.
+
+
 ## Actualización preparada: vista de mesa · 16/10/2026
 
 Versión 47847e6c461f9bb7: principal sin resúmenes de depuración ni pie de Última tanda, porcentaje de mazo restante y acciones de enemigos en Configuración. 305/305 pruebas y QA verificar-vista-mesa.mjs. Subida a main solicitada por el usuario; el workflow de Pages permanece manual y no se despacha como parte de esta subida. La evidencia de publicación inferior corresponde a la versión beta anterior.
