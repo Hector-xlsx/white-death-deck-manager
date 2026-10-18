@@ -63,3 +63,10 @@ test('reaparición registra cada derrota explícita; corrección, cancelación y
  discardCard(s,1,s.history[0].slots[0].id);assert.equal(resumenPuntaje(s).total,0);
  const c=crear(['abominacion'],{reglaAbominaciones:'estandar'});spawn(c,()=>0);unpinCard(c,c.pins[0].uid);assert.equal(resumenPuntaje(c).total,0);assert.equal(c.derrotasEnemigos,undefined);assert.ok(isValid(c));
 });
+
+test('visibilidad de puntaje es booleana opcional, persistente y no altera el cálculo',()=>{
+ const s=crear();spawn(s,()=>0);const base=resumenPuntaje(s).total,m=new Map([[KEY,JSON.stringify(s)]]),store={getItem:k=>m.get(k)??null,setItem:(k,v)=>m.set(k,v)};
+ const nuevo=guardarAccion(s,x=>{x.config.ocultarPuntaje=true;x.proximaConfig.ocultarPuntaje=true;},store);
+ assert.equal(recuperar(store).proximaConfig.ocultarPuntaje,true);assert.equal(resumenPuntaje(nuevo).total,base);assert.deepEqual(nuevo.history,s.history);
+ const malo=structuredClone(nuevo);malo.proximaConfig.ocultarPuntaje='sí';assert.equal(isValid(malo),false);
+});

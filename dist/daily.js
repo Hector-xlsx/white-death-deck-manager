@@ -15,6 +15,14 @@ export function configDailyValida(c){
  (c.dailyPorNivel===undefined||nivelesDailyValidos(c.dailyPorNivel))&&
  (c.dailyIncrementoPor===undefined||['carta','tanda'].includes(c.dailyIncrementoPor));
 }
+// Perfil inicial del formulario; los valores históricos siguen calculándose sin cambios.
+export function perfilDailyInicial(){
+ const valores=[[5,1],[8,2],[12,3],[15,4]];
+ return Object.fromEntries(NIVELES_ADRENALINA.map((nivel,i)=>[nivel,{base:valores[i][0],incremento:valores[i][1]}]));
+}
+export function parametrosDailyFormulario(config,nivel){
+ return config.dailyPorNivel!==undefined||config.dailyBase!==undefined||config.dailyIncremento!==undefined?parametrosDaily(config,nivel):perfilDailyInicial()[nivel];
+}
 export function parametrosDaily(config,nivel){return config.dailyPorNivel?.[nivel]??{base:config.dailyBase??0,incremento:config.dailyIncremento??0};}
 export function crearMazoDaily(config){return crearSecundario(CARTAS_DAILY.filter(c=>idsSecundarios(config,'daily').includes(c.id)),config.modoDaily??'sin-reposicion');}
 export function elegibleDaily(s,c){

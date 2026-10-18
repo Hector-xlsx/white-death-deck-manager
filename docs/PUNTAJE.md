@@ -1,5 +1,14 @@
 # Puntaje y contador de zombis · estado vigente 16/10/2026
 
+## Defaults Daily, reinicio y visibilidad de puntaje · 18/10/2026
+
+Configuración incluye botón «Ocultar puntaje / Mostrar puntaje» en Marcador de puntaje. Guarda inmediatamente la preferencia booleana opcional ocultarPuntaje en config/proximaConfig y la conserva al guardar ajustes o iniciar otra partida. Oculta las cifras en marcador principal y panel (incluido su nombre accesible); muestra ••• y «Oculto». El acceso al contador, las cantidades de zombis, los ajustes manuales y el cálculo continúan disponibles. Mostrar recupera el total real acumulado. No modifica resultados, historial ni sorteos. Cerrar Configuración tras usar solo este botón no advierte cambios sin guardar; los otros borradores siguen protegidos por su confirmación. Cuota/conflicto impiden cambiar la preferencia si falla el guardado. Sin preferencia anterior: puntaje visible, como antes.
+
+Perfil inicial Daily confirmado por captura del usuario: Azul base 5%/+1 punto; Amarillo 8%/+2; Naranja 12%/+3; Rojo 15%/+4. Se usa en arranque nuevo y formulario sin configuración previa. Preserva perfiles guardados y parámetros generales históricos, incluidos ceros explícitos, sin recalcular tandas existentes. Habilitar Daily sigue siendo elección del usuario. El reinicio anticipado inicial ya estaba en 20%; verificado en interfaz y conservado sin sobrescribir un umbral guardado.
+
+Implementación: dist/daily.js (perfil/formulario), app.js (arranque, máscara y botón), estado.js (preferencia booleana), index.html (control). Nuevas pruebas de defaults y preferencia. QA scripts/verificar-defaults-daily.mjs y verificar-ocultar-puntaje.mjs: cuatro perfiles, 20%, conservación de edición, marcadores/panel sin cifra expuesta, suma continua, cambio de tema, mostrar total real, guardado inmediato, cuota y recarga offline. Pasó regresión verificar-puntaje.mjs de tres temas/cinco tamaños/144 combinaciones de cifras. Última batería completa: 307/307. Sin dispositivos físicos. Versión preparada dcd4b41ef57c5626. Subida a main mediante el despliegue automático existente.
+
+
 ## Tabla de puntajes y turnos implementada · 16/10/2026
 
 Fuente vigente: input referencia cartas.xlsx, hoja TABLA PUNTAJES, A1:G19. Instantánea con SHA-256 en dist/tabla-puntajes.js; Excel conservado sin modificaciones. Caminante/Bruto/Corredor al aparecer: 3/4/4; Daily al aparecer: 6, salvo Bake-Danuki. Abominación base 12 y Nigromante base 10 al ser eliminados; multiplicadores por turnos completados 0/1/2/3/4/5/6+: 5/4/3/2,5/2/1,5/1. Resultado Abominaciones: 60/48/36/30/24/18/12; Nigromantes: 50/40/30/25/20/15/10. La tabla de reeliminación ya existe y todos sus valores actuales son 1; se aplica como factor adicional desde la segunda eliminación de la misma presencia/forma.

@@ -1,5 +1,14 @@
 # Plan de implementación por capas
 
+## Defaults Daily, reinicio y visibilidad de puntaje · 18/10/2026
+
+Configuración incluye botón «Ocultar puntaje / Mostrar puntaje» en Marcador de puntaje. Guarda inmediatamente la preferencia booleana opcional ocultarPuntaje en config/proximaConfig y la conserva al guardar ajustes o iniciar otra partida. Oculta las cifras en marcador principal y panel (incluido su nombre accesible); muestra ••• y «Oculto». El acceso al contador, las cantidades de zombis, los ajustes manuales y el cálculo continúan disponibles. Mostrar recupera el total real acumulado. No modifica resultados, historial ni sorteos. Cerrar Configuración tras usar solo este botón no advierte cambios sin guardar; los otros borradores siguen protegidos por su confirmación. Cuota/conflicto impiden cambiar la preferencia si falla el guardado. Sin preferencia anterior: puntaje visible, como antes.
+
+Perfil inicial Daily confirmado por captura del usuario: Azul base 5%/+1 punto; Amarillo 8%/+2; Naranja 12%/+3; Rojo 15%/+4. Se usa en arranque nuevo y formulario sin configuración previa. Preserva perfiles guardados y parámetros generales históricos, incluidos ceros explícitos, sin recalcular tandas existentes. Habilitar Daily sigue siendo elección del usuario. El reinicio anticipado inicial ya estaba en 20%; verificado en interfaz y conservado sin sobrescribir un umbral guardado.
+
+Implementación: dist/daily.js (perfil/formulario), app.js (arranque, máscara y botón), estado.js (preferencia booleana), index.html (control). Nuevas pruebas de defaults y preferencia. QA scripts/verificar-defaults-daily.mjs y verificar-ocultar-puntaje.mjs: cuatro perfiles, 20%, conservación de edición, marcadores/panel sin cifra expuesta, suma continua, cambio de tema, mostrar total real, guardado inmediato, cuota y recarga offline. Pasó regresión verificar-puntaje.mjs de tres temas/cinco tamaños/144 combinaciones de cifras. Última batería completa: 307/307. Sin dispositivos físicos. Versión preparada dcd4b41ef57c5626. Subida a main mediante el despliegue automático existente.
+
+
 ## Despliegue automático autorizado · 16/10/2026
 
 El workflow .github/workflows/pages.yml se ejecuta ahora con cada push a main y conserva workflow_dispatch para ejecución manual. Se mantienen las 13 pruebas de base-web, la preparación de recursos, las 305 pruebas actuales y la dependencia publicar → comprobar-y-preparar: solo se publica si el trabajo previo termina correctamente. No cambian permisos, destino, entorno ni artefacto dist/. La subida de este cambio debe iniciar la primera ejecución automática, incluida la vista de mesa del commit anterior.

@@ -21,7 +21,7 @@ function configValida(c,ids){
   if(c[campo]!==undefined&&(!Array.isArray(c[campo])||new Set(c[campo]).size!==c[campo].length||c[campo].some(id=>!opciones.includes(id))))return false;
  }
  if(c?.coleccionIds!==undefined&&(!c.coleccionIds.includes('core')||!IDS_OTROS.every(id=>c.selectedIds?.includes(id))))return false;
- return c&&(c.temaPuntaje===undefined||['kang','dragon','cabeza'].includes(c.temaPuntaje))&&(c.modoAparicionAdicional===undefined||MODOS_APARICION_ADICIONAL.includes(c.modoAparicionAdicional))&&typeof c.easy==='boolean'&&typeof c.normal==='boolean'&&Number.isFinite(c.threshold)&&c.threshold>=0&&c.threshold<=99&&
+ return c&&(c.ocultarPuntaje===undefined||typeof c.ocultarPuntaje==='boolean')&&(c.temaPuntaje===undefined||['kang','dragon','cabeza'].includes(c.temaPuntaje))&&(c.modoAparicionAdicional===undefined||MODOS_APARICION_ADICIONAL.includes(c.modoAparicionAdicional))&&typeof c.easy==='boolean'&&typeof c.normal==='boolean'&&Number.isFinite(c.threshold)&&c.threshold>=0&&c.threshold<=99&&
  Array.isArray(c.selectedIds)&&new Set(c.selectedIds).size===c.selectedIds.length&&c.selectedIds.every(id=>ids.has(id))&&
  (c.modoAbominaciones===undefined||MODOS_ABOMINACIONES.includes(c.modoAbominaciones))&&
  (c.modoNigromantes===undefined||MODOS_ABOMINACIONES.includes(c.modoNigromantes))&&configDailyValida(c)&&configModosValida(c)&&perfilLimitesValido(c.limitesPorAdrenalina,c.reglaNigromantes!==undefined)&&

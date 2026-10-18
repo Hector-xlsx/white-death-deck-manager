@@ -1,0 +1,16 @@
+import {createRequire} from 'node:module';
+import assert from 'node:assert/strict';
+import {newGame,spawn} from '../dist/engine.js';
+const require=createRequire(import.meta.url),{chromium}=require(process.env.MAZO_PLAYWRIGHT||'playwright'),key='white-death-gestor-v2';
+const browser=await chromium.launch({headless:true,channel:'chrome'});
+try{
+ const s=newGame({easy:true,normal:true,threshold:0,selectedIds:['caminantes-normal'],modoNigromantes:'sin-reposicion',reglaNigromantes:'varios',reglaAbominaciones:'festival'},1);spawn(s,()=>0);s.openBatch=false;
+ const ctx=await browser.newContext({viewport:{width:844,height:390}});await ctx.addInitScript(({s,key})=>{if(!localStorage.getItem(key))localStorage.setItem(key,JSON.stringify(s));},{s,key});const p=await ctx.newPage(),errores=[];p.on('pageerror',e=>errores.push(e.message));await p.goto(process.env.MAZO_URL||'http://127.0.0.1:8080/mazo/');
+ const abrir=()=>p.getByRole('button',{name:'Configuración',exact:true}).click(),cerrar=()=>p.locator('#settings-dialog .close-button').click();
+ await abrir();await p.locator('#toggle-score-visibility').click();assert.equal(await p.locator('#toggle-score-visibility').textContent(),'Mostrar puntaje');await cerrar();assert.equal(await p.locator('#confirm-dialog').isVisible(),false);assert.match(await p.locator('#open-zombies').getAttribute('aria-label'),/Puntaje oculto/);assert.equal(await p.locator('#open-zombies [data-score]').count(),0);
+ await p.locator('#open-zombies').click();assert.equal(await p.locator('#score-total').textContent(),'Oculto');assert.equal(await p.locator('#zombies-total').textContent(),'4');await p.locator('#zombies-amount').fill('2');await p.locator('#zombies-add').click();assert.equal(await p.locator('#score-total').textContent(),'Oculto');assert.equal(await p.locator('#zombies-total').textContent(),'6');await p.locator('#zombies-dialog .close-button').click();
+ await abrir();await p.locator('#tema-puntaje').selectOption('dragon');await p.locator('#save-settings').click();assert.equal(await p.locator('#open-zombies [data-score]').count(),0);
+ await abrir();await p.evaluate(()=>{window.original=Storage.prototype.setItem;Storage.prototype.setItem=()=>{throw Error('Quota');};});await p.locator('#toggle-score-visibility').click();assert.equal(await p.locator('#toggle-score-visibility').textContent(),'Mostrar puntaje');await p.evaluate(()=>Storage.prototype.setItem=window.original);await cerrar();
+ await p.locator('#offline-status').filter({hasText:'Disponible offline'}).waitFor({timeout:90000});await ctx.setOffline(true);await p.reload();assert.match(await p.locator('#open-zombies').getAttribute('aria-label'),/Puntaje oculto/);
+ await abrir();await p.locator('#toggle-score-visibility').click();await cerrar();assert.match(await p.locator('#open-zombies').getAttribute('aria-label'),/Puntaje: 18/);await p.locator('#open-zombies').click();assert.equal(await p.locator('#score-total').textContent(),'18');assert.deepEqual(await p.evaluate(k=>JSON.parse(localStorage.getItem(k)).history,key),s.history);assert.deepEqual(errores,[]);await ctx.close();console.log('Puntaje oculto en marcador/panel y accesibilidad, suma continua, mostrar resultado real, tema, guardado inmediato, cuota y recarga offline verificados.');
+}finally{await browser.close();}

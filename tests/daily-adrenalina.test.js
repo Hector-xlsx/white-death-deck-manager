@@ -2,7 +2,7 @@ import test from 'node:test';
 import assert from 'node:assert/strict';
 import {newGame,spawn,discardCard,replaceCard,anularTanda,elegirNigromante,isValid} from '../dist/engine.js';
 import {cambiarNivelAdrenalina} from '../dist/adrenalina.js';
-import {probabilidadDaily,probabilidadEfectivaDaily,puntosAcumuladosDaily,parametrosDaily} from '../dist/daily.js';
+import {probabilidadDaily,probabilidadEfectivaDaily,puntosAcumuladosDaily,parametrosDaily,perfilDailyInicial,parametrosDailyFormulario} from '../dist/daily.js';
 import {recuperar,guardarAccion,KEY} from '../dist/persistencia.js';
 const perfil=()=>({azul:{base:20,incremento:20},amarillo:{base:30,incremento:5},naranja:{base:10,incremento:10},rojo:{base:40,incremento:15}});
 const crear=(c={},zonas=1)=>newGame({easy:true,normal:true,threshold:0,selectedIds:['asedio'],dailyHabilitado:true,dailyPorNivel:perfil(),dailyIncrementoPor:'carta',...c},zonas);
@@ -75,4 +75,14 @@ test('Daily por adrenalina: valida cuatro pares completos y no comparte el perfi
   const roto=structuredClone(s);cambiar(roto);assert.equal(isValid(roto),false);
  }
  assert.throws(()=>crear({dailyPorNivel:{azul:{base:20,incremento:20}}}));
+});
+
+test('perfil inicial Daily 5/1, 8/2, 12/3, 15/4 sin modificar configuraciones guardadas',()=>{
+ const esperado={azul:{base:5,incremento:1},amarillo:{base:8,incremento:2},naranja:{base:12,incremento:3},rojo:{base:15,incremento:4}};
+ assert.deepEqual(perfilDailyInicial(),esperado);const copia=perfilDailyInicial();copia.azul.base=99;assert.equal(perfilDailyInicial().azul.base,5);
+ for(const nivel of Object.keys(esperado))assert.deepEqual(parametrosDailyFormulario({},nivel),esperado[nivel]);
+ const config={dailyPorNivel:perfil()},antes=JSON.stringify(config);assert.deepEqual(parametrosDailyFormulario(config,'azul'),{base:20,incremento:20});assert.equal(JSON.stringify(config),antes);
+ assert.deepEqual(parametrosDailyFormulario({dailyBase:0,dailyIncremento:0},'rojo'),{base:0,incremento:0});
+ assert.deepEqual(parametrosDailyFormulario({dailyBase:17,dailyIncremento:9},'amarillo'),{base:17,incremento:9});
+ assert.deepEqual(parametrosDaily({},'azul'),{base:0,incremento:0});
 });

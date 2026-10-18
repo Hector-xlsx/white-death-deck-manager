@@ -8,7 +8,7 @@ import {tipoActualBakeDanuki,referenciaBakeDanuki} from './bake-danuki.js';
 import {resumenZombis,ajustarZombis,NOMBRES_AJUSTE} from './contador-zombis.js';
 import {CATALOG,newGame,spawn,replaceCard,discardCard,addZoneCard,pinCard,unpinCard,total,isValid,elegirAbominacion,regenerarAbominacion,elegirNigromante,regenerarNigromante,regenerarDaily,puedeAnularTanda,anularTanda,volverAlMazo} from './engine.js';
 import {escapar as esc,referenciasPorCarta,rutaRecurso,componer,normalizarConfig,idsSecundarios,dificultadVisible,nombreVisible} from './catalogo.js';
-import {parametrosDaily} from './daily.js';
+import {perfilDailyInicial,parametrosDailyFormulario} from './daily.js';
 import {KEY,recuperar,guardarAccion} from './persistencia.js';
 import {selectorContenido,selectorColeccion,iniciarInformacion,informacionCarta} from './informacion.js';
 import {configContenido,marcarContenido,visiblesContenido,erroresContenido,firmaContenido,marcarCaja,resumenCaja,seleccionarContenido} from './contenido.js';
@@ -28,12 +28,12 @@ import {datos} from './catalogo.js';
 const $=id=>document.getElementById(id);
 const marcadorPuntaje=window.ScoreCounter.create($('score-counter-host'),{theme:'kang',value:0,width:180,assetBase:'./recursos/Imagenes generales/contadores_puntaje/assets/'});
 marcadorPuntaje.element.id='open-zombies';marcadorPuntaje.element.dataset.action='zombis';marcadorPuntaje.element.title='Puntaje y zombis generados';
-let ultimoTemaPuntaje='kang',ultimoPuntaje=0;
+let ultimoTemaPuntaje='kang',ultimoPuntaje=0,ultimoPuntajeOculto=false;
 
 // Depuración temporal: desactivar antes de preparar la versión final.
 const DEBUG_DAILY_SPAWN=true;
 let catalog=Object.fromEntries(CATALOG.map(c=>[c.id,c]));
-let state=newGame({easy:true,normal:true,threshold:20,modoNigromantes:'sin-reposicion',reglaNigromantes:'personalizado',reglaAbominaciones:'personalizado',abominacionEstandarId:'enemigo-abominacion-kan',limitesPorAdrenalina:limitesIniciales(true)}),storageBlocked=false,guardadoObservado=null;
+let state=newGame({easy:true,normal:true,threshold:20,modoNigromantes:'sin-reposicion',reglaNigromantes:'personalizado',reglaAbominaciones:'personalizado',abominacionEstandarId:'enemigo-abominacion-kan',dailyPorNivel:perfilDailyInicial(),limitesPorAdrenalina:limitesIniciales(true)}),storageBlocked=false,guardadoObservado=null;
 try{guardadoObservado=localStorage.getItem(KEY);state=recuperar(localStorage)||state;guardadoObservado=localStorage.getItem(KEY);}
 catch(e){storageBlocked=true;$('status-alert').hidden=false;$('status-alert').textContent='No se pudo recuperar la partida guardada. Inicia una nueva partida desde Configuración para continuar.';}
 if(!storageBlocked&&state.revisionReglas!==REVISION_REGLAS){
@@ -248,16 +248,25 @@ for(const fila of filasAjuste){
  });
 }
 
+function mascaraPuntaje(tema){
+ const t=window.ScoreCounter.themes[tema],b=t.box;
+ return `<svg class="score-counter__digits" viewBox="0 0 ${t.width} ${t.height}" aria-hidden="true"><text x="${b.x+b.width/2}" y="${b.y+b.height/2}" text-anchor="middle" dominant-baseline="central" fill="${t.palette.outer}" font-family="Georgia,serif" font-size="${b.height*.65}">•••</text></svg>`;
+}
 function renderContadorZombis(){
  const resumen=resumenZombis(state),puntaje=resumenPuntaje(state),tema=state.proximaConfig.temaPuntaje??state.config.temaPuntaje??'kang';
  if(tema!==ultimoTemaPuntaje){marcadorPuntaje.setTheme(tema);ultimoTemaPuntaje=tema;}
- if(puntaje.total!==ultimoPuntaje){marcadorPuntaje.setValue(puntaje.total);ultimoPuntaje=puntaje.total;}
- marcadorPuntaje.element.setAttribute('aria-label',`Puntaje: ${puntaje.total}. Abrir puntaje y zombis generados`);
+ const oculto=state.proximaConfig.ocultarPuntaje??state.config.ocultarPuntaje??false;
+ if(puntaje.total!==ultimoPuntaje||oculto!==ultimoPuntajeOculto){marcadorPuntaje.setValue(puntaje.total);ultimoPuntaje=puntaje.total;}
+ ultimoPuntajeOculto=oculto;
+ if(oculto)marcadorPuntaje.element.querySelector('.score-counter__digits').innerHTML=mascaraPuntaje(tema).replace(/^<svg[^>]*>/,'').replace(/<\/svg>$/,'');
+ const etiqueta=oculto?'Puntaje oculto. Abrir contador de zombis':`Puntaje: ${puntaje.total}. Abrir puntaje y zombis generados`;
+ marcadorPuntaje.element.setAttribute('aria-label',etiqueta);marcadorPuntaje.element.title=oculto?'Puntaje oculto · Zombis generados':'Puntaje y zombis generados';
+ $('toggle-score-visibility').textContent=oculto?'Mostrar puntaje':'Ocultar puntaje';$('toggle-score-visibility').setAttribute('aria-pressed',String(oculto));$('toggle-score-visibility').disabled=storageBlocked;
  $('zombies-total').textContent=String(resumen.total);
- $('score-total').textContent=String(puntaje.total);
+ $('score-total').textContent=oculto?'Oculto':String(puntaje.total);
  const recurso=window.ScoreCounter.themes[tema];
- $('score-dialog-display').innerHTML=`<img class="score-counter__base" src="./recursos/Imagenes generales/contadores_puntaje/assets/${recurso.file}" alt="">${window.ScoreCounter.renderScoreSvg(tema,puntaje.total)}`;
- $('score-dialog-display').setAttribute('aria-label',`Puntaje: ${puntaje.total}`);
+ $('score-dialog-display').innerHTML=`<img class="score-counter__base" src="./recursos/Imagenes generales/contadores_puntaje/assets/${recurso.file}" alt="">${oculto?mascaraPuntaje(tema):window.ScoreCounter.renderScoreSvg(tema,puntaje.total)}`;
+ $('score-dialog-display').setAttribute('aria-label',oculto?'Puntaje oculto':`Puntaje: ${puntaje.total}`);
  $('score-variable-note').hidden=resumen.variables===0;
  $('score-variable-note').textContent=`${resumen.variables} ${resumen.variables===1?'aparición con cantidad variable':'apariciones con cantidad variable'}: agrega sus zombis manualmente en la fila del tipo correspondiente.`;
 
@@ -381,7 +390,7 @@ function settings(){
  f.elements.modoDaily.value=state.proximaConfig.modoDaily??'sin-reposicion';
  f.elements.modoAparicionAdicional.value=state.proximaConfig.modoAparicionAdicional??'minimalista';
  f.elements.temaPuntaje.value=state.proximaConfig.temaPuntaje??'kang';
- for(const nivel of NIVELES_ADRENALINA){const p=parametrosDaily(state.proximaConfig,nivel);f.elements[`dailyBase-${nivel}`].value=p.base;f.elements[`dailyIncremento-${nivel}`].value=p.incremento;}
+ for(const nivel of NIVELES_ADRENALINA){const p=parametrosDailyFormulario(state.proximaConfig,nivel);f.elements[`dailyBase-${nivel}`].value=p.base;f.elements[`dailyIncremento-${nivel}`].value=p.incremento;}
  f.elements.dailyIncrementoPor.value=state.proximaConfig.dailyIncrementoPor??'tanda';
  document.querySelector('[name="filtro-contenido"][value="zombies"]').checked=true;
  renderContenido();updateSettings();firmaConfiguracionInicial=firmaContenido(draftConfig());openDialog('settings-dialog');
@@ -390,7 +399,7 @@ function draftConfig(){
  const f=$('settings-form'),valor=n=>f.elements[n].value===''?NaN:Number(f.elements[n].value);
  const dailyPorNivel=Object.fromEntries(NIVELES_ADRENALINA.map(nivel=>[nivel,{base:valor(`dailyBase-${nivel}`),incremento:valor(`dailyIncremento-${nivel}`)}]));
  const limitesPorAdrenalina=Object.fromEntries(FAMILIAS_LIMITES.map(mazo=>[mazo,Object.fromEntries(NIVELES_ADRENALINA.map(nivel=>[nivel,valor(`limite-${mazo}-${nivel}`)]))]));
- return normalizarConfig({...borradorContenido,easy:f.elements.easy.checked,normal:f.elements.normal.checked,threshold:Number(f.elements.threshold.value),modoAbominaciones:f.elements.modoAbominaciones.value,modoNigromantes:f.elements.modoNigromantes.value,reglaNigromantes:f.elements.reglaNigromantes.value,reglaAbominaciones:f.elements.reglaAbominaciones.value,abominacionEstandarId:f.elements.abominacionEstandarId.value,dailyHabilitado:f.elements.dailyHabilitado.checked,modoDaily:f.elements.modoDaily.value,modoAparicionAdicional:f.elements.modoAparicionAdicional.value,temaPuntaje:f.elements.temaPuntaje.value,dailyPorNivel,dailyIncrementoPor:f.elements.dailyIncrementoPor.value,limitesPorAdrenalina});
+ return normalizarConfig({...borradorContenido,easy:f.elements.easy.checked,normal:f.elements.normal.checked,threshold:Number(f.elements.threshold.value),modoAbominaciones:f.elements.modoAbominaciones.value,modoNigromantes:f.elements.modoNigromantes.value,reglaNigromantes:f.elements.reglaNigromantes.value,reglaAbominaciones:f.elements.reglaAbominaciones.value,abominacionEstandarId:f.elements.abominacionEstandarId.value,dailyHabilitado:f.elements.dailyHabilitado.checked,modoDaily:f.elements.modoDaily.value,modoAparicionAdicional:f.elements.modoAparicionAdicional.value,temaPuntaje:f.elements.temaPuntaje.value,ocultarPuntaje:state.proximaConfig.ocultarPuntaje??state.config.ocultarPuntaje??false,dailyPorNivel,dailyIncrementoPor:f.elements.dailyIncrementoPor.value,limitesPorAdrenalina});
 }
 function actualizarAbominacionEstandar(){
  const selector=$('abominacion-estandar'),actual=selector.value||borradorContenido.abominacionEstandarId;
@@ -450,6 +459,7 @@ $('settings-form').addEventListener('change',e=>{
  if(input.name==='filtro-contenido'){filtroContenido=input.value;renderContenido();}
  if(input.name==='carta'||input.name==='caja')actualizarAbominacionEstandar();updateSettings();
 });
+$('toggle-score-visibility').addEventListener('click',()=>{if(commit(s=>{const ocultar=!(s.proximaConfig.ocultarPuntaje??s.config.ocultarPuntaje??false);s.config.ocultarPuntaje=ocultar;s.proximaConfig.ocultarPuntaje=ocultar;})&&firmaConfiguracionInicial!==null){const inicial=JSON.parse(firmaConfiguracionInicial);inicial.ocultarPuntaje=state.proximaConfig.ocultarPuntaje;firmaConfiguracionInicial=firmaContenido(inicial);}});
 $('save-settings').addEventListener('click',guardarConfiguracion);
 $('settings-form').addEventListener('submit',e=>{e.preventDefault();const config=draftConfig();showConfirm('¿Iniciar nueva partida?','Se borrarán el historial, los fijados, los desfijados y las zonas de nigromante de la partida actual.',[{value:'cancel',label:'Cancelar'},{value:'yes',label:'Iniciar partida',primary:true}],v=>{if(v!=='yes')return;const zones=state.normal;if(commit(s=>{const nueva=newGame(config,zones,0);for(const k of Object.keys(s))delete s[k];Object.assign(s,nueva);},{recover:true})){for(const d of document.querySelectorAll('dialog[open]'))d.close();visibleBatch=null;toast('Nueva partida lista.');}});});
 function revealBatch(){if(state.normal+state.necro===0)throw new Error('No hay zonas de aparición.');const previousCycle=state.cycle;if(!commit(s=>{adoptarLimites(s);spawn(s);},{procedural:true}))throw new Error($('toast').textContent||'No se pudo guardar la tanda.');showBatch();if(state.cycle>previousCycle)toast('El mazo se ha reiniciado.');return state.history.at(-1);}
