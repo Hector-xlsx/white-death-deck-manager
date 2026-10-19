@@ -1,5 +1,17 @@
 # Decisiones pendientes y propuestas
 
+## Revelación independiente de enemigos · 19/10/2026
+
+Confirmadas acciones independientes Siempre/Por probabilidad/Nunca, incremento/máximo del Spawn y bloqueos sin activación forzada. Duda de activación cerrada por el usuario: «Calcular por: Independiente / Todos juntos» para otros nigromantes y abominaciones; el Profanador siempre se evalúa separado. El trabajo local conserva las combinaciones existentes hasta activar el nuevo perfil. Implementado y verificado, sin publicar. Véase [REVELACION_ACCIONES_INDEPENDIENTES.md](REVELACION_ACCIONES_INDEPENDIENTES.md).
+
+## Daily: porcentaje continuo y elegibilidad · 19/10/2026
+
+Corrección confirmada: el cambio de adrenalina conserva el porcentaje actual y utiliza el incremento del nivel de la tanda; la base del nuevo nivel se usa al reiniciar tras una aparición. Sustituye las notas anteriores sobre sumar lo acumulado a la nueva base. Cartas elegibles configurables. Implementado localmente, sin publicación; véase [AJUSTES_CONFIGURACION_Y_DAILY.md](AJUSTES_CONFIGURACION_Y_DAILY.md).
+
+## Death Notes y actualización de la aplicación · Cerrado el 19/10/2026
+
+El usuario confirmó Death Notes como nigromante seleccionable de Frozen Fortress, una copia, con ruido/daño en mesa, y un aviso visible para aplicar versiones descargadas. Implementación local, sin publicar. Prevalece [ACTUALIZACION_Y_DEATH_NOTES.md](ACTUALIZACION_Y_DEATH_NOTES.md) sobre las notas históricas de Death Notes como ayuda o pendiente de sorteo. Las partidas previas conservan sus selecciones.
+
 ## Spawn Especial confirmado e implementado · 18/10/2026
 
 [SPAWN_ESPECIAL.md](SPAWN_ESPECIAL.md) registra las decisiones explícitas de este chat y su implementación. Las referencias históricas inferiores a aparición probabilística especial y pesos futuros quedan sustituidas únicamente para Spawn Especial y las cantidades de Daily integrado. Daily independiente conserva una copia por identidad. Los pesos adaptativos de otros mazos continúan pendientes. Sin nuevas decisiones sobre campañas o cartas incompletas.

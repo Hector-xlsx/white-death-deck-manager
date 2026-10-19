@@ -13,17 +13,6 @@
       "en_espera": true
     },
     {
-      "id": "referencia-death-notes",
-      "titulo_sugerido": "Death Notes",
-      "imagen": null,
-      "imagen_es": "recursos/03 - Mazo Nigromante ESP/Carta Zombicide_ notas de muerte-7.png",
-      "cartas_vinculadas_ids": [],
-      "vinculos_confirmados": false,
-      "nota": "Consultar como apoyo; asignación a cartas y automatización pendientes.",
-      "mazo_destino": "nigromantes",
-      "cantidad_inicial_mazo_secundario": 1
-    },
-    {
       "id": "referencia-accion-de-combate-a-distancia-demorada",
       "titulo_sugerido": "Accion de combate a distancia demorada",
       "imagen": "recursos/00 Cartas Apoyo Supervivientes/Accion_de_combate_a_distancia_demorada.png",

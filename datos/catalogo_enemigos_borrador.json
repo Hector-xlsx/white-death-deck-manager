@@ -4,6 +4,26 @@
   "nota": "Colección clasificada por el usuario en carpetas 03 y 04. Una copia por carta secundaria; modalidades y reglas pendientes.",
   "enemigos": [
     {
+      "id": "referencia-death-notes",
+      "nombre": "Death Notes",
+      "tipo_sugerido": "nigromante",
+      "tipo_confirmado_por_usuario": true,
+      "imagen_original": null,
+      "imagen_es": "recursos/03 - Mazo Nigromante ESP/Carta Zombicide_ notas de muerte-7.png",
+      "variantes_por_revisar": [],
+      "juego_origen_id": "white-death",
+      "expansion_id": "frozen-fortress",
+      "cantidad_miniaturas_disponibles": null,
+      "cantidad_inicial_mazo_secundario": 1,
+      "peso_inicial": null,
+      "regla_automatica_id": null,
+      "referencias_ids": [],
+      "habilitado_para_sorteo": false,
+      "pendientes": ["Ruido y daño se resuelven en mesa; sin automatización de combate"],
+      "mazo_destino": "nigromantes",
+      "disponible_en_coleccion": true
+    },
+    {
       "id": "enemigo-ostokar-el-palido",
       "nombre": "Ostokar el palido",
       "tipo_sugerido": "nigromante",

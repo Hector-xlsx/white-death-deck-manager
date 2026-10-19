@@ -13,7 +13,7 @@ test('coleccion: seis cajas por Excel, Core obligatorio y retrocompatibilidad se
  assert.equal(datos.coleccion.cajas.filter(c=>c.obligatoria).length,1);
  const c=inicial();assert.ok(c.coleccionIds.includes('core'));assert.ok(c.coleccionIds.includes('core-retrocompatibilidad'));
  assert.equal(visiblesContenido(c,'abominaciones').filter(c=>c.operativa).length,20);
- assert.equal(visiblesContenido(c,'nigromantes').length,10);
+ assert.equal(visiblesContenido(c,'nigromantes').length,11);
 });
 test('filtros separan zombies comunes, secundarios y los seis tipos obligatorios Otros',()=>{
  const c=inicial();
@@ -30,7 +30,7 @@ test('solo Core deja un enemigo de cada tipo y no habilita los retrocompatibles'
 });
 test('quitar caja oculta y excluye secundarios sin borrar la seleccion individual',()=>{
  const c=inicial(),antes=structuredClone(c),sin={...c,coleccionIds:c.coleccionIds.filter(id=>id!=='core-retrocompatibilidad')};
- assert.equal(idsSecundarios(sin,'abominaciones').length,17);assert.equal(idsSecundarios(sin,'nigromantes').length,6);
+ assert.equal(idsSecundarios(sin,'abominaciones').length,17);assert.equal(idsSecundarios(sin,'nigromantes').length,7);
  assert.ok(visiblesContenido(sin,'abominaciones').every(c=>c.cajaId!=='core-retrocompatibilidad'));
  assert.deepEqual(sin.selectedAbominacionesIds,antes.selectedAbominacionesIds);
  assert.deepEqual(idsSecundarios({...sin,coleccionIds:c.coleccionIds},'abominaciones'),idsSecundarios(antes,'abominaciones'));
@@ -62,7 +62,7 @@ test('cantidad de enemigos seleccionados se congela en la nueva partida y limita
  const a=almacen(s),antes=structuredClone(s);
  const nuevo=guardarAccion(s,n=>n.proximaConfig={...inicial(),coleccionIds:['core','frozen-fortress']},a);
  assert.deepEqual(nuevo.nigromantes,antes.nigromantes);assert.deepEqual(nuevo.abominaciones,antes.abominaciones);
- assert.equal(newGame(nuevo.proximaConfig).nigromantes.cartas.length,6);
+ assert.equal(newGame(nuevo.proximaConfig).nigromantes.cartas.length,7);
 });
 test('mazos secundarios vacios bloquean inicio pero borrador se puede guardar',()=>{
  const c={...inicial(),selectedAbominacionesIds:[],selectedNigromantesIds:[]};

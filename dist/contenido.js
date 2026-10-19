@@ -44,7 +44,7 @@ export function erroresContenido(config){
  if(config.modoNigromantes!==undefined&&general.nigromante&&!idsSecundarios(config,'nigromantes').length)errores.push('Selecciona al menos un nigromante de tu colección.');
  if(config.dailyHabilitado&&!idsSecundarios(config,'daily').length)errores.push('Selecciona al menos un Daily Spawn de tu colección.');
  if(!configDailyValida(config))errores.push('Las probabilidades de Daily Spawn deben incluir base e incremento entre 0 y 100 para cada nivel.');
- if(!configModosValida(config))errores.push('Los modos de enemigos no son válidos.');
+ if(!configModosValida(config))errores.push('Revisa los modos y las acciones de revelación: porcentajes entre 0 y 100 y límite de probabilidad no menor que la base.');
  if(config.reglaAbominaciones==='estandar'&&datos.enemigos.enemigos.find(a=>a.id===config.abominacionEstandarId)?.trofeo)errores.push('Estándar no permite abominaciones con trofeo.');
  if(config.reglaAbominaciones==='estandar'&&!idsSecundarios(config,'abominaciones').length)errores.push('Selecciona la abominación estándar entre las marcadas en tu colección.');
  errores.push(...erroresLimites(config.limitesPorAdrenalina,config.reglaNigromantes!==undefined));

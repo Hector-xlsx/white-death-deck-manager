@@ -60,12 +60,40 @@ export const FICHAS_ZOMBIS={
   ]
  }
 };
+const REGLAS_VARIOS_NIGROMANTES={
+ titulo:'Ver reglas: jugar con varios nigromantes',
+ introduccion:'Para jugar con varios Nigromantes se sigue el mismo procedimiento que para jugar con varias Abominaciones: crear un mazo de Nigromantes del que se robe una carta cada vez que se robe una carta de Zombi en la que figure un Nigromante. Las reglas son las mismas, pero con las siguientes modificaciones:',
+ reglas:[
+  'Si no hay ningún Nigromante profanador sobre el tablero, aparece un Nigromante profanador.',
+  'Si ya hay un Nigromante profanador sobre el tablero y los jugadores roban una carta de Zombi en la que figura un Nigromante, en primer lugar el Nigromante profanador recibe una activación adicional, y luego aparece otro Nigromante del mazo de Nigromantes.',
+  'Con la llegada de Nigromantes adicionales no se añaden nuevas Zonas de aparición. El Nigromante profanador es el único que las coloca.',
+  'Coloca una ficha de Corrupción en toda Zona en la que entre un Nigromante, creando así una Zona de Corrupción (página 20). Esta regla se ignora si el Nigromante entra en una Zona de Corrupción.',
+  'Un Nigromante considera la Zona de la Almenara como su Zona de destino. A diferencia de los Supervivientes y los zombis, el Nigromante puede subir y bajar de las Almenas libremente sin necesidad de utilizar Escaleras (página 34). Si un Nigromante llega a la Zona de la Almenara, los jugadores pierden la partida.'
+ ]
+};
+const REGLAS_FESTIVAL={
+ titulo:'Ver reglas: Festival de abominaciones',
+ introduccion:'Utilizando un mazo de Abominaciones como se explica más arriba, con el Festival de Abominaciones se permite que haya varias Abominaciones sobre el tablero al mismo tiempo. Cuantas más haya, más peligro corren los Supervivientes. ¡Quedáis advertidos!',
+ procedimiento:'Resuelve los siguientes efectos de juego cada vez que se robe una carta de Zombi que cause la aparición de una Abominación:',
+ reglas:[
+  'Si no hay ninguna Abominación sobre el tablero, roba una carta del mazo de Abominaciones. Luego coloca la correspondiente Abominación.',
+  'Si ya hay una Abominación sobre el tablero, todas las Abominaciones que haya sobre el tablero reciben una activación adicional. DESPUÉS, roba una carta del mazo de Abominaciones y coloca la correspondiente Abominación.'
+ ]
+};
+function reglasGrupoHTML(clase,reglas){
+ return `<details class="reglas-grupo ${clase}"><summary>${esc(reglas.titulo)}</summary><div class="reglas-grupo-contenido"><p>${esc(reglas.introduccion)}</p>${reglas.procedimiento?`<p>${esc(reglas.procedimiento)}</p>`:''}<ul>${reglas.reglas.map(r=>`<li>${esc(r)}</li>`).join('')}</ul></div></details>`;
+}
 export function fichaZombiHTML(tipo,carta={}){
  const basico=['caminantes','brutos','corredores'].includes(tipo);
  const esCartaGeneral=!carta.id||CATALOG.some(c=>c.id===carta.id&&c.tipo===tipo);
  const f=FICHAS_ZOMBIS[carta.id]??(!basico||esCartaGeneral?FICHAS_ZOMBIS[tipo]:undefined);
- if(f)return pintarFicha(f);
- if(carta.mazo==='abominaciones'||carta.mazo_destino==='abominaciones')return `<details class="reglas-estandar-abominacion"><summary>Ver reglas estándar de abominación White Death (Kan)</summary>${pintarFicha(FICHAS_ZOMBIS['enemigo-abominacion-kan'])}</details>`;
+ const profanador=carta.id==='enemigo-nigromante-profanador';
+ const nigromante=profanador||tipo==='nigromante'||carta.mazo==='nigromantes'||carta.mazo_destino==='nigromantes';
+ const abominacion=tipo==='abominacion'||carta.mazo==='abominaciones'||carta.mazo_destino==='abominaciones'||carta.id==='enemigo-abominacion-kan';
+ const extra=nigromante?reglasGrupoHTML('reglas-varios-nigromantes',REGLAS_VARIOS_NIGROMANTES):abominacion?reglasGrupoHTML('reglas-festival-abominaciones',REGLAS_FESTIVAL):'';
+ if(f)return (profanador?`<details class="reglas-profanador"><summary>Ver reglas: nigromante profanador</summary>${pintarFicha(f)}</details>`:pintarFicha(f))+extra;
+ if(abominacion)return `<details class="reglas-estandar-abominacion"><summary>Ver reglas estándar de abominación White Death (Kan)</summary>${pintarFicha(FICHAS_ZOMBIS['enemigo-abominacion-kan'])}</details>`+extra;
+ if(nigromante)return extra;
  return '';
 }
 function pintarFicha(f){

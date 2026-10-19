@@ -1,59 +1,117 @@
 import http from 'node:http';
-import {readFile} from 'node:fs/promises';
-import {createRequire} from 'node:module';
-import {fileURLToPath} from 'node:url';
 import path from 'node:path';
+import {readFile,mkdir} from 'node:fs/promises';
+import {createRequire} from 'node:module';
 import assert from 'node:assert/strict';
-import {newGame} from '../dist/engine.js';
-const require=createRequire(import.meta.url);
-const {chromium}=require(process.env.MAZO_PLAYWRIGHT||'playwright');
-const raiz=fileURLToPath(new URL('../dist/',import.meta.url));
-let nueva=false;
-const versionNueva='prueba-actualizacion-v2';
-const server=http.createServer(async(req,res)=>{
+import {newGame,spawn} from '../dist/engine.js';
+import {abrirSeccionesConfiguracion} from './ayuda-configuracion.mjs';
+const require=createRequire(import.meta.url),{chromium}=require(process.env.MAZO_PLAYWRIGHT||'playwright');
+const raiz=path.resolve('dist'),versiones=['1111111111111111','2222222222222222','3333333333333333','4444444444444444'];
+let fase=0,fallarDescarga=false;
+const tipos={'.js':'text/javascript','.html':'text/html','.css':'text/css','.png':'image/png','.svg':'image/svg+xml','.webmanifest':'application/manifest+json'};
+const servidor=http.createServer(async(req,res)=>{
  try{
-  if(req.url==='/control.html'){res.writeHead(200,{'Content-Type':'text/html'});res.end('<!DOCTYPE html><title>Control de prueba</title>');return;}
-  const relativa=decodeURIComponent(new URL(req.url,'http://localhost').pathname.slice('/mazo/'.length))||'index.html';
-  const archivo=path.join(raiz,relativa);
+  const u=new URL(req.url,'http://localhost'),rel=decodeURIComponent(u.pathname.slice('/mazo/'.length))||'index.html',archivo=path.resolve(raiz,rel);
+  if(u.pathname==='/control.html'){res.writeHead(200,{'Content-Type':'text/html'});res.end('<!DOCTYPE html><title>Control de prueba</title>');return;}
+  if(!u.pathname.startsWith('/mazo/')||!archivo.startsWith(raiz+path.sep))throw Error('Ruta inválida');
+  if(fallarDescarga&&rel==='icon.svg'){res.writeHead(503);res.end();return;}
   let bytes=await readFile(archivo);
-  if(nueva&&['sw.js','version.js'].includes(relativa))bytes=Buffer.from(bytes.toString().replace(/const VERSION_APP='[^']+'/,`const VERSION_APP='${versionNueva}'`));
-  const tipo=archivo.endsWith('.js')?'text/javascript':archivo.endsWith('.css')?'text/css':archivo.endsWith('.html')?'text/html':archivo.endsWith('.png')?'image/png':'application/octet-stream';
-  res.writeHead(200,{'Content-Type':tipo,'Cache-Control':'no-store'});res.end(bytes);
+  if(rel==='version.js')bytes=Buffer.from(`export const VERSION_APP='${versiones[fase]}';`);
+  if(rel==='sw.js')bytes=Buffer.from(bytes.toString().replace(/const VERSION_APP='[a-f0-9]+';/,`const VERSION_APP='${versiones[fase]}';`));
+  res.writeHead(200,{'Content-Type':tipos[path.extname(archivo)]||'application/octet-stream','Cache-Control':'no-store'});res.end(bytes);
  }catch{res.writeHead(404);res.end();}
 });
-await new Promise(resolve=>server.listen(0,'127.0.0.1',resolve));
-const origen=`http://127.0.0.1:${server.address().port}`;
+await new Promise(resolve=>servidor.listen(0,'127.0.0.1',resolve));
+const url=`http://127.0.0.1:${servidor.address().port}/mazo/`,key='white-death-gestor-v2',errores=[];
 const browser=await chromium.launch({headless:true,channel:process.env.MAZO_NAVEGADOR||'chrome'});
 try{
- const contexto=await browser.newContext();
- await contexto.addInitScript(semilla=>{
-  if(!localStorage.getItem('white-death-gestor-v2'))localStorage.setItem('white-death-gestor-v2',JSON.stringify(semilla));
-  Math.random=()=>0;
- },newGame({easy:true,normal:true,threshold:0,selectedIds:['nigromante','abominacion'],modoNigromantes:'sin-reposicion'},2));
- const page=await contexto.newPage();await page.goto(`${origen}/mazo/`);
- await page.locator('#offline-status').filter({hasText:'Disponible offline'}).waitFor({timeout:60000});
- await page.locator('#spawn').click();
- const estado=await page.evaluate(()=>localStorage.getItem('white-death-gestor-v2'));
- const antigua=await page.evaluate(async()=> (await import('./version.js')).VERSION_APP);
- nueva=true;
- await page.evaluate(async()=>{window.registroPrueba=await navigator.serviceWorker.getRegistration();await window.registroPrueba.update();});
- await page.waitForFunction(()=>window.registroPrueba.waiting?.state==='installed',{},{timeout:60000});
- assert.equal(await page.evaluate(async()=> (await import('./version.js')).VERSION_APP),antigua);
- await page.reload();await page.locator('#batch-dialog').waitFor({state:'visible'});
- assert.equal(await page.evaluate(async()=> (await import('./version.js')).VERSION_APP),antigua);
- assert.equal(await page.evaluate(()=>localStorage.getItem('white-death-gestor-v2')),estado);
- const control=await contexto.newPage();await control.goto(`${origen}/control.html`);
- await page.close();
- await control.evaluate(async()=>window.registroPrueba=await navigator.serviceWorker.getRegistration('/mazo/'));
- await control.waitForFunction(()=>window.registroPrueba.active?.state==='activated'&&!window.registroPrueba.waiting,{},{timeout:15000});
- const paquete=await control.evaluate(async()=>{
-  const canal=new MessageChannel();const resultado=await new Promise(resolve=>{canal.port1.onmessage=e=>resolve(e.data);window.registroPrueba.active.postMessage({tipo:'comprobar-offline'},[canal.port2]);});canal.port1.close();return resultado;
- });assert.deepEqual(paquete,{version:versionNueva,completa:true});
- const actualizada=await contexto.newPage();await actualizada.goto(`${origen}/mazo/`);
- await actualizada.locator('#batch-dialog').waitFor({state:'visible'});
- assert.equal(await actualizada.evaluate(async()=> (await import('./version.js')).VERSION_APP),versionNueva);
- assert.equal(await actualizada.evaluate(()=>localStorage.getItem('white-death-gestor-v2')),estado);
- await contexto.setOffline(true);await actualizada.reload();await actualizada.locator('#batch-dialog').waitFor({state:'visible'});
- assert.equal(await actualizada.evaluate(()=>localStorage.getItem('white-death-gestor-v2')),estado);
- console.log('Actualizacion: espera al cierre de pestañas, conserva paquete anterior al recargar y mantiene partida/offline tras activar.');
-}finally{await browser.close();await new Promise(resolve=>server.close(resolve));}
+ const ctx=await browser.newContext({viewport:{width:1024,height:768}});
+ const s=newGame({easy:true,normal:true,threshold:0,selectedIds:['caminantes-normal'],modoNigromantes:'sin-reposicion',reglaNigromantes:'personalizado',reglaAbominaciones:'personalizado'},1);spawn(s,()=>0);s.openBatch=false;
+ let bytes=JSON.stringify(s);
+ await ctx.addInitScript(({key,bytes})=>{if(!localStorage.getItem(key))localStorage.setItem(key,bytes);},{key,bytes});
+ const p=await ctx.newPage();p.on('pageerror',e=>errores.push(e.message));await p.goto(url);
+ await p.locator('#offline-status').filter({hasText:'Disponible offline'}).waitFor({timeout:90000});
+ bytes=await p.evaluate(k=>localStorage.getItem(k),key);
+ assert.equal(JSON.parse(bytes).history.length,1);
+ assert.equal(await p.locator('#actualizacion-disponible').isVisible(),false);
+ await p.getByRole('button',{name:'Configuración',exact:true}).click();
+ await abrirSeccionesConfiguracion(p,'Contenido',['cartas']);
+ await p.locator('[name="filtro-contenido"][value="nigromantes"]').check();
+ const muerte=p.locator('#content-selector .content-row').filter({hasText:'Death Notes:'});
+ await muerte.locator('xpath=ancestor::details[1]').evaluate(e=>e.open=true);
+ assert.equal(await muerte.locator('input[name="carta"]').isEnabled(),true);
+ await muerte.getByRole('button',{name:/Consultar/}).click();
+ assert.equal(await p.locator('#info-title').textContent(),'Death Notes');assert.equal(await p.locator('#info-content img').count(),1);
+ await p.locator('#info-dialog [data-action="close"]').click();
+ await p.locator('[name="filtro-contenido"][value="otros"]').check();
+ assert.equal(await p.locator('#content-selector [data-id="referencia-death-notes"]').count(),0);
+ await p.locator('#settings-dialog .close-button').click();
+ const otra=await ctx.newPage();otra.on('pageerror',e=>errores.push(e.message));await otra.goto(url);
+ await otra.getByRole('button',{name:'Configuración',exact:true}).click();
+ await abrirSeccionesConfiguracion(otra,'Apariencia',['puntaje']);await otra.locator('#tema-puntaje').selectOption('dragon');
+ fase=1;
+ await p.evaluate(async()=>{await (await navigator.serviceWorker.getRegistration()).update();});
+ await p.locator('#actualizacion-disponible').waitFor({state:'visible',timeout:90000});
+ await p.reload();await p.locator('#actualizacion-disponible').waitFor({state:'visible'});
+ assert.equal(await p.evaluate(async()=>(await import('./version.js')).VERSION_APP),versiones[0]);
+ for(const [w,h] of [[1440,900],[1024,768],[844,390],[390,844],[320,568]]){
+  await p.setViewportSize({width:w,height:h});assert.equal(await p.evaluate(()=>document.documentElement.scrollWidth>innerWidth),false);
+  const b=await p.locator('#actualizar-app').boundingBox();assert.ok(b&&b.width>=44&&b.height>=44&&b.y>=0&&b.y+b.height<=h);
+ }
+ await mkdir('docs/verificacion',{recursive:true});await p.screenshot({path:'docs/verificacion/aviso-actualizacion.png',fullPage:true});
+ // Un panel abierto puede contener un borrador: el botón no lo descarta.
+ await p.getByRole('button',{name:'Configuración',exact:true}).click();
+ await p.evaluate(()=>document.getElementById('actualizar-app').click());
+ assert.match(await p.locator('#actualizacion-mensaje').textContent(),/Guarda o cierra/);
+ assert.equal(await p.evaluate(async()=>Boolean((await navigator.serviceWorker.getRegistration()).waiting)),true);
+ await p.locator('#settings-dialog .close-button').click();
+ await Promise.all([p.waitForEvent('load'),p.locator('#actualizar-app').click()]);
+ await p.locator('#offline-status').filter({hasText:'Disponible offline'}).waitFor({timeout:90000});
+ assert.equal(await p.evaluate(async()=>(await import('./version.js')).VERSION_APP),versiones[1]);
+ assert.equal(await p.evaluate(k=>localStorage.getItem(k),key),bytes);
+ // La otra pestaña conserva su borrador y sus módulos de la versión anterior.
+ assert.equal(await otra.locator('#settings-dialog').isVisible(),true);
+ assert.equal(await otra.locator('#tema-puntaje').inputValue(),'dragon');
+ assert.equal(await otra.evaluate(async()=>await (await fetch('./version.js')).text()),`export const VERSION_APP='${versiones[0]}';`);
+ await otra.locator('#save-settings').click();
+ const guardado=await p.evaluate(k=>localStorage.getItem(k),key);
+ await otra.locator('#actualizacion-disponible').waitFor({state:'visible'});
+ await Promise.all([otra.waitForEvent('load'),otra.locator('#actualizar-app').click()]);
+ await otra.locator('#offline-status').filter({hasText:'Disponible offline'}).waitFor();
+ assert.equal(await otra.evaluate(async()=>(await import('./version.js')).VERSION_APP),versiones[1]);
+ assert.equal(await otra.evaluate(k=>localStorage.getItem(k),key),guardado);
+ // Segunda actualización: comprobar offline no puede borrar el paquete en espera.
+ fase=2;await p.evaluate(async()=>{await (await navigator.serviceWorker.getRegistration()).update();});
+ await p.locator('#actualizacion-disponible').waitFor({state:'visible',timeout:90000});
+ await p.evaluate(()=>window.dispatchEvent(new Event('online')));
+ await ctx.setOffline(true);
+ await Promise.all([p.waitForEvent('load'),p.locator('#actualizar-app').click()]);
+ await p.locator('#offline-status').filter({hasText:'Disponible offline'}).waitFor();
+ assert.equal(await p.evaluate(async()=>(await import('./version.js')).VERSION_APP),versiones[2]);
+ assert.equal(await p.evaluate(k=>localStorage.getItem(k),key),guardado);
+ await ctx.setOffline(false);fase=3;fallarDescarga=true;
+ await p.evaluate(async()=>{await (await navigator.serviceWorker.getRegistration()).update();});
+ await p.locator('#offline-status').filter({hasText:'Descarga offline incompleta'}).waitFor({timeout:90000});
+ assert.equal(await p.evaluate(async()=>Boolean((await navigator.serviceWorker.getRegistration()).waiting)),false);
+ assert.equal(await p.locator('#actualizacion-disponible').isVisible(),false);
+ await ctx.setOffline(true);await p.reload();
+ await p.locator('#offline-status').filter({hasText:'Disponible offline'}).waitFor();
+ assert.equal(await p.evaluate(k=>localStorage.getItem(k),key),guardado);
+ // También se conserva la activación automática al cerrar las ventanas.
+ await ctx.setOffline(false);fallarDescarga=false;
+ await p.evaluate(async()=>{await (await navigator.serviceWorker.getRegistration()).update();});
+ await p.locator('#actualizacion-disponible').waitFor({state:'visible',timeout:90000});
+ const control=await ctx.newPage();await control.goto(new URL('/control.html',url).href);
+ await p.close();await otra.close();
+ await control.waitForFunction(async()=>{const r=await navigator.serviceWorker.getRegistration('/mazo/');return r?.active?.state==='activated'&&!r.waiting;},{},{timeout:20000});
+ const final=await ctx.newPage();await final.goto(url);
+ await final.locator('#offline-status').filter({hasText:'Disponible offline'}).waitFor();
+ assert.equal(await final.evaluate(async()=>(await import('./version.js')).VERSION_APP),versiones[3]);
+ assert.equal(await final.evaluate(k=>localStorage.getItem(k),key),guardado);
+ await final.waitForFunction(async()=>{
+  const paquetes=(await caches.keys()).filter(k=>k.startsWith('white-death-')&&!k.endsWith('-clientes'));
+  return paquetes.length===1&&paquetes[0].endsWith('4444444444444444');
+ });
+ assert.deepEqual(errores,[]);await ctx.close();
+ console.log('Actualización: Death Notes seleccionable y consultable, aviso y cinco tamaños, protección de paneles, dos pestañas y borrador conservados, paquetes independientes, actualizaciones sucesivas, activación offline, descarga fallida y activación automática sin pérdida de partida.');
+}finally{await browser.close();await new Promise(resolve=>servidor.close(resolve));}

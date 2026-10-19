@@ -11,26 +11,26 @@ const cerrar=s=>{s.openBatch=false;};
 const intentos=s=>s.history.at(-1).slots.flatMap(t=>t.draws).filter(c=>c.dailyIntento).map(c=>c.dailyIntento.probabilidad);
 function almacen(s){let bytes=JSON.stringify(s);return {getItem:k=>k===KEY?bytes:null,setItem:(k,v)=>{bytes=v;}};}
 
-test('Daily por adrenalina: conserva puntos acumulados al subir y bajar, sin recalcular incrementos antiguos',()=>{
+test('Daily por adrenalina: conserva porcentaje actual al subir y bajar, sin recalcular incrementos antiguos',()=>{
  const s=crear();spawn(s,azar([0,.99]));assert.equal(probabilidadDaily(s),40);cerrar(s);
- cambiarNivelAdrenalina(s,1);assert.equal(probabilidadDaily(s),50);
- spawn(s,azar([0,.99]));assert.deepEqual(intentos(s),[50]);assert.equal(puntosAcumuladosDaily(s),25);assert.equal(probabilidadDaily(s),55);cerrar(s);
- cambiarNivelAdrenalina(s,1);assert.equal(probabilidadDaily(s),35);cambiarNivelAdrenalina(s,-1);assert.equal(probabilidadDaily(s),55);
+ cambiarNivelAdrenalina(s,1);assert.equal(probabilidadDaily(s),40);
+ spawn(s,azar([0,.99]));assert.deepEqual(intentos(s),[40]);assert.equal(puntosAcumuladosDaily(s),25);assert.equal(probabilidadDaily(s),45);cerrar(s);
+ cambiarNivelAdrenalina(s,1);assert.equal(probabilidadDaily(s),45);cambiarNivelAdrenalina(s,-1);assert.equal(probabilidadDaily(s),45);
  assert.ok(isValid(s));
 });
 test('Daily por adrenalina: intento por carta incrementa y una aparicion reinicia el aumento',()=>{
  const s=crear({},3);spawn(s,azar([0,.99,0,.99,0,.1,0]));
  assert.deepEqual(intentos(s),[20,40,60]);assert.equal(s.pins.length,1);assert.equal(puntosAcumuladosDaily(s),0);assert.equal(probabilidadDaily(s),20);cerrar(s);
- cambiarNivelAdrenalina(s,1);assert.equal(probabilidadDaily(s),30);assert.ok(isValid(s));
+ cambiarNivelAdrenalina(s,1);assert.equal(probabilidadDaily(s),20);assert.ok(isValid(s));
 });
 test('Daily por adrenalina: incremento por tanda usa su nivel una sola vez y conserva el aumento entre niveles',()=>{
  const s=crear({dailyIncrementoPor:'tanda'},2);spawn(s,azar([0,.99,0,.99]));assert.deepEqual(intentos(s),[20,20]);assert.equal(probabilidadDaily(s),40);cerrar(s);
- cambiarNivelAdrenalina(s,1);spawn(s,azar([0,.99,0,.99]));assert.deepEqual(intentos(s),[50,50]);assert.equal(probabilidadDaily(s),55);cerrar(s);
- cambiarNivelAdrenalina(s,1);assert.equal(probabilidadDaily(s),35);assert.ok(isValid(s));
+ cambiarNivelAdrenalina(s,1);spawn(s,azar([0,.99,0,.99]));assert.deepEqual(intentos(s),[40,40]);assert.equal(probabilidadDaily(s),45);cerrar(s);
+ cambiarNivelAdrenalina(s,1);assert.equal(probabilidadDaily(s),45);assert.ok(isValid(s));
 });
-test('Daily por adrenalina: probabilidad maxima 100 conserva el incremento ganado al bajar la base',()=>{
+test('Daily por adrenalina: probabilidad maxima 100 se mantiene al cambiar de nivel',()=>{
  const p=perfil();p.azul={base:90,incremento:20};const s=crear({dailyPorNivel:p});spawn(s,azar([0,.99]));assert.equal(probabilidadDaily(s),100);assert.equal(puntosAcumuladosDaily(s),20);cerrar(s);
- cambiarNivelAdrenalina(s,1);assert.equal(probabilidadDaily(s),50);
+ cambiarNivelAdrenalina(s,1);assert.equal(probabilidadDaily(s),100);
 });
 test('Daily por adrenalina: base cero no sortea; base 100 garantiza y todos en juego bloquean',()=>{
  const p=perfil();p.azul={base:0,incremento:20};const s=crear({dailyPorNivel:p},2);spawn(s,azar([0,0,.99]));assert.deepEqual(intentos(s),[0,20]);assert.equal(probabilidadDaily(s),40);assert.ok(isValid(s));
@@ -46,23 +46,23 @@ test('Daily por adrenalina: cancelar fallo o aparicion revierte su aporte sin pe
 });
 test('Daily por adrenalina: regenerar una tanda antigua usa su base aunque el selector ya cambio',()=>{
  const s=crear();spawn(s,azar([0,.99]));cerrar(s);cambiarNivelAdrenalina(s,1);
- replaceCard(s,1,'t1-z1',azar([0,.99]));assert.equal(s.history[0].nivelAdrenalina,'azul');assert.equal(s.history[0].slots[0].draws.at(-1).dailyIntento.probabilidad,20);assert.equal(probabilidadDaily(s),50);assert.ok(isValid(s));
+ replaceCard(s,1,'t1-z1',azar([0,.99]));assert.equal(s.history[0].nivelAdrenalina,'azul');assert.equal(s.history[0].slots[0].draws.at(-1).dailyIntento.probabilidad,20);assert.equal(probabilidadDaily(s),40);assert.ok(isValid(s));
 });
 test('Daily por adrenalina: eleccion tardia usa el nivel de su tanda y no duplica el incremento',()=>{
  const s=crear({selectedIds:['nigromante','asedio'],modoNigromantes:'sin-reposicion',selectedNigromantesIds:['enemigo-ostokar-el-palido','enemigo-bomoh'],dailyIncrementoPor:'tanda'});
  spawn(s,azar([0,0,.99,.99]));cerrar(s);cambiarNivelAdrenalina(s,1);spawn(s,azar([0,.99,.99]));
  const origen=s.history[1].slots[0].draws[0];cerrar(s);cambiarNivelAdrenalina(s,1);
- elegirNigromante(s,origen.uid,'spawn',azar([0,.99,.99]));assert.deepEqual(intentos(s),[50,50]);assert.equal(puntosAcumuladosDaily(s),25);assert.equal(probabilidadDaily(s),35);assert.ok(isValid(s));
+ elegirNigromante(s,origen.uid,'spawn',azar([0,.99,.99]));assert.deepEqual(intentos(s),[40,40]);assert.equal(puntosAcumuladosDaily(s),25);assert.equal(probabilidadDaily(s),45);assert.ok(isValid(s));
 });
 test('Daily por adrenalina: anular restaura exactamente nivel, probabilidad y configuracion anteriores',()=>{
  const s=crear();spawn(s,azar([0,.99]));cerrar(s);cambiarNivelAdrenalina(s,1);const antes=structuredClone(s);antes.respaldoTanda=null;
- spawn(s,azar([0,.99]));cerrar(s);cambiarNivelAdrenalina(s,1);anularTanda(s);assert.deepEqual(s,antes);assert.equal(probabilidadDaily(s),50);assert.ok(isValid(s));
+ spawn(s,azar([0,.99]));cerrar(s);cambiarNivelAdrenalina(s,1);anularTanda(s);assert.deepEqual(s,antes);assert.equal(probabilidadDaily(s),40);assert.ok(isValid(s));
 });
 test('Daily por adrenalina: recarga, cuota y configuracion futura conservan la partida congelada',()=>{
  const s=crear();spawn(s,azar([0,.99]));cerrar(s);cambiarNivelAdrenalina(s,1);const a=almacen(s),antes=structuredClone(s);
- assert.deepEqual(recuperar(a),antes);assert.equal(probabilidadDaily(recuperar(a)),50);
+ assert.deepEqual(recuperar(a),antes);assert.equal(probabilidadDaily(recuperar(a)),40);
  assert.throws(()=>guardarAccion(s,n=>spawn(n,()=>.99),{setItem(){throw new Error('Quota');}}));assert.deepEqual(s,antes);
- const siguiente=guardarAccion(s,n=>{n.proximaConfig.dailyPorNivel.amarillo.base=90;},a);assert.equal(probabilidadDaily(siguiente),50);assert.equal(siguiente.config.dailyPorNivel.amarillo.base,30);assert.equal(newGame(siguiente.proximaConfig).config.dailyPorNivel.amarillo.base,90);
+ const siguiente=guardarAccion(s,n=>{n.proximaConfig.dailyPorNivel.amarillo.base=90;},a);assert.equal(probabilidadDaily(siguiente),40);assert.equal(siguiente.config.dailyPorNivel.amarillo.base,30);assert.equal(newGame(siguiente.proximaConfig).config.dailyPorNivel.amarillo.base,90);
 });
 test('Daily por adrenalina: configuracion general anterior conserva tasas y bytes, nueva partida opta por niveles',()=>{
  const s=newGame({easy:true,normal:true,threshold:0,selectedIds:['asedio'],dailyHabilitado:true,dailyBase:20,dailyIncremento:20,dailyIncrementoPor:'carta'},1);spawn(s,azar([0,.99]));cerrar(s);const a=almacen(s),bytes=a.getItem(KEY);
@@ -85,4 +85,20 @@ test('perfil inicial Daily 5/1, 8/2, 12/3, 15/4 sin modificar configuraciones gu
  assert.deepEqual(parametrosDailyFormulario({dailyBase:0,dailyIncremento:0},'rojo'),{base:0,incremento:0});
  assert.deepEqual(parametrosDailyFormulario({dailyBase:17,dailyIncremento:9},'amarillo'),{base:17,incremento:9});
  assert.deepEqual(parametrosDaily({},'azul'),{base:0,incremento:0});
+});
+
+test('Daily: al cambiar de nivel mantiene porcentaje; solo una aparición adopta la nueva base',()=>{
+ const s=crear();spawn(s,azar([0,.99]));cerrar(s);cambiarNivelAdrenalina(s,1);
+ assert.equal(probabilidadDaily(s),40);
+ spawn(s,azar([0,.1,0]));assert.equal(probabilidadDaily(s),30);cerrar(s);
+ cambiarNivelAdrenalina(s,1);assert.equal(probabilidadDaily(s),30);
+ spawn(s,azar([0,.99]));assert.equal(probabilidadDaily(s),40);assert.ok(isValid(s));
+});
+
+test('Daily: orígenes elegibles seleccionables, incluidos tipos excluidos por defecto',()=>{
+ const s=crear({selectedIds:['activacion-caminantes'],dailyElegibles:[],dailyPorNivel:{...perfil(),azul:{base:100,incremento:0}}});
+ spawn(s,()=>0);assert.equal(s.history[0].slots[0].draws[0].dailyIntento,undefined);assert.ok(isValid(s));
+ const t=crear({selectedIds:['activacion-caminantes'],dailyElegibles:['activacion-caminantes'],dailyPorNivel:{...perfil(),azul:{base:100,incremento:0}}});
+ spawn(t,()=>0);assert.equal(t.history[0].slots[0].draws[0].dailyIntento.resultado,'spawn');assert.equal(t.pins.length,1);assert.ok(isValid(t));
+ for(const valores of [null,['inexistente'],['asedio','asedio']]){const roto=structuredClone(s);roto.config.dailyElegibles=valores;assert.equal(isValid(roto),false);}
 });

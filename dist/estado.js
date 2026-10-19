@@ -112,6 +112,17 @@ export function migrarEstado(entrada){
   if(estado.respaldoTanda?.estado)actualizarImagen(estado.respaldoTanda.estado);
  }
  actualizarImagen(s);
+ // El catálogo crece, pero los defaults implícitos de partidas anteriores no.
+ function conservarNigromantes(estado){
+  if(!estado||typeof estado!=='object')return;
+  if(estado.nigromantes?.cartas&&!estado.nigromantes.cartas.some(c=>c.id==='referencia-death-notes')){
+   for(const config of [estado.config,estado.proximaConfig,...(estado.history||[]).flatMap(b=>[b.configTanda,b.configEspecial])]){
+    if(config&&config.selectedNigromantesIds===undefined)config.selectedNigromantesIds=datos.nigromantes.cartas_ids.filter(id=>id!=='referencia-death-notes');
+   }
+  }
+  if(estado.respaldoTanda?.estado)conservarNigromantes(estado.respaldoTanda.estado);
+ }
+ conservarNigromantes(s);
  if(!isValid(s))throw new Error('Partida invalida; se conserva el guardado original.');
  if(s.version===2){
   const trofeos=datos.enemigos.enemigos.filter(c=>c.trofeo===true).map(c=>c.id);

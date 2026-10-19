@@ -2,7 +2,7 @@
   "version": 1,
   "fuente": "input referencia cartas.xlsx / Mazo Custom Daily Spawn",
   "politica_probabilidad": {
-    "fuente": "Decisión del usuario del 13/10/2026; configuración del gestor, no regla oficial de las cartas",
+    "fuente": "Decisiones del usuario del 13/10/2026 y corrección del 19/10/2026; configuración del gestor, no regla oficial de las cartas",
     "base_e_incremento_por": "nivel_adrenalina",
     "niveles": [
       "azul",
@@ -10,8 +10,8 @@
       "naranja",
       "rojo"
     ],
-    "cambio_de_nivel": "conservar_puntos_acumulados",
-    "aparicion": "reiniciar_aumento",
+    "cambio_de_nivel": "conservar_porcentaje_actual",
+    "aparicion": "reiniciar_a_base_del_nivel_de_la_tanda",
     "probabilidad_maxima": 100
   },
   "cartas_ids": [

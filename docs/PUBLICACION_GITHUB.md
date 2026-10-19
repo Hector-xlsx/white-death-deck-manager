@@ -1,5 +1,15 @@
 # Publicación beta · 16/10/2026
 
+## Publicación del conjunto de cambios autorizada · 19/10/2026
+
+El usuario solicitó subir a GitHub el conjunto preparado: actualización visible conservando partidas/pestañas, Death Notes como nigromante, configuración más explícita y plegable con consulta de cartas, corrección del porcentaje Daily al cambiar de adrenalina y elegibilidad seleccionable, reglas de consulta contraídas, acciones independientes de revelación y «Calcular por: Independiente / Todos juntos» para otros nigromantes y abominaciones. Se mantienen los modos oficiales y las combinaciones guardadas hasta activar el nuevo perfil.
+
+Validaciones previas a la subida: 364/364 pruebas del proyecto y 13/13 de la base original; QA de Configuración, Spawn Especial, reglas core, Daily, revelación independiente, actualización entre versiones/pestañas, cinco tamaños, almacenamiento fallido y offline. No se modificaron `base-web/`, Excel ni `AGENTS.md`. Sin validación en dispositivos físicos.
+
+La subida a `main` ejecuta el workflow existente, que prepara nuevamente el paquete y publica solo si las pruebas de Linux terminan correctamente. La ejecución y la URL pública se verifican al cerrar esta publicación. Las notas anteriores «local» o «sin publicar» de los documentos de cada cambio corresponden a su etapa de desarrollo y quedan sustituidas por este cierre de publicación autorizada.
+
+La versión publicada anterior todavía no tiene «Actualizar ahora»: la primera transición puede requerir cerrar/reabrir las ventanas de la app una última vez. Las siguientes actualizaciones ya dispondrán del aviso. No hace falta borrar datos del sitio.
+
 ## Despliegue automático autorizado · 16/10/2026
 
 El workflow .github/workflows/pages.yml se ejecuta ahora con cada push a main y conserva workflow_dispatch para ejecución manual. Se mantienen las 13 pruebas de base-web, la preparación de recursos, las 305 pruebas actuales y la dependencia publicar → comprobar-y-preparar: solo se publica si el trabajo previo termina correctamente. No cambian permisos, destino, entorno ni artefacto dist/. La subida de este cambio debe iniciar la primera ejecución automática, incluida la vista de mesa del commit anterior.

@@ -1,4 +1,6 @@
-import {componer,idsSecundarios} from './catalogo.js';
+import {componer,idsSecundarios,CATALOG,nombreVisible,escapar} from './catalogo.js';
+import {idsElegiblesDaily} from './daily.js';
+import {iniciarRevelacionUI,actualizarRevelacionUI} from './revelacion-ui.js';
 import {opcionesEspecial,dailyIntegrado} from './especial-config.js';
 
 const $=id=>document.getElementById(id);
@@ -20,14 +22,19 @@ export function mostrarPestanaConfiguracion(nombre,{enfocar=false}={}){
 export function iniciarConfiguracionUI(){
  const form=$('settings-form'),dialog=$('settings-dialog'),campos=[...form.querySelectorAll(':scope>fieldset')];
  const campo=nombre=>campos.find(f=>f.querySelector('legend')?.textContent===nombre);
- const dificultad=campo('Dificultad'),contenido=campo('Contenido'),nigromantes=campo('Mazo de nigromantes'),abominaciones=campo('Mazo de abominaciones'),reinicio=campo('Reinicio anticipado');
+ const dificultad=campo('Dificultad'),contenido=campo('Contenido'),nigromantes=campo('Mazo de nigromantes'),abominaciones=campo('Mazo de abominaciones'),reinicio=campo('Reiniciar mazo general de forma anticipada');
  const titulo=dialog.querySelector('h2');titulo.id='config-title';dialog.setAttribute('aria-labelledby',titulo.id);
  const coleccion=form.querySelector('.collection-section');
  const acciones=dialog.querySelector('.enemy-actions-settings');
  for(const [mazo,campoDestino,tipo] of [['nigromantes',nigromantes,'nigromante'],['abominaciones',abominaciones,'abominacion']]){
   const bloque=document.createElement('div');bloque.className='config-acciones';
   const label=$(`accion-${tipo}`).closest('label'),nota=document.createElement('p');nota.className='field-note config-auto-note';nota.textContent='Esta acción se guarda al elegirla y se aplica a la próxima tanda.';
-  bloque.append(label,nota);campoDestino.append(bloque);
+  label.querySelector('span').textContent='Combinación anterior';
+  const descripcion=document.createElement('p');descripcion.id=`descripcion-spawn-${tipo}`;descripcion.className='field-note';
+  iniciarRevelacionUI(bloque,mazo,label,descripcion,nota);campoDestino.append(bloque);
+  for(const [selector,id] of [[`regla-${mazo}`,`descripcion-modo-${tipo}`],[`modo-${mazo}`,`descripcion-reposicion-${tipo}`]]){
+   const ayuda=document.createElement('span');ayuda.id=id;ayuda.className='field-note';$(selector).after(ayuda);
+  }
   const limites=document.createElement('div');limites.id=`config-limites-${mazo}`;limites.className='limit-settings';
   const table=document.createElement('table');table.className='daily-levels';
   table.innerHTML=`<caption>Topes personalizados por adrenalina</caption><thead><tr><th scope="col">Nivel</th><th scope="col">${mazo==='nigromantes'?'Adicionales al Profanador':'Abominaciones totales'}</th></tr></thead><tbody></tbody>`;
@@ -46,12 +53,11 @@ export function iniciarConfiguracionUI(){
  const coleccionResumen=coleccion.querySelector('summary');coleccionResumen.textContent='Colección';
  form.prepend(nav,panels);
  $('config-panel-contenido').append(coleccion,seccion('dificultad','Dificultad',[dificultad]),seccion('cartas','Cartas de la partida',[contenido]));
- const general=seccion('general','General y Spawn Especial',[$('especial-config'),reinicio]);
+ const general=seccion('general','Mazo general y mazo especial',[$('especial-config'),reinicio]);
  $('config-panel-mazos').append(general,seccion('nigromantes','Nigromantes',[nigromantes]),seccion('abominaciones','Abominaciones',[abominaciones]),seccion('daily','Daily Spawn',[$('daily-config')]));
  $('config-panel-apariencia').append(seccion('apariciones','Apariciones adicionales',[campo('Apariciones adicionales')]),seccion('puntaje','Marcador de puntaje',[campo('Marcador de puntaje')]));
- const notaDailyTexto=$('daily-config').querySelector(':scope>.field-note');
- notaDaily=document.createElement('details');notaDaily.className='config-help';notaDaily.innerHTML='<summary>Cómo funciona</summary>';notaDailyTexto.before(notaDaily);notaDaily.append(notaDailyTexto);
- const integrado=document.createElement('div');integrado.id='config-daily-integrado';integrado.innerHTML='<p class="field-note">Daily participa en Spawn Especial. Sus cantidades y reposición se configuran allí; cada identidad sigue siendo única.</p><button type="button" class="text-button">Ir a Spawn Especial</button>';
+ notaDaily=$('daily-nota-probabilidad');
+ const integrado=document.createElement('div');integrado.id='config-daily-integrado';integrado.innerHTML='<p class="field-note">Daily participa en el mazo especial. Sus cantidades y reposición se configuran allí; cada identidad sigue siendo única.</p><button type="button" class="text-button">Ir a Spawn Especial</button>';
  integrado.querySelector('button').addEventListener('click',()=>{mostrarPestanaConfiguracion('mazos');general.open=true;general.scrollIntoView({block:'start'});$('especial-config').querySelector('select').focus();});$('daily-config').append(integrado);
  const nueva=$('new-game'),advertencia=nueva.nextElementSibling;
  const gestion=document.createElement('details');gestion.id='config-nueva-partida';gestion.className='config-new-game';gestion.innerHTML='<summary>Iniciar nueva partida</summary>';gestion.append(advertencia,nueva);panels.append(gestion);
@@ -69,18 +75,36 @@ export function iniciarConfiguracionUI(){
  mostrarPestanaConfiguracion(pestanaActual);
 }
 export function actualizarConfiguracionUI(config){
- for(const nota of $('especial-config').querySelectorAll('p.field-note:not(#especial-composicion)')){if(nota.closest('.config-help')||nota.closest('#especial-cartas'))continue;const ayuda=document.createElement('details');ayuda.className='config-help';const summary=document.createElement('summary');summary.textContent=nota.textContent.startsWith('Daily integrado')?'Sobre Daily integrado':'Cómo funciona';ayuda.append(summary);nota.before(ayuda);ayuda.append(nota);}
+ actualizarRevelacionUI(config);
+ for(const nota of $('especial-config').querySelectorAll('p.field-note:not(#especial-composicion):not([data-especial-descripcion])')){if(nota.closest('.config-help')||nota.closest('#especial-cartas'))continue;const ayuda=document.createElement('details');ayuda.className='config-help';const summary=document.createElement('summary');summary.textContent=nota.textContent.startsWith('Daily integrado')?'Sobre Daily integrado':'Cómo funciona';ayuda.append(summary);nota.before(ayuda);ayuda.append(nota);}
 
  const o=opcionesEspecial(config),sumar=m=>Object.values(m).reduce((a,b)=>a+b,0);
  const texto=(id,s)=>secciones[id].resumen.textContent=s,identidades=n=>`${n} ${n===1?'identidad':'identidades'}`;
  const cajas=config.coleccionIds?.length??0;$('collection-selector').closest('details').querySelector('summary').textContent=`Colección · ${cajas} ${cajas===1?'caja':'cajas'}`;
  texto('dificultad',[config.easy?'Fácil':null,config.normal?'Estándar':null].filter(Boolean).join(' + ')||'Sin Fácil ni Estándar');
- texto('cartas',`${sumar(componer(config))} cartas en el general · ${config.coleccionIds?.length??0} cajas seleccionadas`);
- const modos={directo:'Integración directa',disparadores:`${o.disparadores} disparadores`,probabilidad:`Probabilidad por ${o.frecuencia==='carta'?'carta':'tanda'}`};
+ texto('cartas',`${sumar(componer(config))} cartas en el mazo general · ${config.coleccionIds?.length??0} cajas seleccionadas`);
+ const modos={directo:'Integración directa',disparadores:`${o.disparadores} cartas Spawn especial`,probabilidad:`Probabilidad por ${o.frecuencia==='carta'?'carta':'tanda'}`};
  texto('general',modos[o.modo]+(o.modo==='directo'?'':` · ${o.reposicion==='con-reposicion'?'Con':'Sin'} reposición`));
  const nombres={estandar:'Estándar',varios:'Varios',festival:'Festival',personalizado:'Personalizado'};
  for(const [mazo,campo] of [['nigromantes','reglaNigromantes'],['abominaciones','reglaAbominaciones']])texto(mazo,`${nombres[config[campo]]??'Personalizado'} · ${identidades(idsSecundarios(config,mazo).length)}`);
- const integrado=dailyIntegrado(config);texto('daily',!config.dailyHabilitado?'Desactivado':`${integrado?'Integrado en Especial':'Independiente'} · ${identidades(idsSecundarios(config,'daily').length)}`);
+ const integrado=dailyIntegrado(config);texto('daily',!config.dailyHabilitado?'Desactivado':`${integrado?'Integrado en el mazo especial':'Independiente'} · ${identidades(idsSecundarios(config,'daily').length)}`);
  $('config-daily-integrado').hidden=!integrado;if(notaDaily)notaDaily.hidden=integrado||!config.dailyHabilitado;
+ const descripciones={nigromante:{estandar:'Solo participa el Profanador: aparece si está fuera de juego y se activa si ya está presente.',varios:'Si falta el Profanador, aparece primero. Si ya está en juego, se activa y aparece otro nigromante disponible.',personalizado:'Permite elegir el funcionamiento de Spawn y el máximo de nigromantes adicionales por adrenalina. El Profanador tiene prioridad y no cuenta para ese máximo.'},abominacion:{estandar:'Usa la abominación elegida, sin trofeo: aparece si no hay ninguna en juego; si ya hay presencia, las abominaciones presentes se activan.',festival:'Si no hay abominaciones, aparece una. Si ya hay, se activan las presentes y aparece otra disponible.',personalizado:'Permite elegir el funcionamiento de Spawn y el máximo total de abominaciones por adrenalina.'}};
+ const acciones={nigromante:{activacion:'Activa al Profanador.', 'activacion-azar':'Activa al Profanador y sortea por separado una posibilidad del 50% de activar a cada nigromante adicional.',spawn:'Hace aparecer un nigromante adicional disponible.', 'activacion-spawn':'Activa al Profanador y hace aparecer un nigromante adicional.', 'activacion-azar-spawn':'Activa al Profanador, sortea la activación de cada adicional al 50% y hace aparecer otro nigromante.',azar:'Elige al azar uno de los cinco funcionamientos disponibles que respete el cupo y las cartas disponibles.'},abominacion:{activacion:'Activa las abominaciones presentes.',spawn:'Hace aparecer una abominación disponible.', 'activacion-spawn':'Activa las abominaciones presentes y hace aparecer otra disponible.',azar:'Elige al azar entre activar, hacer aparecer o activar y hacer aparecer, respetando el cupo y la disponibilidad.'}};
+ for(const [tipo,mazo,campo,modo] of [['nigromante','nigromantes','reglaNigromantes','modoNigromantes'],['abominacion','abominaciones','reglaAbominaciones','modoAbominaciones']]){
+  $(`descripcion-modo-${tipo}`).textContent=descripciones[tipo][config[campo]??'personalizado'];
+  $(`descripcion-spawn-${tipo}`).textContent=config[campo]==='personalizado'?`${acciones[tipo][$(`accion-${tipo}`).value]??''} Se aplica cuando ya hay presencia; sin candidatos o al alcanzar el tope solo se activa.`:'Funcionamiento fijado por el modo seleccionado.';
+  $(`descripcion-reposicion-${tipo}`).textContent=(config[modo]==='con-reposicion'?'Al derrotarlo/desfijarlo, vuelve al mazo.':'Al derrotarlo/desfijarlo, queda en descarte hasta reiniciar el mazo al agotarse.')+(tipo==='abominacion'?' Los trofeos permanecen fuera.':'');
+ }
+ $('daily-nota-incremento').textContent=config.dailyIncrementoPor==='carta'?'El porcentaje aumenta por cada carta elegible sin aparición Daily; se reinicia a la base del nivel al aparecer un Daily.':'El porcentaje aumenta una vez por tanda sin aparición Daily; se reinicia a la base del nivel al aparecer un Daily. Los intentos se realizan por cada carta elegible.';
+ $('daily-nota-reposicion').textContent=config.modoDaily==='con-reposicion'?'Al derrotarlo/desfijarlo, el Daily vuelve al mazo. Mientras esté en juego, no puede repetirse.':'Al derrotarlo/desfijarlo, el Daily queda en descarte hasta agotar y reiniciar el mazo. Mientras esté en juego, no puede repetirse.';
+ const general=componer(config),lista=CATALOG.filter(c=>Object.hasOwn(general,c.id)),host=$('daily-elegibles'),firma=JSON.stringify(lista.map(c=>c.id));
+ if(host.dataset.firma!==firma){const elegibles=new Set(idsElegiblesDaily(config));host.innerHTML=lista.map(c=>`<label class="check-row"><input type="checkbox" data-daily-elegible="${c.id}" ${elegibles.has(c.id)?'checked':''}><span>${escapar(nombreVisible(c.name))}</span></label>`).join('');host.dataset.firma=firma;}
+ for(const input of host.querySelectorAll('input'))input.disabled=!config.dailyHabilitado||integrado;
  texto('apariciones',config.modoAparicionAdicional==='cartas-custom'?'Cartas custom':'Minimalista');texto('puntaje',config.ocultarPuntaje?'Oculto':({kang:'Kang',dragon:'Dragón',cabeza:'Cabeza'}[config.temaPuntaje??'kang']));
+}
+export function leerElegiblesDailyUI(config){
+ const controles=$('daily-elegibles')?.querySelectorAll('[data-daily-elegible]');
+ if(!controles?.length)return config.dailyElegibles;
+ const ids=new Set(idsElegiblesDaily(config));for(const e of controles){if(e.checked)ids.add(e.dataset.dailyElegible);else ids.delete(e.dataset.dailyElegible);}return [...ids];
 }

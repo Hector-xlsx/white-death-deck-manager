@@ -1,5 +1,17 @@
 # Especificación funcional · Gestor de mazos Zombicide
 
+## Revelación independiente y alcance del sorteo · 19/10/2026
+
+Personalizado permite acciones independientes Siempre/Por probabilidad/Nunca y Spawn con aumento y máximo. En la activación de otros nigromantes y de abominaciones, «Calcular por» ofrece Independiente (un sorteo por enemigo) o Todos juntos (un sorteo para todo el grupo). El Profanador queda fuera de ese grupo. Los topes bloquean únicamente Spawn, sin forzar activaciones ni contar como fallo. Las combinaciones guardadas permanecen hasta activar el nuevo perfil. [REVELACION_ACCIONES_INDEPENDIENTES.md](REVELACION_ACCIONES_INDEPENDIENTES.md) prevalece sobre las descripciones históricas de combinaciones fijas para este perfil opcional.
+
+## Corrección Daily y claridad de configuración · 19/10/2026
+
+[AJUSTES_CONFIGURACION_Y_DAILY.md](AJUSTES_CONFIGURACION_Y_DAILY.md) establece nombres explícitos de mazos, grupos plegables con consulta, descripciones por opción y orígenes Daily seleccionables. Cambiar de adrenalina mantiene el porcentaje actual; cada fallo usa el incremento del nivel de su tanda y una aparición reinicia a la base de ese nivel. Prevalece sobre la descripción histórica de sumar a la nueva base.
+
+## Death Notes y actualización visible · 19/10/2026
+
+Death Notes se incorpora como nigromante de Frozen Fortress, una copia seleccionable y reglas consultables; ruido y daño en mesa. El aviso fijo «Actualizar ahora» permite activar una versión completa y recargar conservando partidas y las otras pestañas. Las selecciones anteriores se mantienen. [ACTUALIZACION_Y_DEATH_NOTES.md](ACTUALIZACION_Y_DEATH_NOTES.md) sustituye las notas históricas inferiores sobre esta carta y la actualización.
+
 ## Ampliación confirmada: Spawn Especial · 18/10/2026
 
 La composición directa se conserva como modalidad inicial. Las modalidades opcionales de disparadores y aparición probabilística, sus cantidades, reposición, Daily integrado, compensación y persistencia se definen en [SPAWN_ESPECIAL.md](SPAWN_ESPECIAL.md), que prevalece sobre las descripciones históricas de expansiones siempre integradas al general.

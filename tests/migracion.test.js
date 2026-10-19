@@ -83,7 +83,7 @@ test('acciones por ID siguen apuntando a la posicion tras reordenarla y no reesc
  assert.throws(()=>discardCard(s,1,id));assert.deepEqual(s,antes);
 });
 test('inventarios pendientes no entran al sorteo; originales y variantes son rutas controladas',()=>{
- assert.equal(datos.enemigos.enemigos.length,30);
+ assert.equal(datos.enemigos.enemigos.length,31);
  assert.ok(datos.enemigos.enemigos.every(c=>c.habilitado_para_sorteo===false&&c.cantidad_inicial_mazo_secundario===1));
  assert.equal(datos.expansiones.cartas.filter(c=>c.habilitada_para_sorteo).length,5);
  assert.ok(datos.expansiones.cartas.filter(c=>!c.habilitada_para_sorteo).every(c=>c.efectos_por_nivel===null));

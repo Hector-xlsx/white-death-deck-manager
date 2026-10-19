@@ -441,6 +441,9 @@ body.revelacion-procedural #pins,body.revelacion-procedural #last-preview,body.r
 .reglas-estandar-abominacion{grid-column:1/-1;margin-top:16px;border-top:1px solid var(--line);padding-top:8px;min-width:0}
 .reglas-estandar-abominacion>summary{cursor:pointer;color:var(--ice);padding:12px 0;min-height:44px;line-height:1.4}
 .reglas-estandar-abominacion>.ficha-zombi{margin-top:4px}
+.reglas-profanador,.reglas-grupo{grid-column:1/-1;margin-top:16px;border-top:1px solid var(--line);padding-top:8px;min-width:0}
+.reglas-profanador>summary,.reglas-grupo>summary{cursor:pointer;color:var(--ice);padding:12px 0;min-height:44px;line-height:1.4}
+.reglas-profanador>.ficha-zombi{margin-top:4px}.reglas-grupo-contenido{padding:12px 0;line-height:1.6;overflow-wrap:break-word}.reglas-grupo-contenido p+p{margin-top:12px}.reglas-grupo-contenido ul{padding-left:24px}.reglas-grupo-contenido li+li{margin-top:10px}
 .ficha-zombi ul ul{margin:8px 0;padding-left:20px;list-style:disc}
 .ficha-zombi ul ul>li{margin:6px 0}
 
@@ -481,9 +484,17 @@ body.revelacion-procedural #pins,body.revelacion-procedural #last-preview,body.r
 #config-panel-contenido>.collection-section{padding:14px}#config-panel-contenido>.collection-section>summary{cursor:pointer}
 .config-acciones{border-top:1px solid var(--line);padding-top:12px;margin-top:12px}.config-acciones>label{display:flex;flex-direction:column;gap:6px;font-size:.875rem}
 .config-auto-note{color:var(--ice);font-size:.8rem}.config-help{margin-top:12px;font-size:.85rem;color:var(--muted)}.config-help>summary{cursor:pointer;min-height:32px;align-content:center}
+.actualizacion-disponible{position:fixed;z-index:50;bottom:max(12px,env(safe-area-inset-bottom));left:50%;transform:translateX(-50%);width:min(1100px,calc(100% - 24px));box-sizing:border-box;box-shadow:0 8px 32px #0009;display:flex;align-items:center;justify-content:space-between;gap:12px;margin:0;padding:12px 16px;max-width:1100px;border:1px solid #7cb8cb;border-radius:12px;background:#203c48;color:#f0faff}.actualizacion-disponible[hidden]{display:none}.actualizacion-disponible button{flex-shrink:0;min-height:44px;padding:8px 14px;border:1px solid #a3d9e5;border-radius:8px;background:#315c69;color:#fff;font:inherit;cursor:pointer}.actualizacion-disponible button:disabled{opacity:.65;cursor:wait}@media(max-width:480px){.actualizacion-disponible{flex-direction:column;align-items:stretch;margin:0;font-size:.85rem}}
 .config-new-game{padding:12px 14px;border-color:#795052}.config-new-game>summary{cursor:pointer;color:var(--danger);min-height:24px}.config-new-game .danger-button{margin:12px 0 0}
 .config-footer{flex-shrink:0;padding:10px 20px 14px;border-top:1px solid var(--line);background:#172632}
 .config-footer #save-settings{margin:0;min-height:44px;background:#244655;border-color:#527081}
 .config-save-note{font-size:.75rem;color:var(--muted);margin:0 0 6px;line-height:1.35}.config-footer .settings-summary{font-size:.75rem;margin:0 0 8px}.config-footer .field-error{max-height:64px;overflow:auto;font-size:.8rem;margin:0 0 8px}
 @media(max-width:480px){.config-panels{padding:10px 12px}.config-tabs{padding:0 12px 10px;gap:4px}#settings-dialog>.dialog-header{padding:12px}.config-footer{padding:8px 12px 12px}}
 @media(max-height:500px){#settings-dialog[open]{height:calc(100dvh - 16px);max-height:calc(100dvh - 16px)}#settings-dialog>.dialog-header{padding:8px 14px}.config-tabs{padding-bottom:6px}.config-footer{padding:6px 14px}.config-footer .settings-summary{display:none}.config-save-note{margin-bottom:4px}.config-panels{padding:8px 14px}}
+
+body:has(#actualizacion-disponible:not([hidden])){padding-bottom:120px}
+.config-acciones>.check-row{display:flex;flex-direction:row;align-items:center;justify-content:flex-start;gap:8px}.config-acciones>.check-row input{width:20px;flex:0 0 20px}
+
+#settings-dialog label>.field-note{display:block;line-height:1.4;font-weight:normal}.especial-set{margin:8px 0;padding:8px 10px;border:1px solid var(--line);border-radius:8px}.especial-set>summary{cursor:pointer;min-height:32px;line-height:1.5}.especial-carta .text-button{min-width:36px;min-height:36px}
+
+.config-acciones>h3{font-size:1rem;margin:16px 0 8px}.config-acciones>.field-note{line-height:1.5}.acciones-independientes fieldset{margin:12px 0;padding:12px;min-width:0}.acciones-independientes legend{font-size:.85rem}.acciones-independientes label{display:flex;flex-direction:column;gap:6px;margin:8px 0}.acciones-independientes [data-revelacion-probabilidad]{display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,150px),1fr));gap:10px}.acciones-independientes input,.acciones-independientes select{width:100%;min-height:44px;min-width:0;border:1px solid var(--line);border-radius:8px;background:var(--bg);color:var(--text);padding:8px}.acciones-independientes p{line-height:1.5}

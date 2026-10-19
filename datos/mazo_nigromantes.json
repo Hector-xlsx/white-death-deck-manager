@@ -15,7 +15,7 @@
   "enemigo-ostokar-el-palido", "enemigo-gran-inquisidor-innsmouth",
   "enemigo-nigromante-orco", "enemigo-bomoh", "enemigo-hannya",
   "enemigo-tengu", "enemigo-yuki-onna", "enemigo-mumm-ra",
-  "enemigo-kaguya", "enemigo-nigromante-profanador"
+  "enemigo-kaguya", "enemigo-nigromante-profanador", "referencia-death-notes"
  ],
- "pendientes": ["Death Notes: referencia sin entrada al sorteo ni reglas automaticas confirmadas"]
+ "pendientes": ["Death Notes: efectos de ruido y daño resueltos en mesa; incorporación al mazo confirmada por el usuario el 19/10/2026"]
 }

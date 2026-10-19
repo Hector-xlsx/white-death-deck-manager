@@ -1,5 +1,7 @@
 # Organización de Configuración · 19/10/2026
 
+Refinamiento local posterior: nombres explícitos de mazos, Cartas Spawn especial, grupos plegables con consulta, ayudas por opción y elegibilidad Daily seleccionable. El porcentaje Daily se conserva al cambiar de adrenalina. Prevalece [AJUSTES_CONFIGURACION_Y_DAILY.md](AJUSTES_CONFIGURACION_Y_DAILY.md) para estos cambios; pendientes de publicación.
+
 Cambio de interfaz solicitado y autorizado para publicar por el usuario. Conserva la estética, los controles y la lógica de la aplicación.
 
 ## Distribución

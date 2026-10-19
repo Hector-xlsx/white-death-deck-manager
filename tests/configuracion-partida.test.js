@@ -49,10 +49,18 @@ test('configuración: deshabilitar caja de enemigo presente conserva su presenci
 });
 test('configuración: Daily cambia selección, habilitación y parámetros sin perder puntos históricos',()=>{
  const daily=datos.daily.cartas_ids.slice(0,2),perfil={azul:{base:0,incremento:20},amarillo:{base:0,incremento:20},naranja:{base:0,incremento:20},rojo:{base:0,incremento:20}};
- const s=crear({dailyHabilitado:true,selectedDailyIds:daily,dailyPorNivel:perfil,dailyIncrementoPor:'tanda'});revelar(s);assert.equal(puntosAcumuladosDaily(s),20);const nuevo=structuredClone(perfil);nuevo.azul={base:30,incremento:5};guardar(s,{dailyPorNivel:nuevo,selectedDailyIds:[daily[1]]});revelar(s);assert.equal(puntosAcumuladosDaily(s),25);assert.equal(probabilidadDaily(s),55);assert.deepEqual(s.daily.habilitadasIds,[daily[1]]);guardar(s,{dailyHabilitado:false});revelar(s);assert.equal(s.config.dailyHabilitado,false);assert.equal(puntosAcumuladosDaily(s),25);guardar(s,{dailyHabilitado:true});revelar(s);assert.equal(puntosAcumuladosDaily(s),30);
+ const s=crear({dailyHabilitado:true,selectedDailyIds:daily,dailyPorNivel:perfil,dailyIncrementoPor:'tanda'});revelar(s);assert.equal(puntosAcumuladosDaily(s),20);const nuevo=structuredClone(perfil);nuevo.azul={base:30,incremento:5};guardar(s,{dailyPorNivel:nuevo,selectedDailyIds:[daily[1]]});revelar(s);assert.equal(puntosAcumuladosDaily(s),25);assert.equal(probabilidadDaily(s),25);assert.deepEqual(s.daily.habilitadasIds,[daily[1]]);guardar(s,{dailyHabilitado:false});revelar(s);assert.equal(s.config.dailyHabilitado,false);assert.equal(puntosAcumuladosDaily(s),25);guardar(s,{dailyHabilitado:true});revelar(s);assert.equal(puntosAcumuladosDaily(s),30);
 });
 test('configuración: activar Daily por primera vez después de tandas sin Daily valida historia',()=>{
  const s=crear();revelar(s);guardar(s,{dailyHabilitado:true,selectedDailyIds:datos.daily.cartas_ids.slice(0,1),dailyBase:100,dailyIncremento:0});const c=revelar(s);assert.equal(c.daily.length,1);assert.ok(isValid(s));
+});
+
+test('configuración: cambiar elegibilidad Daily no invalida ni modifica apariciones anteriores',()=>{
+ const s=crear({selectedIds:['asedio'],dailyHabilitado:true,selectedDailyIds:['daily-du02'],dailyBase:100,dailyIncremento:0,dailyElegibles:['asedio']});
+ revelar(s);const anterior=structuredClone(s.history[0]);assert.equal(s.pins[0].cardId,'daily-du02');
+ guardar(s,{dailyElegibles:[]});const c=revelar(s);
+ assert.equal(c.dailyIntento,undefined);assert.deepEqual(s.history[0],anterior);assert.ok(isValid(s));
+ assert.deepEqual(recuperar({getItem:k=>k===KEY?JSON.stringify(s):null}),s);
 });
 test('configuración: Kan respalda estándar vacío/trofeos y no se elige un trofeo',()=>{
  const c=prepararConfiguracion({...crear().config,reglaAbominaciones:'estandar',selectedAbominacionesIds:[trofeo],abominacionEstandarId:trofeo});assert.equal(c.abominacionEstandarId,kan);const s=newGame(c);assert.equal(s.abominaciones.cartas[0].id,kan);const vacia=prepararConfiguracion({...c,selectedAbominacionesIds:[]});assert.equal(vacia.abominacionEstandarId,kan);

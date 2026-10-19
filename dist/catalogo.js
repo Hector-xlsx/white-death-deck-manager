@@ -29,8 +29,9 @@ export function idsSecundarios(config,mazo){
 export function normalizarConfig(config={easy:true,normal:true,threshold:20}){
  const resultado={...config,selectedIds:[...new Set(config.selectedIds??CATALOGO_BASE.map(c=>c.id))]};
  if(config.dailyPorNivel!==undefined)resultado.dailyPorNivel=structuredClone(config.dailyPorNivel);
+ if(config.revelacionEnemigos!==undefined)resultado.revelacionEnemigos=structuredClone(config.revelacionEnemigos);
  if(config.limitesPorAdrenalina!==undefined)resultado.limitesPorAdrenalina=structuredClone(config.limitesPorAdrenalina);
- for(const campo of ['coleccionIds','selectedAbominacionesIds','selectedNigromantesIds','selectedDailyIds'])if(config[campo]!==undefined)resultado[campo]=[...new Set(config[campo])];
+ for(const campo of ['coleccionIds','selectedAbominacionesIds','selectedNigromantesIds','selectedDailyIds','dailyElegibles'])if(config[campo]!==undefined)resultado[campo]=[...new Set(config[campo])];
  if(config.coleccionIds!==undefined){resultado.coleccionIds=[...new Set(['core',...resultado.coleccionIds])];resultado.selectedIds=[...new Set([...resultado.selectedIds,...IDS_OTROS])];}
  if(config.reglaNigromantes!==undefined&&(config.selectedNigromantesIds?.includes('enemigo-mumm-ra')||config.selectedAbominacionesIds?.includes('enemigo-mumm-ra-abominacion'))){
   resultado.selectedNigromantesIds=[...new Set([...(resultado.selectedNigromantesIds??datos.nigromantes.cartas_ids),'enemigo-mumm-ra'])];

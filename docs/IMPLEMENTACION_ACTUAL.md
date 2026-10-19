@@ -1,5 +1,21 @@
 # Implementación actual
 
+## Revelación con acciones independientes · 19/10/2026 · Implementado localmente
+
+Título, introducción y condiciones plegables; acciones Siempre/Por probabilidad/Nunca para Profanador, otros nigromantes y Spawn, con aumento y máximo de Spawn. Un bloqueo ya no fuerza una activación al utilizar el perfil nuevo. Primera aparición y modos fijados se conservan. Nuevos perfiles opcionales y resultados persistidos, sin conversión automática de guardados. Abominaciones tiene esquema equivalente. «Calcular por: Independiente / Todos juntos» define el sorteo de activación de los otros nigromantes y las abominaciones; el Profanador permanece separado. 364 pruebas y QA de configuración/revelación en cinco tamaños, guardado y offline. Detalle: [REVELACION_ACCIONES_INDEPENDIENTES.md](REVELACION_ACCIONES_INDEPENDIENTES.md). Sin publicar.
+
+## Reglas de consulta plegables · 19/10/2026 · Local
+
+La ficha del Profanador queda inicialmente contraída con «Ver reglas: nigromante profanador». Las consultas de nigromantes añaden «Ver reglas: jugar con varios nigromantes» y las de abominaciones «Ver reglas: Festival de abominaciones», ambos contraídos. Texto suministrado por el usuario, con palabras partidas por salto de línea reunidas. Disponible en consulta y detalle de carta mediante el render compartido. No altera modos, sorteos, guardado ni automatiza Corrupción/movimiento/combate. Sustituye la nota histórica de Profanador mostrado directamente. QA de reglas core: todos los enemigos, apertura/cierre, listas, cinco tamaños, almacenamiento intacto y offline. Sin publicar.
+
+## Ajustes de configuración y porcentaje Daily · 19/10/2026 · Local
+
+Nombres de mazos y Cartas Spawn especial, cantidades plegables con consulta de imagen, máximo general sin columna de límites por adrenalina, descripción de modo/funcionamiento/reposición y elegibilidad Daily seleccionable. Cambiar de adrenalina mantiene el porcentaje actual; el incremento usa el nivel de la tanda y la base cambia al aparecer Daily. 341 pruebas y QA en cinco tamaños, guardado y offline. Sin publicar. Detalle y alcance histórico: [AJUSTES_CONFIGURACION_Y_DAILY.md](AJUSTES_CONFIGURACION_Y_DAILY.md).
+
+## Actualización visible y Death Notes · 19/10/2026 · Local, sin publicar
+
+Aviso fijo «Nueva versión disponible» con «Actualizar ahora», protección de paneles y guardado, recarga de la pestaña solicitante y conservación del paquete de las demás pestañas. Comprobación al abrir/volver/conectar y cada cinco minutos de uso visible. Death Notes pasa de ayuda a nigromante seleccionable de Frozen Fortress, una copia, conservando ID e imagen; ruido/daño en mesa. Los guardados anteriores conservan su selección y composición. Este cierre sustituye las referencias históricas inferiores a Death Notes pendiente y a cierre obligatorio de ventanas para futuras actualizaciones. Detalle y validación: [ACTUALIZACION_Y_DEATH_NOTES.md](ACTUALIZACION_Y_DEATH_NOTES.md).
+
 ## Configuración organizada en pestañas · 19/10/2026
 
 Interfaz autorizada con Contenido / Mazos / Apariencia. Secciones desplegables con resumen de configuración; acciones y topes junto al mazo correspondiente; Daily integrado enlaza a General y Spawn Especial. Guardar permanece visible en un pie fijo y Nueva partida se separa en un desplegable con su confirmación anterior. Ayudas largas plegables. Se conservan los controles originales, sus nombres y manejadores, los borradores entre pestañas y el guardado inmediato de acciones. Sin cambios al motor, reglas, datos o partidas.

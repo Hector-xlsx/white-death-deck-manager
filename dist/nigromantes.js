@@ -3,6 +3,7 @@ import {accionPorDefecto,validarAccionEnemigo} from './acciones-enemigos.js';
 import {crearSecundario,extraccionesSecundarias,recalcularSecundario,anularSecundaria,archivarSecundaria,robarSecundario,MODOS_SECUNDARIOS,validarDisponibilidad,disponiblesSecundario} from './secundarios.js';
 import {contarEnemigos,aplicarLimite} from './limites.js';
 import {PROFANADOR,presentes,profanadorPresente,ACCIONES_NIGROMANTES,tieneSpawn,elegirAzar,registrarActivaciones} from './modos-enemigos.js';
+import {resolverAccionesIndependientes,registrarAparicionPrioritaria} from './acciones-independientes.js';
 
 export const CARTAS_NIGROMANTES=datos.enemigos.enemigos
  .filter(c=>datos.nigromantes.cartas_ids.includes(c.id)&&c.mazo_destino==='nigromantes'&&c.tipo_confirmado_por_usuario&&c.cantidad_inicial_mazo_secundario===1)
@@ -33,12 +34,17 @@ export function prepararNigromante(s,origen,rng){
 function prepararNigromanteModerno(s,origen,rng){
  const profanador=profanadorPresente(s),modo=s.config.reglaNigromantes;
  origen.activaciones=[];
- if(!profanador)return seleccionarNigromante(s,origen,rng);
+ const independiente=modo==='personalizado'&&s.config.revelacionEnemigos?.nigromantes;
+ if(!profanador){const c=seleccionarNigromante(s,origen,rng);if(c&&independiente)registrarAparicionPrioritaria(origen,'nigromantes');return c;}
  let accion=modo==='estandar'?'activacion':modo==='varios'?'activacion-spawn':s.history.at(-1)?.accionesEnemigos?.nigromante??s.accionesPredeterminadas?.nigromante??'azar';
  const tope=s.history.at(-1)?.limitesEnemigos?.nigromantes;
  const lleno=modo==='personalizado'&&tope!==undefined&&presentes(s,'nigromantes').filter(c=>c.cardId!==PROFANADOR).length>=tope;
  recalcularSecundario(s,'nigromantes');
  const disponible=disponiblesSecundario(s,'nigromantes').some(c=>c.id!==PROFANADOR);
+ if(independiente){
+  if(resolverAccionesIndependientes(s,origen,'nigromantes',presentes(s,'nigromantes'),{limite:lleno,disponible},rng))return seleccionarNigromante(s,origen,rng,origen.accionEnemigo);
+  return null;
+ }
  if(accion==='azar')accion=elegirAzar(ACCIONES_NIGROMANTES.filter(a=>!tieneSpawn(a)||!lleno&&disponible),rng);
  if(!ACCIONES_NIGROMANTES.includes(accion))throw new Error('Acción personalizada de nigromantes inválida');
  if(tieneSpawn(accion)&&(lleno||!disponible)){accion='activacion';if(lleno)origen.activacionPorLimite=tope;else origen.sinCandidatos=true;}
@@ -76,7 +82,8 @@ export function validarNigromantes(s){
     if(c.nigromantes!==undefined&&!Array.isArray(c.nigromantes))return false;
     if(!c.resolucionNigromante){if(c.nigromantes)return false;continue;}
     if(!validarAccionEnemigo(c,'resolucionNigromante'))return false;
-    if(c.cardId!=='nigromante'||!['pendiente','activacion','spawn','anulada'].includes(c.resolucionNigromante)||c.discarded!==(c.resolucionNigromante==='anulada'))return false;
+    if(c.cardId!=='nigromante'||!['pendiente','activacion','spawn','anulada','sin-efecto'].includes(c.resolucionNigromante)||c.discarded!==(c.resolucionNigromante==='anulada'))return false;
+    if(c.resolucionNigromante==='sin-efecto'&&!c.revelacionIndependiente)return false;
     if((c.nigromantes||[]).filter(n=>!n.anulada).length!==(c.resolucionNigromante==='spawn'?1:0))return false;
     for(const n of c.nigromantes||[]){
 if(!ids.has(n.cardId)||n.mazo!=='nigromantes'||n.origenUid!==c.uid||typeof n.anulada!=='boolean'||n.discarded!==n.anulada||!Number.isSafeInteger(n.cycle)||n.cycle<1||n.cycle>(m.version===2?m.cycle:robos.length+1))return false;

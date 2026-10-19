@@ -24,7 +24,7 @@ test('compactar conserva IDs, selección y pendientes deshabilitados',()=>{
  assert.equal((html.match(/name="carta"/g)||[]).length,11);
 });
 test('abominaciones y nigromantes de todas las cajas usan nombre, cantidad y casilla al final',()=>{
- for(const [filtro,total] of [['abominaciones',20],['nigromantes',10]]){
+ for(const [filtro,total] of [['abominaciones',20],['nigromantes',11]]){
   const html=selectorContenido(config,filtro);
   assert.equal((html.match(/class="content-row"/g)||[]).length,total);
   assert.equal((html.match(/<strong>1<\/strong><input[^>]+name="carta"/g)||[]).length,total);

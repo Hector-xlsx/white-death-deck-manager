@@ -1,5 +1,5 @@
 import {dailyIntegrado,reposicionDaily} from './especial-config.js';
-import {datos,idsSecundarios} from './catalogo.js';
+import {datos,idsSecundarios,CATALOG} from './catalogo.js';
 import {crearSecundario,recalcularSecundario,robarSecundario,extraccionesSecundarias,anularSecundaria,validarDisponibilidad,disponiblesSecundario} from './secundarios.js';
 import {NIVELES_ADRENALINA,nivelAdrenalina} from './adrenalina.js';
 export const CARTAS_DAILY=datos.daily.cartas.map(c=>({id:c.id,idCarta:c.id_carta,name:c.nombre,image:c.imagen,tipo:c.tipo_zombi,reglas:c.reglas_texto,trofeo:false}));
@@ -11,6 +11,7 @@ function nivelesDailyValidos(niveles){
 }
 export function configDailyValida(c){
  return (c.modoDaily===undefined||['sin-reposicion','con-reposicion'].includes(c.modoDaily))&&
+ (c.dailyElegibles===undefined||Array.isArray(c.dailyElegibles)&&new Set(c.dailyElegibles).size===c.dailyElegibles.length&&c.dailyElegibles.every(id=>CATALOG.some(a=>a.id===id)))&&
  (c.dailyHabilitado===undefined||typeof c.dailyHabilitado==='boolean')&&
  ['dailyBase','dailyIncremento'].every(k=>c[k]===undefined||porcentajeValido(c[k]))&&
  (c.dailyPorNivel===undefined||nivelesDailyValidos(c.dailyPorNivel))&&
@@ -26,10 +27,11 @@ export function parametrosDailyFormulario(config,nivel){
 }
 export function parametrosDaily(config,nivel){return config.dailyPorNivel?.[nivel]??{base:config.dailyBase??0,incremento:config.dailyIncremento??0};}
 export function crearMazoDaily(config){return crearSecundario(CARTAS_DAILY.filter(c=>idsSecundarios(config,'daily').includes(c.id)),reposicionDaily(config));}
-export function elegibleDaily(s,c){
- const ficha=s.catalogo.cartas.find(a=>a.id===c.cardId);
- return !c.mazo&&ficha&&!ficha.id.startsWith('activacion-')&&!['abominacion','nigromante'].includes(ficha.tipo)&&
- (ficha.tipo==='asedio'||ficha.levels?.some(n=>typeof n==='number'&&n>0));
+export function idsElegiblesDaily(config,cartas=CATALOG){
+ return config.dailyElegibles??cartas.filter(f=>!f.id.startsWith('activacion-')&&!['abominacion','nigromante'].includes(f.tipo)&&(f.tipo==='asedio'||f.levels?.some(n=>typeof n==='number'&&n>0))).map(f=>f.id);
+}
+export function elegibleDaily(s,c,config=s.history.at(-1)?.configTanda??s.config){
+ return !c.mazo&&idsElegiblesDaily(config,s.catalogo.cartas).includes(c.cardId);
 }
 // Reconstruir desde resultados guardados permite cancelar un origen sin repetir sorteos.
 export function puntosAcumuladosDaily(s){
@@ -49,21 +51,23 @@ export function puntosAcumuladosDaily(s){
  return puntos;
 }
 export function probabilidadDaily(s,nivel=nivelAdrenalina(s)){
- if(s.config.dailyPorNivel||s.configuracionDinamica)return Math.min(100,parametrosDaily(s.config,nivel).base+puntosAcumuladosDaily(s));
- // Las partidas con configuración general conservan exactamente su progresión anterior.
- const base=s.config.dailyBase??0,incremento=s.config.dailyIncremento??0;
- let p=base;
+ // El nivel cambia el incremento futuro y la base del próximo reinicio, no el porcentaje actual.
+ let p=null;
  for(const b of s.history){
+  const config=b.configTanda??s.config;
+  if(dailyIntegrado(b.configEspecial??config)||!config.dailyHabilitado&&b.dailyCerrada===undefined)continue;
+  const {base,incremento}=parametrosDaily(config,b.nivelAdrenalina??'azul');
+  p??=parametrosDaily(config,'azul').base;
   const cartas=b.slots.flatMap(t=>t.draws).filter(c=>!c.discarded&&!c.anulada).sort((a,b)=>a.uid-b.uid);
   let aparecio=false;
   for(const c of cartas){
    const intento=c.dailyIntento;if(!intento||intento.resultado==='bloqueado')continue;
    if(intento.resultado==='spawn'){p=base;aparecio=true;}
-   else if(s.config.dailyIncrementoPor==='carta')p=Math.min(100,p+incremento);
+   else if(config.dailyIncrementoPor==='carta')p=Math.min(100,p+incremento);
   }
-  if(s.config.dailyIncrementoPor!=='carta'&&b.dailyCerrada&&!aparecio&&!b.dailyBloqueada)p=Math.min(100,p+incremento);
+  if(config.dailyIncrementoPor!=='carta'&&b.dailyCerrada&&!aparecio&&!b.dailyBloqueada)p=Math.min(100,p+incremento);
  }
- return p;
+ return p??parametrosDaily(s.config,'azul').base;
 }
 export function probabilidadEfectivaDaily(s){return s.config.dailyHabilitado&&disponiblesSecundario(s,'daily').length?probabilidadDaily(s):0;}
 export function abrirTandaDaily(s){
@@ -109,7 +113,7 @@ export function validarDaily(s){
    const config=b.configEspecial??b.configTanda??s.config;
    if(robos.some(n=>n.spawnEspecial&&(!dailyIntegrado(config)||n.disparadorEspecial!==(c.cardId==='spawn-especial'))))return false;
    if(a){
-    if(!elegibleDaily(s,c)||!Number.isFinite(a.probabilidad)||a.probabilidad<0||a.probabilidad>100||!['spawn','fallo','bloqueado'].includes(a.resultado)||a.resultado==='bloqueado'&&a.probabilidad!==0)return false;
+    if(!elegibleDaily(s,c,config)||!Number.isFinite(a.probabilidad)||a.probabilidad<0||a.probabilidad>100||!['spawn','fallo','bloqueado'].includes(a.resultado)||a.resultado==='bloqueado'&&a.probabilidad!==0)return false;
     if(vigentes.length!==(a.resultado==='spawn'&&!c.discarded&&!c.anulada?1:0))return false;
    }else if(robos.some(n=>!n.spawnEspecial))return false;
    for(const n of robos)if(!ids.includes(n.cardId)||n.mazo!=='daily'||n.origenUid!==c.uid||typeof n.anulada!=='boolean'||n.discarded!==n.anulada||!Number.isSafeInteger(n.cycle)||n.cycle<1||n.cycle>m.cycle)return false;

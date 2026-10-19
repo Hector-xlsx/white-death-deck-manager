@@ -10,8 +10,8 @@ const origen=s=>raiz(s).draws.at(-1);
 const enemigo=s=>origen(s).nigromantes.at(-1);
 const derivada=(s,n=enemigo(s))=>s.history.at(-1).slots.find(t=>t.id===n.spawnSlotId);
 
-test('catalogo operativo: diez nigromantes, una identidad por recurso y Death Notes como ayuda',()=>{
- assert.equal(CARTAS_NIGROMANTES.length,10);assert.equal(new Set(CARTAS_NIGROMANTES.map(c=>c.id)).size,10);
+test('catalogo operativo: once nigromantes, una identidad por recurso y Death Notes seleccionable',()=>{
+ assert.equal(CARTAS_NIGROMANTES.length,11);assert.equal(new Set(CARTAS_NIGROMANTES.map(c=>c.id)).size,11);
  assert.ok(CARTAS_NIGROMANTES.every(c=>c.image.startsWith('recursos/03 - Mazo Nigromante ESP/')));
  const s=partida();assert.equal(s.necro,0);assert.ok(isValid(s));
 });
@@ -20,7 +20,7 @@ test('primera aparicion fija, suma exactamente una zona y roba general inmediata
  assert.equal(origen(s).cardId,'nigromante');assert.equal(origen(s).discarded,false);
  assert.equal(s.necro,1);assert.equal(s.pins[0].uid,n.uid);assert.equal(d.origenUid,n.uid);
  assert.equal(d.zone,'Zona 1-3');assert.equal(d.kind,'derivada');assert.equal(d.draws[0].resolucionNigromante,'pendiente');
- assert.equal(total(s.remaining),7);assert.equal(total(s.nigromantes.remaining),9);assert.equal(s.history[0].normal,1);assert.equal(s.history[0].necro,0);assert.ok(isValid(s));
+ assert.equal(total(s.remaining),7);assert.equal(total(s.nigromantes.remaining),10);assert.equal(s.history[0].normal,1);assert.equal(s.history[0].necro,0);assert.ok(isValid(s));
 });
 test('cadena manual: nuevo nigromante genera otro robo una vez, activacion simple no consume',()=>{
  const s=partida();spawn(s,()=>0);const c=derivada(s).draws[0];
@@ -39,7 +39,7 @@ test('nueva tanda incluye zonas de fijados al comenzar sin duplicar los robos in
 test('fijar, desfijar y refijar mantiene igualdad exacta y no repite la aparicion ni devuelve cartas',()=>{
  const s=partida();spawn(s,()=>0);const n=enemigo(s),restantes={...s.remaining};
  pinCard(s,n);assert.equal(s.necro,1);unpinCard(s,n.uid,false);assert.equal(s.necro,0);unpinCard(s,n.uid,true);assert.equal(s.necro,0);
- pinCard(s,n);pinCard(s,n);assert.equal(s.necro,1);assert.deepEqual(s.remaining,restantes);assert.equal(total(s.nigromantes.remaining),9);assert.ok(isValid(s));
+ pinCard(s,n);pinCard(s,n);assert.equal(s.necro,1);assert.deepEqual(s.remaining,restantes);assert.equal(total(s.nigromantes.remaining),10);assert.ok(isValid(s));
 });
 test('genericamente fijado cuenta solo si valido; referencia descartada no modifica contador',()=>{
  const s=partida();spawn(s,()=>0);pinCard(s,origen(s));assert.equal(s.necro,2);
@@ -48,7 +48,7 @@ test('genericamente fijado cuenta solo si valido; referencia descartada no modif
 test('cancelar origen anula toda su cadena, devuelve secundarios y deja generales consumidas',()=>{
  const s=partida();spawn(s,()=>0);elegirNigromante(s,derivada(s).draws[0].uid,'spawn',()=>0);
  const generales={...s.remaining},uid=enemigo(s).uid;discardCard(s,1,raiz(s).id);discardCard(s,1,raiz(s).id);
- assert.equal(s.necro,0);assert.equal(s.pins.length,0);assert.equal(total(s.nigromantes.remaining),10);assert.deepEqual(s.remaining,generales);
+ assert.equal(s.necro,0);assert.equal(s.pins.length,0);assert.equal(total(s.nigromantes.remaining),11);assert.deepEqual(s.remaining,generales);
  assert.ok(s.history[0].slots.filter(t=>t.kind==='derivada').every(t=>t.anulada));
  regenerarNigromante(s,uid,()=>{throw new Error('No debe robar anulada');});assert.ok(isValid(s));
 });
@@ -63,19 +63,19 @@ test('regenerar secundaria devuelve anterior y anula su spawn; conserva origen y
  const s=partida();spawn(s,()=>0);const anterior=enemigo(s),vieja=derivada(s);
  regenerarNigromante(s,anterior.uid,()=>0);
  assert.equal(anterior.anulada,true);assert.equal(vieja.anulada,true);assert.equal(origen(s).discarded,false);
- assert.equal(enemigo(s).cardId,anterior.cardId);assert.equal(s.necro,1);assert.equal(total(s.remaining),6);assert.equal(total(s.nigromantes.remaining),9);assert.ok(isValid(s));
+ assert.equal(enemigo(s).cardId,anterior.cardId);assert.equal(s.necro,1);assert.equal(total(s.remaining),6);assert.equal(total(s.nigromantes.remaining),10);assert.ok(isValid(s));
 });
 test('regenerar origen consume nueva general y su spawn sin conservar enemigo anterior',()=>{
  const s=partida();spawn(s,()=>0);const anterior=enemigo(s);replaceCard(s,1,raiz(s).id,()=>0);
  assert.equal(anterior.anulada,true);assert.equal(raiz(s).draws[0].discarded,true);
- assert.equal(s.necro,1);assert.equal(total(s.remaining),5);assert.equal(total(s.nigromantes.remaining),9);assert.ok(isValid(s));
+ assert.equal(s.necro,1);assert.equal(total(s.remaining),5);assert.equal(total(s.nigromantes.remaining),10);assert.ok(isValid(s));
 });
 test('derivada abominacion integra su mazo; cancelar nigromante devuelve y desfija ambos tipos',()=>{
  const s=newGame({easy:true,normal:true,threshold:0,selectedIds:['nigromante','abominacion'],modoNigromantes:'sin-reposicion'},1);
  const az=[0,0,0.8,0];spawn(s,()=>az.shift());
  assert.equal(derivada(s).draws[0].cardId,'abominacion');assert.equal(s.pins.length,2);assert.equal(total(s.abominaciones.remaining),19);
  const antes={...s.remaining};discardCard(s,1,raiz(s).id);
- assert.equal(total(s.abominaciones.remaining),20);assert.equal(total(s.nigromantes.remaining),10);assert.equal(s.necro,0);assert.equal(s.pins.length,0);assert.deepEqual(s.remaining,antes);assert.ok(isValid(s));
+ assert.equal(total(s.abominaciones.remaining),20);assert.equal(total(s.nigromantes.remaining),11);assert.equal(s.necro,0);assert.equal(s.pins.length,0);assert.deepEqual(s.remaining,antes);assert.ok(isValid(s));
 });
 test('un spawn de nigromante puede descartarse/regenerarse sin quitar su padre ni duplicar aportes',()=>{
  const s=partida();spawn(s,()=>0);const d=derivada(s),uid=d.draws[0].uid;
@@ -85,7 +85,7 @@ test('un spawn de nigromante puede descartarse/regenerarse sin quitar su padre n
 });
 test('legado v1: con reposicion repite identidad manteniendo dos fijados; sin reposicion reinicia al agotar',()=>{
  const s=partida('con-reposicion');s.nigromantes.version=1;spawn(s,()=>0);elegirNigromante(s,derivada(s).draws[0].uid,'spawn',()=>0);
- assert.equal(s.pins[0].cardId,s.pins[1].cardId);assert.equal(total(s.nigromantes.remaining),10);assert.equal(s.necro,2);assert.ok(isValid(s));
+ assert.equal(s.pins[0].cardId,s.pins[1].cardId);assert.equal(total(s.nigromantes.remaining),11);assert.equal(s.necro,2);assert.ok(isValid(s));
  const n=partida();n.nigromantes.version=1;n.nigromantes.cartas=n.nigromantes.cartas.slice(0,2);n.nigromantes.remaining=Object.fromEntries(n.nigromantes.cartas.map(c=>[c.id,1]));
  spawn(n,()=>0);elegirNigromante(n,derivada(n).draws[0].uid,'spawn',()=>0);
  assert.notEqual(n.pins[0].cardId,n.pins[1].cardId);assert.equal(n.nigromantes.cycle,2);assert.equal(total(n.nigromantes.remaining),2);assert.ok(isValid(n));
@@ -93,7 +93,7 @@ test('legado v1: con reposicion repite identidad manteniendo dos fijados; sin re
 test('reinicio general dentro del robo inmediato conserva la cadena y no reinicia secundarios',()=>{
  const s=partida();s.config.threshold=99;spawn(s,()=>0);
  assert.equal(s.cycle,3);assert.equal(origen(s).cycle,1);assert.equal(derivada(s).draws[0].cycle,2);
- assert.equal(s.nigromantes.cycle,1);assert.equal(total(s.nigromantes.remaining),9);assert.equal(s.necro,1);assert.ok(isValid(s));
+ assert.equal(s.nigromantes.cycle,1);assert.equal(total(s.nigromantes.remaining),10);assert.equal(s.necro,1);assert.ok(isValid(s));
 });
 test('ajustes manuales verdes no permitidos en el motor nuevo; zonas normales siguen funcionando',()=>{
  const s=partida();spawn(s,()=>0);const antes=structuredClone(s);assert.throws(()=>addZoneCard(s,1,'necro',()=>0));assert.deepEqual(s,antes);

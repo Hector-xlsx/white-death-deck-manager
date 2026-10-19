@@ -1,4 +1,5 @@
 import {cartasTransformadas} from './reglas-cartas.js';
+import {configuracionAccionesValida,validarResultadoIndependiente} from './acciones-independientes.js';
 export const PROFANADOR='enemigo-nigromante-profanador';
 export const MODOS_NIGROMANTES=['estandar','varios','personalizado'];
 export const MODOS_ABOMINACION=['estandar','festival','personalizado'];
@@ -16,6 +17,7 @@ export function presentes(s,mazo){
 }
 export const profanadorPresente=s=>presentes(s,'nigromantes').find(c=>c.cardId===PROFANADOR);
 export function configModosValida(c){
+ if(!configuracionAccionesValida(c))return false;
  if((c.reglaNigromantes===undefined)!==(c.reglaAbominaciones===undefined))return false;
  if(c.reglaNigromantes!==undefined&&c.modoNigromantes===undefined)return false;
  if(c.reglaNigromantes!==undefined&&!MODOS_NIGROMANTES.includes(c.reglaNigromantes))return false;
@@ -38,6 +40,8 @@ export function activacionesValidas(s){
   if(b.configTanda&&(b.configTanda.reglaNigromantes!==b.reglasEnemigos?.nigromantes||b.configTanda.reglaAbominaciones!==b.reglasEnemigos?.abominaciones))return false;
   if(b.accionesEnemigos!==undefined&&(!b.accionesEnemigos||![...ACCIONES_NIGROMANTES,'azar'].includes(b.accionesEnemigos.nigromante)||!['activacion','spawn','activacion-spawn','azar'].includes(b.accionesEnemigos.abominacion)))return false;
   for(const c of b.slots.flatMap(t=>t.draws)){
+   if(!validarResultadoIndependiente(c,b))return false;
+   if(c.revelacionIndependiente?.activaciones.some(a=>!extracciones.has(a.uid)||extracciones.get(a.uid).mazo!==c.revelacionIndependiente.mazo||extracciones.get(a.uid).cardId!==a.cardId))return false;
    if(esReglaNueva(s)&&(c.resolucionNigromante==='pendiente'||c.resolucionAbominacion==='pendiente'))return false;
    if(c.sinCandidatos!==undefined&&typeof c.sinCandidatos!=='boolean')return false;
    if(c.activaciones===undefined)continue;

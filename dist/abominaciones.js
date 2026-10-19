@@ -1,8 +1,9 @@
 import {datos,idsSecundarios} from './catalogo.js';
+import {resolverAccionesIndependientes,registrarAparicionPrioritaria} from './acciones-independientes.js';
 import {accionPorDefecto,ACCIONES_ENEMIGOS,validarAccionEnemigo} from './acciones-enemigos.js';
 import {crearSecundario,recalcularSecundario,archivarSecundaria as archivar,anularSecundaria,robarSecundario,validarDisponibilidad,disponiblesSecundario} from './secundarios.js';
 import {contarEnemigos,aplicarLimite} from './limites.js';
-import {registrarActivaciones,elegirAzar} from './modos-enemigos.js';
+import {registrarActivaciones,elegirAzar,presentes} from './modos-enemigos.js';
 
 export const CARTAS_ABOMINACIONES=datos.enemigos.enemigos
  .filter(c=>datos.abominaciones.cartas_ids.includes(c.id)&&c.mazo_destino==='abominaciones'&&c.tipo_confirmado_por_usuario&&c.cantidad_inicial_mazo_secundario===1)
@@ -34,7 +35,8 @@ export function validarMazoAbominaciones(s){
   if(c.abominaciones!==undefined&&!Array.isArray(c.abominaciones))return false;
   if(!c.resolucionAbominacion){if(c.abominaciones)return false;continue;}
   if(!validarAccionEnemigo(c,'resolucionAbominacion'))return false;
-  if(c.cardId!=='abominacion'||!['pendiente','activacion','spawn','anulada'].includes(c.resolucionAbominacion))return false;
+  if(c.cardId!=='abominacion'||!['pendiente','activacion','spawn','anulada','sin-efecto'].includes(c.resolucionAbominacion))return false;
+  if(c.resolucionAbominacion==='sin-efecto'&&!c.revelacionIndependiente)return false;
   if(c.discarded!==(c.resolucionAbominacion==='anulada'))return false;
   const derivadas=c.abominaciones||[],activas=derivadas.filter(a=>!a.anulada);
   if(activas.length!==(c.resolucionAbominacion==='spawn'?1:0))return false;
@@ -72,10 +74,18 @@ export function prepararAbominacion(s,origen,rng=Math.random){
  origen.resolucionAbominacion='pendiente';
  if(s.config.reglaAbominaciones!==undefined){
   origen.activaciones=[];
+  const independiente=s.config.reglaAbominaciones==='personalizado'&&s.config.revelacionEnemigos?.abominaciones;
   if(!presenciaAbominacion(s)){
-   const c=robarSecundaria(s,origen,rng);if(!c)origen.sinCandidatos=true;return;
+   const c=robarSecundaria(s,origen,rng);if(!c){origen.sinCandidatos=true;if(independiente)resolverAccionesIndependientes(s,origen,'abominaciones',[],{disponible:false},rng);}else if(independiente)registrarAparicionPrioritaria(origen,'abominaciones');return;
   }
   const modo=s.config.reglaAbominaciones;
+  if(independiente){
+   recalcularSecundario(s,'abominaciones');
+   const tope=s.history.at(-1)?.limitesEnemigos?.abominaciones,limite=tope!==undefined&&presentes(s,'abominaciones').length>=tope;
+   const disponible=disponiblesSecundario(s,'abominaciones').length>0;
+   if(resolverAccionesIndependientes(s,origen,'abominaciones',presentes(s,'abominaciones'),{limite,disponible},rng))robarSecundaria(s,origen,rng,origen.accionEnemigo);
+   return;
+  }
   let accion=modo==='estandar'?'activacion':modo==='festival'?'activacion-spawn':s.history.at(-1)?.accionesEnemigos?.abominacion??s.accionesPredeterminadas?.abominacion??'azar';
   recalcularSecundario(s,'abominaciones');
   const disponible=disponiblesSecundario(s,'abominaciones').length>0,limitado=aplicarLimite(s,origen,'abominaciones');

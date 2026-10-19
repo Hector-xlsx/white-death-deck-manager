@@ -1,5 +1,13 @@
 # Plan de implementación por capas
 
+## Revelación independiente y Calcular por · 19/10/2026 · Local
+
+Implementados los perfiles independientes de nigromantes y abominaciones, aumento/máximo de Spawn, bloqueos sin activación forzada y condiciones desplegables. Calcular por permite sortear activaciones por enemigo o para todo el grupo; el Profanador mantiene su evaluación propia. 364 pruebas y QA en cinco tamaños, configuración, cuota, próxima tanda y recuperación offline. Sin publicación. Detalle: [REVELACION_ACCIONES_INDEPENDIENTES.md](REVELACION_ACCIONES_INDEPENDIENTES.md).
+
+## Actualización visible y Death Notes · 19/10/2026
+
+Implementados localmente y pendientes de publicación por indicación del usuario: aviso fijo de actualización manual conservando partidas y borradores de otras pestañas; Death Notes en nigromantes con una copia y configuración anterior preservada. 338 pruebas y 13 originales; QA de actualización y configuración. Alcance y primera transición desde la versión anterior: [ACTUALIZACION_Y_DEATH_NOTES.md](ACTUALIZACION_Y_DEATH_NOTES.md).
+
 ## Configuración organizada en pestañas · 19/10/2026
 
 Interfaz autorizada con Contenido / Mazos / Apariencia. Secciones desplegables con resumen de configuración; acciones y topes junto al mazo correspondiente; Daily integrado enlaza a General y Spawn Especial. Guardar permanece visible en un pie fijo y Nueva partida se separa en un desplegable con su confirmación anterior. Ayudas largas plegables. Se conservan los controles originales, sus nombres y manejadores, los borradores entre pestañas y el guardado inmediato de acciones. Sin cambios al motor, reglas, datos o partidas.

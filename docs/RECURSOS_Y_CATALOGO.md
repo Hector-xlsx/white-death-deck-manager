@@ -20,7 +20,7 @@ Los otros JSON mantienen pendientes explícitos. El usuario confirmó una copia 
 - `datos/cartas_expansion_pendientes.json`: cinco cartas numeradas y Bestias divinas Aparición, según la carpeta 02. Bestias divinas Activación pertenece a la carpeta 04 y ya no está en este inventario de spawn general.
 - `datos/referencias_borrador.json`: ayudas consultables; vínculos concretos aún por confirmar.
 - `datos/mazo_abominaciones.json`: catálogo operativo autorizado el 8/10/2026, separado de los borradores. 20 identidades, cantidad 1, modos y política de reinicio confirmados; sin reglas especiales automáticas. Bestias divinas Activación pendiente de entrada al sorteo.
-- `datos/mazo_nigromantes.json`: catálogo operativo autorizado el 8/10/2026 con 10 identidades, cantidad 1, reposición/reinicio y robo inmediato. Death Notes permanece como referencia, sin reglas automáticas ni entrada al sorteo confirmada.
+- `datos/mazo_nigromantes.json`: once identidades, cantidad 1, reposición/reinicio según modo. Death Notes incorporada como nigromante de Frozen Fortress por confirmación del usuario el 19/10/2026, conservando su ID e imagen; ruido/daño en mesa. Véase `ACTUALIZACION_Y_DEATH_NOTES.md` para preservar selecciones anteriores.
 
 Se conservan los nombres y las rutas elegidos por el usuario, con espacios y Unicode. La preparación admite únicamente esas cinco carpetas y nombres PNG controlados. Todos los archivos se verifican por SHA-256; sus píxeles no se modifican. Las tres carpetas anteriores ya no son dependencias de la app y pueden eliminarse de `recursos/`.
 

@@ -16,12 +16,15 @@ try{
  await abrir();assert.equal(await p.locator('[name="especial-modo"]').inputValue(),'directo');
  await p.locator('[name="especial-modo"]').selectOption('probabilidad');
  for(const n of ['azul','amarillo','naranja','rojo']){await p.locator(`[name="especial-base-${n}"]`).fill('100');await p.locator(`[name="especial-incremento-${n}"]`).fill('5');}
+ await p.locator('[data-especial-cantidad="spawn-559"]').evaluate(e=>e.closest('details').open=true);
+ await p.locator('[data-especial-set="spawn-565"]').evaluate(e=>e.closest('details').open=true);
  await p.locator('[data-especial-cantidad="spawn-559"]').fill('2');await p.locator('[data-especial-set="spawn-565"]').selectOption('general');
  assert.equal(await p.locator('[data-especial-elegible="spawn-565"]').isChecked(),true);
  await p.locator('[name="especial-limite"]').fill('1');
  await p.locator('[name="especial-compensar"]').check();
  await p.locator('[name="dailyHabilitado"]').check();await p.locator('[name="especial-daily"]').selectOption('integrado');
  assert.equal(await p.locator('[data-especial-cantidad="daily-du01"]').count(),1);
+ await p.locator('[data-especial-cantidad="daily-du01"]').evaluate(e=>e.closest('details').open=true);
  await p.locator('[data-especial-cantidad="daily-du01"]').fill('4');
  // Ocultar/mostrar Daily no debe perder cantidades editadas del borrador.
  await p.locator('[name="especial-daily"]').selectOption('independiente');assert.equal(await p.locator('[data-especial-cantidad="daily-du01"]').count(),0);
@@ -41,6 +44,7 @@ try{
  assert.match(await p.locator('#batch-grid').textContent(),/Spawn Especial/);
  await p.locator('#offline-status').filter({hasText:'Disponible offline'}).waitFor({timeout:90000});await ctx.setOffline(true);await p.reload();assert.deepEqual(await p.evaluate(k=>JSON.parse(localStorage.getItem(k)).history,key),historial);
  await p.locator('#batch-dialog .close-button').click();await abrir();assert.equal(await p.locator('[name="especial-modo"]').inputValue(),'probabilidad');assert.equal(await p.locator('[data-especial-cantidad="spawn-559"]').inputValue(),'2');
+ await p.locator('[data-especial-cantidad="spawn-559"]').evaluate(e=>e.closest('details').open=true);
  await p.locator('[data-especial-cantidad="spawn-559"]').fill('0');assert.equal(await p.locator('#save-settings').isDisabled(),true);await p.locator('[data-especial-cantidad="spawn-559"]').fill('3');
  const bytes=await p.evaluate(k=>localStorage.getItem(k),key);await p.evaluate(()=>{window.original=Storage.prototype.setItem;Storage.prototype.setItem=()=>{throw Error('Quota');};});await p.locator('#save-settings').click();assert.equal(await p.locator('#settings-dialog').isVisible(),true);assert.equal(await p.evaluate(k=>localStorage.getItem(k),key),bytes);await ctx.close();
  const trigger=newGame({...base,selectedIds:['caminantes-normal','spawn-559'],spawnEspecial:{modo:'disparadores',disparadores:6}},1);for(const id of Object.keys(trigger.remaining))trigger.remaining[id]=Number(id==='spawn-especial');

@@ -57,7 +57,7 @@ Estado vigente en [docs/IMPLEMENTACION_ACTUAL.md](docs/IMPLEMENTACION_ACTUAL.md)
 
 La preparación ya no lee `recursos/originales`, `recursos/traducciones_es` ni `recursos/variantes_por_revisar`. Esas carpetas del paquete anterior se pueden eliminar; `base-web/` se conserva como referencia. El Excel permanece como referencia editable y no fue modificado durante esta reorganización.
 
-Abominaciones utiliza las 20 identidades confirmadas, una copia de Kijin con imagen corregida; nigromantes utiliza 10 identidades. Bestias divinas Activación y Death Notes siguen como referencias sin automatización ni entrada al sorteo confirmada. El Excel no fue modificado. Consultar una ficha no ejecuta sus reglas.
+Abominaciones utiliza las 20 identidades confirmadas, una copia de Kijin con imagen corregida; nigromantes utiliza 11 identidades, incluida Death Notes de Frozen Fortress, con una copia seleccionable y ruido/daño en mesa. Bestias divinas Activación sigue como referencia sin entrada al sorteo confirmada. El Excel no fue modificado. Consultar una ficha no ejecuta sus reglas.
 
 ## Guardado y actualizaciones
 
@@ -65,7 +65,7 @@ La partida v2 usa `white-death-gestor-v2`; la migración lee `white-death-mvp-v1
 
 El usuario autorizó reiniciar las partidas de prueba anteriores: la app guarda una partida nueva con configuración conservada y marca de revisión, sin repetir el reset en recargas posteriores. Guardar cambios durante una partida prepara próxima tanda; su adopción, mazos y respaldo se guardan atómicamente con SPAWN. Las tandas anteriores conservan su configuración y referencias, incluso si se retiró contenido. Los catálogos secundarios conservan las identidades históricas y separan candidatos habilitados de presencia, descartes y trofeos. Desfijar/refijar al Profanador ajusta su zona sin repetir robos resueltos.
 
-Una actualización PWA queda esperando mientras haya pestañas de la app abiertas. Recargar conserva el paquete activo completo. Cierra todas las pestañas de la app y vuelve a abrir para activar la nueva versión; los datos locales permanecen. La descarga necesita conexión y espacio suficientes. Borrar el almacenamiento del navegador elimina la partida y la precarga.
+Una actualización PWA completa muestra el aviso fijo «Actualizar ahora»: activa la nueva versión y recarga conservando la partida local. Los paneles deben guardarse/cerrarse antes; las otras pestañas conservan su versión y sus borradores hasta decidir recargar. También se mantiene la actualización al cerrar todas las ventanas. La primera llegada desde la versión anterior puede requerir cerrar/reabrir una última vez, porque esa página aún no tiene el botón. La descarga necesita conexión y espacio suficientes. Borrar el almacenamiento del navegador elimina la partida y la precarga. Detalle: [actualización y Death Notes](docs/ACTUALIZACION_Y_DEATH_NOTES.md).
 
 Las partidas de Sites no aparecen en este origen local ni en Pages. El importador de respaldos sigue pendiente de solicitud.
 
