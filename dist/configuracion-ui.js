@@ -33,7 +33,7 @@ export function iniciarConfiguracionUI(){
   }
   const limites=document.createElement('div');limites.id=`config-limites-${mazo}`;limites.className='limit-settings';
   const table=document.createElement('table');table.className='daily-levels';
-  table.innerHTML=`<caption>Topes personalizados por adrenalina</caption><thead><tr><th scope="col">Nivel</th><th scope="col">${mazo==='nigromantes'?'Adicionales al Profanador':'Abominaciones totales'}</th></tr></thead><tbody></tbody>`;
+  table.innerHTML=`<caption>${mazo==='nigromantes'?'Tope de Nigromantes adicionales al Profanador en juego':'Topes personalizados por adrenalina'}</caption><thead><tr><th scope="col">Nivel</th><th scope="col">${mazo==='nigromantes'?'Nigromantes adicionales al Profanador':'Abominaciones totales'}</th></tr></thead><tbody></tbody>`;
   for(const nivel of ['azul','amarillo','naranja','rojo']){const input=form.elements[`limite-${mazo}-${nivel}`],fila=document.createElement('tr'),th=document.createElement('th'),td=document.createElement('td');th.scope='row';th.textContent=nivel[0].toUpperCase()+nivel.slice(1);td.append(input);fila.append(th,td);table.tBodies[0].append(fila);}
   const notaLimite=document.createElement('p');notaLimite.className='field-note';notaLimite.textContent=mazo==='nigromantes'?'No incluye al Profanador. Los topes no pueden disminuir de Azul a Rojo.':'Incluye la primera abominación. Los topes no pueden disminuir de Azul a Rojo.';
   limites.append(table,notaLimite);campoDestino.append(limites);
