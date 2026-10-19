@@ -457,3 +457,33 @@ body.revelacion-procedural #pins,body.revelacion-procedural #last-preview,body.r
 
 #especial-config input[type="number"]{min-height:44px;padding:6px 8px;border:1px solid var(--line);border-radius:8px;background:var(--bg);color:var(--text);font:inherit}
 @media(max-width:480px){#especial-config .enemy-mode-row{grid-template-columns:1fr}.especial-perfiles th,.especial-perfiles td{padding:3px}.especial-perfiles input{padding:6px 3px!important}}
+
+/* Configuración: navegación fija, contenido desplazable y guardado siempre visible. */
+#settings-dialog[open]{display:flex;flex-direction:column;width:min(860px,calc(100vw - 28px));height:min(880px,92dvh);padding:0;overflow:hidden}
+#settings-dialog [hidden]{display:none!important}
+#settings-dialog>.dialog-header{flex-shrink:0;padding:16px 20px 10px;margin:0}
+#settings-dialog .dialog-header h2{margin:0}
+#settings-form{display:flex;flex-direction:column;flex:1;min-height:0;overflow:hidden;margin:0}
+.config-tabs{display:flex;gap:6px;padding:0 20px 10px;flex-shrink:0;border-bottom:1px solid var(--line)}
+.config-tabs>button{flex:1;min-width:0;font-size:.9rem;padding:9px 6px}
+.config-tabs>[aria-selected="true"]{background:#244655;border-color:var(--ice);color:var(--ice)}
+.config-tabs>button:focus-visible{outline:2px solid var(--ice);outline-offset:2px}
+.config-panels{flex:1;min-height:0;overflow:auto;overscroll-behavior:contain;padding:14px 20px;scroll-padding:12px}
+.config-section,.config-new-game,#config-panel-contenido>.collection-section{border:1px solid var(--line);border-radius:10px;margin:0 0 12px;background:#13232d}
+.config-section>summary{display:grid;grid-template-columns:16px minmax(0,1fr);gap:4px 8px;list-style:none;padding:14px;cursor:pointer;min-height:56px}
+.config-section>summary::-webkit-details-marker{display:none}
+.config-section>summary::before{content:'›';font-size:1.4rem;grid-row:1 / span 2;align-self:center;transition:transform .12s}
+.config-section[open]>summary::before{transform:rotate(90deg)}
+.config-section>summary>span{grid-column:2;font-weight:600}.config-section>summary>small{grid-column:2;color:var(--muted);line-height:1.4}
+.config-section[open]>summary{border-bottom:1px solid var(--line)}
+#settings-form .config-section>fieldset{margin:0;padding:12px 16px 16px;border:0;min-width:0}
+.config-section>fieldset>legend{position:absolute;width:1px;height:1px;padding:0;overflow:hidden;clip-path:inset(50%);white-space:nowrap}
+#config-panel-contenido>.collection-section{padding:14px}#config-panel-contenido>.collection-section>summary{cursor:pointer}
+.config-acciones{border-top:1px solid var(--line);padding-top:12px;margin-top:12px}.config-acciones>label{display:flex;flex-direction:column;gap:6px;font-size:.875rem}
+.config-auto-note{color:var(--ice);font-size:.8rem}.config-help{margin-top:12px;font-size:.85rem;color:var(--muted)}.config-help>summary{cursor:pointer;min-height:32px;align-content:center}
+.config-new-game{padding:12px 14px;border-color:#795052}.config-new-game>summary{cursor:pointer;color:var(--danger);min-height:24px}.config-new-game .danger-button{margin:12px 0 0}
+.config-footer{flex-shrink:0;padding:10px 20px 14px;border-top:1px solid var(--line);background:#172632}
+.config-footer #save-settings{margin:0;min-height:44px;background:#244655;border-color:#527081}
+.config-save-note{font-size:.75rem;color:var(--muted);margin:0 0 6px;line-height:1.35}.config-footer .settings-summary{font-size:.75rem;margin:0 0 8px}.config-footer .field-error{max-height:64px;overflow:auto;font-size:.8rem;margin:0 0 8px}
+@media(max-width:480px){.config-panels{padding:10px 12px}.config-tabs{padding:0 12px 10px;gap:4px}#settings-dialog>.dialog-header{padding:12px}.config-footer{padding:8px 12px 12px}}
+@media(max-height:500px){#settings-dialog[open]{height:calc(100dvh - 16px);max-height:calc(100dvh - 16px)}#settings-dialog>.dialog-header{padding:8px 14px}.config-tabs{padding-bottom:6px}.config-footer{padding:6px 14px}.config-footer .settings-summary{display:none}.config-save-note{margin-bottom:4px}.config-panels{padding:8px 14px}}

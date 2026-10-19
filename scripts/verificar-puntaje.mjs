@@ -1,3 +1,4 @@
+import {abrirSeccionesConfiguracion} from './ayuda-configuracion.mjs';
 import {createRequire} from 'node:module';
 import assert from 'node:assert/strict';
 import {newGame,spawn,isValid} from '../dist/engine.js';
@@ -15,7 +16,7 @@ try{
  const cantidades=await p.evaluate(k=>{const s=JSON.parse(localStorage.getItem(k));return {history:s.history,pins:s.pins,ajustes:s.ajustesZombis,sequence:s.sequence};},key);
  await p.locator('#zombies-dialog [data-action="close"]').click();
  for(const tema of ['kang','dragon','cabeza']){
-  await p.getByRole('button',{name:'Configuración',exact:true}).click();await p.locator('#tema-puntaje').selectOption(tema);await p.locator('#save-settings').click();assert.equal(await p.locator('#open-zombies').getAttribute('data-theme'),tema);assert.match(await p.locator('#open-zombies').getAttribute('aria-label'),/Puntaje: 36/);await p.locator('#open-zombies img').evaluate(e=>e.decode());
+  await p.getByRole('button',{name:'Configuración',exact:true}).click();await abrirSeccionesConfiguracion(p,'Apariencia',['puntaje']);await p.locator('#tema-puntaje').selectOption(tema);await p.locator('#save-settings').click();assert.equal(await p.locator('#open-zombies').getAttribute('data-theme'),tema);assert.match(await p.locator('#open-zombies').getAttribute('aria-label'),/Puntaje: 36/);await p.locator('#open-zombies img').evaluate(e=>e.decode());
   for(const [nombre,width,height] of [['escritorio',1440,900],['tablet',1024,768],['horizontal',844,390],['vertical',390,844],['estrecho',320,568]]){
    await p.setViewportSize({width,height});assert.equal(await p.evaluate(()=>document.documentElement.scrollWidth>innerWidth),false);await p.locator('.brand').screenshot({path:`docs/verificacion/puntaje-${tema}-${nombre}.png`});
   }

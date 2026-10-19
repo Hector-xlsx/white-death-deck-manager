@@ -1,5 +1,12 @@
 # Implementación actual
 
+## Configuración organizada en pestañas · 19/10/2026
+
+Interfaz autorizada con Contenido / Mazos / Apariencia. Secciones desplegables con resumen de configuración; acciones y topes junto al mazo correspondiente; Daily integrado enlaza a General y Spawn Especial. Guardar permanece visible en un pie fijo y Nueva partida se separa en un desplegable con su confirmación anterior. Ayudas largas plegables. Se conservan los controles originales, sus nombres y manejadores, los borradores entre pestañas y el guardado inmediato de acciones. Sin cambios al motor, reglas, datos o partidas.
+
+Validación: 334/334 pruebas actuales y 13/13 originales; QA de Configuración, Especial, ocultación/puntaje, defaults Daily y vista de mesa. Navegación de teclado, cinco tamaños, guardado/cuota, confirmación de nueva partida y recarga offline. Sin dispositivos físicos. Subida a main y publicación automática autorizadas en esta solicitud. Detalle: [UI_CONFIGURACION.md](UI_CONFIGURACION.md).
+
+
 ## Spawn Especial · 18/10/2026
 
 Implementadas las tres modalidades: integración directa anterior, disparadores virtuales (6 editables desde 1) y aparición adicional por probabilidad. Cantidades y reposición independientes; destinos General/Especial; orígenes elegibles seleccionables; intentos e incremento por carta o por tanda; límites generales o por adrenalina. Intento por tanda al final, incluida resolución tardía, con ubicación aleatoria guardada; sin elegibles cuenta como fallo. Daily independiente conserva una copia por identidad; integrado usa cantidades editables y excluye todas las copias de identidades presentes. Compensación opcional del motor sobre Core filtrado con enteros y vista previa. Sin nuevas cartas habilitadas ni cambios a originales.

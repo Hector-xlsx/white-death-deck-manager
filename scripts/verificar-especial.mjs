@@ -1,3 +1,4 @@
+import {abrirSeccionesConfiguracion} from './ayuda-configuracion.mjs';
 import {createRequire} from 'node:module';
 import assert from 'node:assert/strict';
 import {newGame} from '../dist/engine.js';
@@ -10,8 +11,8 @@ async function pagina(s){
  const p=await ctx.newPage();p.on('pageerror',e=>errores.push(e.message));await p.goto(url);return {ctx,p};
 }
 try{
- const {ctx,p}=await pagina(newGame(base,2));
- const abrir=()=>p.getByRole('button',{name:'Configuración',exact:true}).click();
+ const {ctx,p}=await pagina(newGame(base,2));p.setDefaultTimeout(15000);
+ const abrir=async()=>{await p.getByRole('button',{name:'Configuración',exact:true}).click();await abrirSeccionesConfiguracion(p,'Mazos',['general','daily']);};
  await abrir();assert.equal(await p.locator('[name="especial-modo"]').inputValue(),'directo');
  await p.locator('[name="especial-modo"]').selectOption('probabilidad');
  for(const n of ['azul','amarillo','naranja','rojo']){await p.locator(`[name="especial-base-${n}"]`).fill('100');await p.locator(`[name="especial-incremento-${n}"]`).fill('5');}

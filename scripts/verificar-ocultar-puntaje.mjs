@@ -1,3 +1,4 @@
+import {abrirSeccionesConfiguracion} from './ayuda-configuracion.mjs';
 import {createRequire} from 'node:module';
 import assert from 'node:assert/strict';
 import {newGame,spawn} from '../dist/engine.js';
@@ -6,7 +7,7 @@ const browser=await chromium.launch({headless:true,channel:'chrome'});
 try{
  const s=newGame({easy:true,normal:true,threshold:0,selectedIds:['caminantes-normal'],modoNigromantes:'sin-reposicion',reglaNigromantes:'varios',reglaAbominaciones:'festival'},1);spawn(s,()=>0);s.openBatch=false;
  const ctx=await browser.newContext({viewport:{width:844,height:390},reducedMotion:'reduce'});await ctx.addInitScript(({s,key})=>{if(!localStorage.getItem(key))localStorage.setItem(key,JSON.stringify(s));},{s,key});const p=await ctx.newPage(),errores=[];p.on('pageerror',e=>errores.push(e.message));await p.goto(process.env.MAZO_URL||'http://127.0.0.1:8080/mazo/');
- const abrir=()=>p.getByRole('button',{name:'Configuración',exact:true}).click(),guardar=()=>p.locator('#save-settings').click();
+ const abrir=async()=>{await p.getByRole('button',{name:'Configuración',exact:true}).click();await abrirSeccionesConfiguracion(p,'Apariencia',['puntaje']);},guardar=()=>p.locator('#save-settings').click();
  await abrir();assert.deepEqual(await p.locator('#tema-puntaje option').allTextContents(),['Kang','Dragón','Cabeza','Ocultar marcador']);assert.equal(await p.locator('#toggle-score-visibility').count(),0);
  await p.locator('#tema-puntaje').selectOption('oculto');await guardar();assert.equal(await p.locator('#score-counter-host').isVisible(),false);assert.equal(await p.getByRole('button',{name:/Abrir puntaje y zombis/}).count(),0);
  for(const [nombre,width,height] of [['escritorio',1440,900],['tablet',1024,768],['horizontal',844,390],['vertical',390,844],['estrecho',320,568]]){

@@ -61,5 +61,5 @@ export function actualizarEspecialUI(config){
  host.dataset.destinos=JSON.stringify(o.destinos);host.dataset.borrador=JSON.stringify(o);
  const total=m=>Object.values(m).reduce((a,b)=>a+b,0),core=Object.fromEntries(Object.entries(generalBase).filter(([id])=>CATALOG.some(c=>c.id===id&&c.expansionId==='core-white-death'))),motor=m=>['nigromante','abominacion','asedio'].reduce((a,id)=>a+(m[id]??0),0),porcentaje=m=>total(m)?(100*motor(m)/total(m)).toFixed(2):'0.00';
  host.querySelector('#especial-composicion').textContent=configEspecialValida(config,CATALOG,datos.daily.cartas_ids)?`General: ${total(general)} cartas · Motor Core filtrado: ${porcentaje(core)}% → general: ${porcentaje(general)}% · Especial: ${cartasEspecial(config).reduce((n,c)=>n+cantidadEspecial(config,c),0)+daily.reduce((n,c)=>n+cantidadEspecial(config,c),0)} copias configuradas.`:'Revisa las cantidades, probabilidades y límites.';
- for(const e of host.querySelectorAll('input,select'))if(e.name!=='especial-modo')e.disabled=!activo||Boolean(e.closest('[hidden]'));
+ for(const e of host.querySelectorAll('input,select'))if(e.name!=='especial-modo'){const oculto=e.closest('[hidden]');e.disabled=!activo||Boolean(oculto&&host.contains(oculto));}
 }

@@ -91,7 +91,7 @@ archivos.push('./fichas-zombis.js','./tabla-puntajes.js','./formula-puntaje.js',
 archivos.push('./volteo.js','./contador-zombis.js','./bake-danuki.js');
 archivos.push('./revelacion.js');
 archivos.push('./acciones-enemigos.js');
-archivos.push('./daily.js','./especial.js','./especial-config.js','./especial-ui.js');
+archivos.push('./daily.js','./especial.js','./especial-config.js','./especial-ui.js','./configuracion-ui.js');
 archivos.push('./adrenalina.js');
 archivos.push('./limites.js');
 archivos.push('./modos-enemigos.js');

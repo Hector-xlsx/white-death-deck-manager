@@ -1,3 +1,4 @@
+import {iniciarConfiguracionUI,actualizarConfiguracionUI} from './configuracion-ui.js';
 import {iniciarEspecialUI,leerEspecialUI,actualizarEspecialUI} from './especial-ui.js';
 import {regenerarEspecial} from './especial.js';
 import {ID_DISPARADOR,dailyIntegrado} from './especial-config.js';
@@ -29,6 +30,7 @@ import {REVISION_REGLAS} from './configuracion-partida.js';
 import {disponiblesSecundario} from './secundarios.js';
 import {datos} from './catalogo.js';
 const $=id=>document.getElementById(id);
+iniciarConfiguracionUI();
 const marcadorPuntaje=window.ScoreCounter.create($('score-counter-host'),{theme:'kang',value:0,width:180,assetBase:'./recursos/Imagenes generales/contadores_puntaje/assets/'});
 marcadorPuntaje.element.id='open-zombies';marcadorPuntaje.element.dataset.action='zombis';marcadorPuntaje.element.title='Puntaje y zombis generados';
 let ultimoTemaPuntaje='kang',ultimoPuntaje=0;
@@ -435,13 +437,13 @@ function updateSettings(){
  $('save-settings').disabled=storageBlocked||errores.length>0;$('new-game').disabled=storageBlocked||errores.length>0;
  $('abominacion-estandar-label').hidden=config.reglaAbominaciones!=='estandar';f.elements.abominacionEstandarId.disabled=config.reglaAbominaciones!=='estandar';
  const personalizado={nigromantes:config.reglaNigromantes==='personalizado',abominaciones:config.reglaAbominaciones==='personalizado'};
- $('limits-config').hidden=!Object.values(personalizado).some(Boolean);
- for(const [mazo,columna] of [['nigromantes',2],['abominaciones',3]]){
-  for(const celda of $('limits-config').querySelectorAll(`tr>:nth-child(${columna})`))celda.hidden=!personalizado[mazo];
+ for(const mazo of ['nigromantes','abominaciones']){
+  $(`config-limites-${mazo}`).hidden=!personalizado[mazo];
   for(const nivel of NIVELES_ADRENALINA){const input=f.elements[`limite-${mazo}-${nivel}`];input.min=mazo==='nigromantes'?'0':'1';input.disabled=!personalizado[mazo];}
  }
  for(const input of document.querySelectorAll('.daily-settings input,.daily-settings select'))input.disabled=!config.dailyHabilitado||dailyIntegrado(config);
  $('daily-config').querySelector('.daily-settings').hidden=dailyIntegrado(config);
+ actualizarConfiguracionUI(config);
 }
 function hayCambiosConfiguracion(){return $('settings-dialog').open&&firmaConfiguracionInicial!==null&&firmaContenido(draftConfig())!==firmaConfiguracionInicial;}
 function guardarConfiguracion(){const config=draftConfig();if(commit(s=>programarConfiguracion(s,config))){firmaConfiguracionInicial=firmaContenido(config);toast('Configuración guardada. Modos y contenido se aplicarán a la próxima tanda.');closeDialog('settings-dialog',{forzar:true});}}

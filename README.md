@@ -24,9 +24,13 @@ Si Node no está en PATH, en esta máquina:
 
 El puerto se cambia con `MAZO_PUERTO`. Se necesita HTTP local o HTTPS para los módulos y la PWA; abrir el HTML como archivo no es suficiente.
 
+## Configuración
+
+Tres pestañas: Contenido (colección, dificultad y cartas), Mazos (modos, reposición, acciones y topes) y Apariencia. Las secciones cerradas muestran su resumen; Guardar permanece visible y Nueva partida conserva su confirmación. [Detalle y validación](docs/UI_CONFIGURACION.md).
+
 ## Spawn Especial
 
-En Configuración, elige integración directa, disparadores o aparición adicional por probabilidad. Selecciona cartas en Contenido y configura cantidades, reposición, Daily integrado/independiente, destinos y límites. Guardar aplica a la próxima tanda. Las probabilidades nuevas parten en 0% hasta configurarlas. Detalle en [docs/SPAWN_ESPECIAL.md](docs/SPAWN_ESPECIAL.md).
+En Configuración → Mazos → General y Spawn Especial, elige integración directa, disparadores o aparición adicional por probabilidad. Selecciona cartas en Contenido y configura cantidades, reposición, Daily integrado/independiente, destinos y límites. Guardar aplica a la próxima tanda. Las probabilidades nuevas parten en 0% hasta configurarlas. Detalle en [docs/SPAWN_ESPECIAL.md](docs/SPAWN_ESPECIAL.md).
 
 ## Estado
 

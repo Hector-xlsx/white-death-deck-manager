@@ -4,7 +4,7 @@
 
 Diseño solicitado y aclarado por el usuario en este chat. Es una configuración personalizada del gestor, no una regla oficial del juego. Mantiene la integración directa existente y añade dos modalidades. Solo usa cartas confirmadas y habilitadas del catálogo; no incorpora cartas o reglas nuevas de campañas citadas como ejemplos. Bestias divinas Aparición continúa pendiente.
 
-Se configura en **Configuración → Mazo de Aparición · Spawn Especial**. La selección de colección y cartas sigue en Contenido. Guardar programa los cambios para la siguiente pulsación de SPAWN; la tanda abierta conserva configuración, resultados y nivel. No hay reinicio de partida ni reinterpretación de tandas anteriores. Iniciar nueva partida conserva el flujo de confirmación existente.
+Se configura en **Configuración → Mazos → General y Spawn Especial**. La selección de colección y cartas sigue en Contenido. Guardar programa los cambios para la siguiente pulsación de SPAWN; la tanda abierta conserva configuración, resultados y nivel. No hay reinicio de partida ni reinterpretación de tandas anteriores. Iniciar nueva partida conserva el flujo de confirmación existente.
 
 ## Modalidades
 
