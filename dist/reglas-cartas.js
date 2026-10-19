@@ -7,7 +7,7 @@ export const SHAKOKI='enemigo-shakoki-dogu',CHIMIMORYO='enemigo-chimimoryo',MENG
 export const esMumm=id=>id===MUMM_N||id===MUMM_A;
 export const cartasTransformadas=s=>(s.transformacionesMummRa||[]).map(e=>e.carta);
 export function mummOcupado(s,id){return esMumm(id)&&s.pins.some(p=>esMumm(p.cardId));}
-function extracciones(s){return [...s.history.flatMap(b=>b.slots.flatMap(t=>t.draws.flatMap(c=>[c,...(c.abominaciones||[]),...(c.nigromantes||[]),...(c.daily||[])]))),...cartasTransformadas(s)];}
+function extracciones(s){return [...s.history.flatMap(b=>b.slots.flatMap(t=>t.draws.flatMap(c=>[c,...(c.abominaciones||[]),...(c.nigromantes||[]),...(c.daily||[]),...(c.especial||[])]))),...cartasTransformadas(s)];}
 function asegurarForma(s,id,mazo){
  const ficha=datos.enemigos.enemigos.find(c=>c.id===id);
  const m=s[mazo];if(!m)throw new Error('El mazo de destino no está disponible.');
@@ -32,7 +32,7 @@ export function transformarMummRa(s,uid,{origenUid=null,motivo='correccion'}={})
 }
 // Revertir dependencias antes de cancelar una carta conserva su identidad anterior.
 export function revertirTransformaciones(s,uid){
- for(const b of s.history)for(const c of b.slots.flatMap(t=>t.draws))if(c.aporteShakoki?.uid===uid)c.aporteShakoki.anulada=true;
+ for(const b of s.history)for(const c of b.slots.flatMap(t=>t.draws.flatMap(c=>[c,...(c.especial||[])])))if(c.aporteShakoki?.uid===uid)c.aporteShakoki.anulada=true;
  const eventos=s.transformacionesMummRa||[];
  const afectados=new Set([uid]);
  for(const e of eventos)if(afectados.has(e.anteriorUid)||e.origenUid===uid)afectados.add(e.carta.uid);
@@ -70,6 +70,7 @@ export function aportesTanda(b){
  const aportes=new Map();
  const sumar=(tipo,cantidad,destino)=>{const clave=destino+'-'+tipo,anterior=aportes.get(clave);if(anterior)anterior.cantidad+=cantidad;else aportes.set(clave,{tipo,cantidad,destino});};
  for(const t of b.slots)if(!t.anulada)for(const c of t.draws)if(!c.discarded&&!c.anulada){
+  for(const a of c.especial||[])if(!a.discarded&&!a.anulada&&a.aporteShakoki&&!a.aporteShakoki.anulada)sumar(a.aporteShakoki.tipo,1,'Shakōki Dogū');
   if(c.aporteShakoki&&!c.aporteShakoki.anulada)sumar(c.aporteShakoki.tipo,1,'Shakōki Dogū');
   for(const d of c.daily||[])if(d.cardId===RAKSHASA&&d.acompanantesRakshasa===3&&!d.anulada&&!d.discarded)sumar('caminantes',3,'Rakshasa');
  }
@@ -95,7 +96,7 @@ export function validarReglasCartas(s){
   if(!a||!esMumm(a.cardId)||!c||!esMumm(c.cardId)||c.cardId===a.cardId||c.origenUid!==a.uid||c.uid<=a.uid||!b||!['aparicion','derrota','correccion'].includes(e.motivo)||c.mazo!==(c.cardId===MUMM_N?'nigromantes':'abominaciones')||!Number.isSafeInteger(c.cycle)||c.cycle<1||c.cycle>s[c.mazo]?.cycle||typeof c.anulada!=='boolean'||c.discarded!==c.anulada)return false;
   if(e.motivo==='aparicion'&&!b.slots.some(t=>t.draws.some(o=>o.uid===e.origenUid&&o.transformarMummUid===a.uid)))return false;
  }
- for(const b of s.history)for(const c of b.slots.flatMap(t=>t.draws)){
+ for(const b of s.history)for(const c of b.slots.flatMap(t=>t.draws.flatMap(c=>[c,...(c.especial||[])]))){
   if(c.transformarMummUid!==undefined&&(c.cardId!=='nigromante'||mapa.get(c.transformarMummUid)?.cardId!==MUMM_N||c.transformarMummUid>=c.uid||!['varios','personalizado'].includes(b.reglasEnemigos?.nigromantes)))return false;
   const a=c.aporteShakoki;
   if(a!==undefined&&(!a||a.cantidad!==1||mapa.get(a.uid)?.cardId!==SHAKOKI||a.uid>=c.uid||typeof a.tipo!=='string'||!s.catalogo.cartas.some(f=>f.tipo?.replace(/-(normal|facil)$/,'')===a.tipo)||c.cardId.startsWith('activacion-')||['abominacion','nigromante'].includes(s.catalogo.cartas.find(f=>f.id===c.cardId)?.tipo)))return false;

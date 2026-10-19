@@ -1,3 +1,5 @@
+import {erroresEspecial} from './especial.js';
+import {configEspecialValida} from './especial-config.js';
 import {CATALOG,datos,normalizarConfig,componer,idsSecundarios,IDS_OTROS,enColeccion,cajaCarta,nombreVisible} from './catalogo.js';
 import {configDailyValida} from './daily.js';
 import {erroresLimites} from './limites.js';
@@ -34,7 +36,9 @@ export function resumenCaja(config,filtro,cajaId){
 }
 export function marcarCaja(config,filtro,cajaId,marcar){return seleccionarContenido(config,filtro,visiblesContenido(config,filtro).filter(c=>c.cajaId===cajaId).map(c=>c.id),marcar);}
 export function erroresContenido(config){
- const general=componer(config),errores=[];
+ if(!configEspecialValida(config,CATALOG,datos.daily.cartas_ids))return ['La configuración de Spawn Especial no es válida: revisa cantidades enteras, probabilidades y límites.'];
+ const general=componer(config),errores=[...erroresEspecial(config)];
+ if(!Object.values(general).every(n=>Number.isSafeInteger(n)&&n>0)||!Number.isSafeInteger(Object.values(general).reduce((a,b)=>a+b,0)))errores.push('Las cantidades del mazo general exceden el rango de enteros permitido.');
  if(!Object.values(general).some(n=>n>0))errores.push('Selecciona cartas para el mazo general.');
  if(general.abominacion&&!idsSecundarios(config,'abominaciones').length)errores.push('Selecciona al menos una abominación de tu colección.');
  if(config.modoNigromantes!==undefined&&general.nigromante&&!idsSecundarios(config,'nigromantes').length)errores.push('Selecciona al menos un nigromante de tu colección.');

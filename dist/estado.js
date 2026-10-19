@@ -1,3 +1,5 @@
+import {validarEspecial} from './especial.js';
+import {configEspecialValida,DISPARADOR_ESPECIAL} from './especial-config.js';
 import {derrotasValidas} from './derrotas.js';
 import {resumenPuntaje} from './puntaje.js';
 import {cartasTransformadas,validarReglasCartas} from './reglas-cartas.js';
@@ -21,7 +23,7 @@ function configValida(c,ids){
   if(c[campo]!==undefined&&(!Array.isArray(c[campo])||new Set(c[campo]).size!==c[campo].length||c[campo].some(id=>!opciones.includes(id))))return false;
  }
  if(c?.coleccionIds!==undefined&&(!c.coleccionIds.includes('core')||!IDS_OTROS.every(id=>c.selectedIds?.includes(id))))return false;
- return c&&(c.ocultarPuntaje===undefined||typeof c.ocultarPuntaje==='boolean')&&(c.temaPuntaje===undefined||['kang','dragon','cabeza'].includes(c.temaPuntaje))&&(c.modoAparicionAdicional===undefined||MODOS_APARICION_ADICIONAL.includes(c.modoAparicionAdicional))&&typeof c.easy==='boolean'&&typeof c.normal==='boolean'&&Number.isFinite(c.threshold)&&c.threshold>=0&&c.threshold<=99&&
+ return c&&configEspecialValida(c,CATALOG,datos.daily.cartas_ids)&&(c.ocultarPuntaje===undefined||typeof c.ocultarPuntaje==='boolean')&&(c.temaPuntaje===undefined||['kang','dragon','cabeza'].includes(c.temaPuntaje))&&(c.modoAparicionAdicional===undefined||MODOS_APARICION_ADICIONAL.includes(c.modoAparicionAdicional))&&typeof c.easy==='boolean'&&typeof c.normal==='boolean'&&Number.isFinite(c.threshold)&&c.threshold>=0&&c.threshold<=99&&
  Array.isArray(c.selectedIds)&&new Set(c.selectedIds).size===c.selectedIds.length&&c.selectedIds.every(id=>ids.has(id))&&
  (c.modoAbominaciones===undefined||MODOS_ABOMINACIONES.includes(c.modoAbominaciones))&&
  (c.modoNigromantes===undefined||MODOS_ABOMINACIONES.includes(c.modoNigromantes))&&configDailyValida(c)&&configModosValida(c)&&perfilLimitesValido(c.limitesPorAdrenalina,c.reglaNigromantes!==undefined)&&
@@ -38,7 +40,7 @@ export function isValid(s){
    const r=s.reincorporacionesPendientes;
    if(!s.configuracionPendiente||!r||typeof r!=='object'||Array.isArray(r))return false;
    for(const [mazo,valores] of Object.entries(r)){
-    const opciones=mazo==='general'?CATALOG.map(c=>c.id):datos[mazo]?.cartas_ids;
+    const opciones=mazo==='general'?[...CATALOG,DISPARADOR_ESPECIAL].map(c=>c.id):datos[mazo]?.cartas_ids;
     if(!['general','abominaciones','nigromantes','daily'].includes(mazo)||!Array.isArray(valores)||new Set(valores).size!==valores.length||valores.some(id=>!opciones.includes(id)))return false;
    }
   }
@@ -46,9 +48,9 @@ export function isValid(s){
   const cartas=s.version===1?CATALOGO_BASE:s.catalogo?.cartas;
   if(!Array.isArray(cartas)||!cartas.length||!entero(s.version===1?1:s.catalogo.version,1))return false;
   const ids=new Set(cartas.map(c=>c.id));
-  if(ids.size!==cartas.length||!cartas.every(c=>typeof c.id==='string'&&/^[a-z0-9-]+$/.test(c.id)&&typeof c.name==='string'&&entero(c.copies,1)&&[null,'Fácil','Normal'].includes(c.difficulty)&&/^[\w-]+\.png$/.test(c.image)))return false;
+  if(ids.size!==cartas.length||!cartas.every(c=>typeof c.id==='string'&&/^[a-z0-9-]+$/.test(c.id)&&typeof c.name==='string'&&entero(c.copies,1)&&[null,'Fácil','Normal'].includes(c.difficulty)&&(/^[\w-]+\.png$/.test(c.image)||c.id===DISPARADOR_ESPECIAL.id&&c.image===DISPARADOR_ESPECIAL.image&&c.rutaImagen===DISPARADOR_ESPECIAL.rutaImagen)))return false;
   if(!cartas.every(c=>c.levels===undefined||(Array.isArray(c.levels)&&c.levels.length===4&&c.levels.every(n=>typeof n==='string'||entero(n)))))return false;
-  if(!cartas.every(c=>c.rutaImagen===undefined||datos.recursos.recursos.some(r=>r.ruta===c.rutaImagen&&r.ruta.split('/').at(-1)===c.image)))return false;
+  if(!cartas.every(c=>c.rutaImagen===undefined||c.id===DISPARADOR_ESPECIAL.id&&c.rutaImagen===DISPARADOR_ESPECIAL.rutaImagen&&c.image===DISPARADOR_ESPECIAL.image||datos.recursos.recursos.some(r=>r.ruta===c.rutaImagen&&r.ruta.split('/').at(-1)===c.image)))return false;
   const config=s.version===1?normalizarConfig(s.config):s.config;
   if(!configValida(config,ids)||!configValida(s.version===1?config:s.proximaConfig,new Set(CATALOG.map(c=>c.id))))return false;
   if(!['normal','necro','sequence'].every(k=>entero(s[k]))||!entero(s.cycle,1)||typeof s.openBatch!=='boolean')return false;
@@ -60,6 +62,7 @@ export function isValid(s){
    if(b.number!==i+1||!Number.isFinite(b.date)||!entero(b.normal)||!entero(b.necro)||!Array.isArray(b.slots)||!b.slots.length)return false;
    if(!tandaLimitesValida(b))return false;
    if(b.configTanda!==undefined&&!configValida(b.configTanda,ids))return false;
+   if(b.configEspecial!==undefined&&!configValida(b.configEspecial,ids))return false;
    if(b.nivelAdrenalina!==undefined&&!NIVELES_ADRENALINA.includes(b.nivelAdrenalina))return false;
    if(b.normal!==b.slots.filter(t=>t.kind==='normal').length||b.necro!==b.slots.filter(t=>t.kind==='necro').length)return false;
    for(const t of b.slots){
@@ -69,7 +72,7 @@ export function isValid(s){
      if(!entero(c.uid,1)||c.uid>s.sequence||extracciones.has(c.uid)||!(s.configuracionDinamica?ids.has(c.cardId):Object.hasOwn(s.initial,c.cardId))||typeof c.discarded!=='boolean'||!entero(c.cycle,1)||c.cycle>s.cycle)return false;
      extracciones.set(c.uid,c);
      if(c.anulada!==undefined&&(typeof c.anulada!=='boolean'||c.anulada&&(!c.discarded||!t.anulada)))return false;
-     for(const a of [...(c.abominaciones||[]),...(c.nigromantes||[]),...(c.daily||[])]){
+     for(const a of [...(c.abominaciones||[]),...(c.nigromantes||[]),...(c.daily||[]),...(c.especial||[])]){
       if(!entero(a.uid,1)||a.uid>s.sequence||extracciones.has(a.uid))return false;
       extracciones.set(a.uid,a);
      }
@@ -92,7 +95,7 @@ export function isValid(s){
   if(!validarNigromantes(s))return false;
   if(!activacionesValidas(s))return false;
   if(!validarBakeDanuki(s))return false;
-  if(!validarDaily(s))return false;
+  if(!validarDaily(s)||!validarEspecial(s))return false;
   if(s.version===2)resumenPuntaje(s);
   if(s.unpinned!==undefined&&!Array.isArray(s.unpinned))return false;
   const referencias=[...s.pins,...(s.unpinned||[])];

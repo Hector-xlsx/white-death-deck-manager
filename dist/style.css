@@ -447,3 +447,13 @@ body.revelacion-procedural #pins,body.revelacion-procedural #last-preview,body.r
 .deck-status{grid-template-columns:auto minmax(0,1fr)}
 .enemy-actions-settings .enemy-defaults{display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,230px),1fr));gap:12px}
 .enemy-actions-settings .enemy-defaults label{width:100%;grid-template-columns:1fr;gap:6px}
+
+/* Configuración de Spawn Especial. */
+.especial-carta{display:flex;flex-wrap:wrap;gap:10px;align-items:center;padding:10px 0;border-bottom:1px solid var(--line)}
+.especial-carta>span{flex:1 1 200px}.especial-carta label{display:flex;gap:6px;align-items:center}.especial-carta input{width:90px}
+.especial-perfiles{width:100%;table-layout:fixed;margin:12px 0}.especial-perfiles th,.especial-perfiles td{padding:5px;font-size:.8rem}.especial-perfiles input{width:100%;min-width:0}
+.especial-concepto{display:grid;place-content:center;text-align:center;min-height:180px;border:1px solid var(--ice);border-radius:12px;padding:18px;color:var(--ice)}
+#especial-config select{max-width:100%}#especial-config>label{display:flex;flex-wrap:wrap;gap:8px;align-items:center}
+
+#especial-config input[type="number"]{min-height:44px;padding:6px 8px;border:1px solid var(--line);border-radius:8px;background:var(--bg);color:var(--text);font:inherit}
+@media(max-width:480px){#especial-config .enemy-mode-row{grid-template-columns:1fr}.especial-perfiles th,.especial-perfiles td{padding:3px}.especial-perfiles input{padding:6px 3px!important}}

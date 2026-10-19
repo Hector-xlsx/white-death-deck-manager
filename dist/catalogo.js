@@ -1,3 +1,4 @@
+import {ajustarGeneralEspecial} from './especial-config.js';
 import datos from './catalogo-datos.js';
 export {datos};
 export const CATALOGO_BASE=datos.base.cartas.map(c=>({
@@ -39,7 +40,7 @@ export function normalizarConfig(config={easy:true,normal:true,threshold:20}){
 }
 export function componer(config,cartas=CATALOG){
  const ids=new Set(config.selectedIds??cartas.map(c=>c.id));
- return Object.fromEntries(cartas.filter(c=>enColeccion(c.id,config)&&(ids.has(c.id)||config.coleccionIds!==undefined&&IDS_OTROS.includes(c.id))&&(!c.difficulty||(c.difficulty==='Fácil'?config.easy:config.normal))).map(c=>[c.id,c.copies]));
+ return ajustarGeneralEspecial(config,Object.fromEntries(cartas.filter(c=>enColeccion(c.id,config)&&(ids.has(c.id)||config.coleccionIds!==undefined&&IDS_OTROS.includes(c.id))&&(!c.difficulty||(c.difficulty==='Fácil'?config.easy:config.normal))).map(c=>[c.id,c.copies])),cartas);
 }
 export function referenciasPorCarta(id){
  const ficha=datos.base.cartas.find(c=>c.id===id)||datos.enemigos.enemigos.find(c=>c.id===id);

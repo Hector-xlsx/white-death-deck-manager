@@ -1,3 +1,5 @@
+import {crearEspecial,prepararEspecial,cerrarEspecial,anularEspecial} from './especial.js';
+import {especialActivo,dailyIntegrado,DISPARADOR_ESPECIAL} from './especial-config.js';
 import {registrarDerrota} from './derrotas.js';
 import {prepararReglasCarta,cerrarReglasCarta,revertirTransformaciones,transformarMummRa,mummOcupado,MUMM_A,MENG_HUO,CHIMIMORYO} from './reglas-cartas.js';
 export {transformarMummRa};
@@ -23,18 +25,20 @@ export function actualizarPartidaDePrueba(s){
  return true;
 }
 export {regenerarDaily} from './daily.js';
-export {elegirAbominacion,regenerarAbominacion} from './abominaciones.js';
+import {elegirAbominacion as resolverAbominacion,regenerarAbominacion as renovarAbominacion} from './abominaciones.js';
+export function elegirAbominacion(s,uid,opcion,rng=Math.random){const n=resolverAbominacion(s,uid,opcion,rng);cerrarEspecial(s,rng);return n;}
+export function regenerarAbominacion(s,uid,rng=Math.random){const n=renovarAbominacion(s,uid,rng);cerrarEspecial(s,rng);return n;}
 export {CATALOG};
 export {isValid} from './estado.js';
 export const total = values => Object.values(values).reduce((a,b)=>a+b,0);
 export function newGame(config={easy:true,normal:true,threshold:20}, normal=3, necro=0) {
  config=normalizarConfig(config);
- const errores=erroresContenido(config);if((config.coleccionIds!==undefined||config.dailyHabilitado||config.reglaNigromantes!==undefined)&&errores.length)throw new Error(errores.join(' '));
+ const errores=erroresContenido(config);if((config.coleccionIds!==undefined||config.dailyHabilitado||config.reglaNigromantes!==undefined||config.spawnEspecial!==undefined)&&errores.length)throw new Error(errores.join(' '));
  if(config.reglaNigromantes!==undefined)config=prepararConfiguracion(config);
  const initial=componer(config);
  const nigromantes=config.modoNigromantes===undefined?null:crearMazoNigromantes(config.modoNigromantes,idsSecundarios(config,'nigromantes'));
  const daily=config.dailyHabilitado?crearMazoDaily(config):null;
- return {version:2,...(config.reglaNigromantes!==undefined?{revisionReglas:REVISION_REGLAS}:{}),nivelAdrenalina:'azul',config,proximaConfig:structuredClone(config),catalogo:{version:2,cartas:structuredClone(CATALOG)},abominaciones:crearMazoAbominaciones(config.modoAbominaciones,idsSecundarios(config,'abominaciones')),...(nigromantes?{nigromantes}:{}),...(daily?{daily}:{}),initial,remaining:{...initial},normal,necro:nigromantes?0:necro,history:[],pins:[],unpinned:[],cycle:1,sequence:0,openBatch:false,respaldoTanda:null};
+ return {version:2,...(config.reglaNigromantes!==undefined?{revisionReglas:REVISION_REGLAS}:{}),nivelAdrenalina:'azul',config,proximaConfig:structuredClone(config),catalogo:{version:2,cartas:structuredClone(especialActivo(config)?[...CATALOG,DISPARADOR_ESPECIAL]:CATALOG)},abominaciones:crearMazoAbominaciones(config.modoAbominaciones,idsSecundarios(config,'abominaciones')),...(nigromantes?{nigromantes}:{}),...(daily?{daily}:{}),...(especialActivo(config)?{especial:crearEspecial(config)}:{}),initial,remaining:{...initial},normal,necro:nigromantes?0:necro,history:[],pins:[],unpinned:[],cycle:1,sequence:0,openBatch:false,respaldoTanda:null};
 }
 export function draw(s,rng=Math.random) {
  if(!total(s.remaining)) s.remaining={...s.initial};
@@ -65,6 +69,7 @@ export function spawn(s,rng=Math.random) {
   batch.configTanda=structuredClone(s.config);
   batch.accionesEnemigos={nigromante:s.accionesPredeterminadas?.nigromante??'azar',abominacion:s.accionesPredeterminadas?.abominacion??'azar'};
  }
+ if(especialActivo(s.config))batch.configEspecial=structuredClone(s.config);
  s.history.push(batch);
  abrirTandaDaily(s);
  for(let i=0;i<count;i++){
@@ -73,7 +78,7 @@ export function spawn(s,rng=Math.random) {
   prepararGeneral(s,carta,rng,0,cola);
  }
  for(const {origen,secundaria} of cola)robarZonaNigromante(s,origen,secundaria,rng);
- cerrarReglasCarta(s);cerrarTandaDaily(s);registrarBakeDanuki(batch,bakeDanukiInicial,rng);s.openBatch=true;return batch;
+ cerrarReglasCarta(s);cerrarTandaDaily(s);cerrarEspecial(s,rng);registrarBakeDanuki(batch,bakeDanukiInicial,rng);s.openBatch=true;return batch;
 }
 export function puedeAnularTanda(s,numero=s.history.at(-1)?.number){
  return Boolean(s.respaldoTanda&&s.respaldoTanda.numero===numero&&s.history.at(-1)?.number===numero);
@@ -89,12 +94,12 @@ export function replaceCard(s,batchNumber,slotIndex,rng=Math.random) {
  abrirTandaDaily(s);
  slot.draws.at(-1).discarded=true;anularEfectos(s,slot.draws.at(-1));
  const carta=draw(s,rng);slot.draws.push(carta);prepararGeneral(s,carta,rng);
- cerrarReglasCarta(s);cerrarTandaDaily(s);
+ cerrarReglasCarta(s);cerrarTandaDaily(s);cerrarEspecial(s,rng);
 }
-export function discardCard(s,batchNumber,slotIndex) {
+export function discardCard(s,batchNumber,slotIndex,rng=Math.random) {
  const slot=posicionActual(s,batchNumber,slotIndex);
  slot.draws.at(-1).discarded=true;
- anularEfectos(s,slot.draws.at(-1));
+ anularEfectos(s,slot.draws.at(-1));cerrarEspecial(s,rng);
 }
 export function addZoneCard(s,batchNumber,kind,rng=Math.random) {
  if(!['normal','necro'].includes(kind))throw new Error('Tipo de zona inválido');
@@ -107,7 +112,7 @@ export function addZoneCard(s,batchNumber,kind,rng=Math.random) {
  batch[kind]=(batch[kind]||0)+1;s[kind]++;
  batch.slots.push({id:`t${batch.number}-z${batch.slots.length+1}`,zone:kind==='normal'?`Zona ${number}`:`Nigromante ${number}`,kind,draws:[card]});
  prepararGeneral(s,card,rng);
- cerrarReglasCarta(s);cerrarTandaDaily(s);
+ cerrarReglasCarta(s);cerrarTandaDaily(s);cerrarEspecial(s,rng);
  return card;
 }
 export function pinCard(s,card) {
@@ -121,7 +126,7 @@ export function pinCard(s,card) {
  }
  s.unpinned=(s.unpinned||[]).filter(c=>c.uid!==card.uid);
  s.pins.push({...card});
- if(m)recalcularSecundario(s,card.mazo);
+ if(m&&card.mazo!=='especial')recalcularSecundario(s,card.mazo);
  sincronizarNigromantes(s);
 }
 export function unpinCard(s,uid,subtractSpawn=false,forzar=false,motivo='correccion') {
@@ -162,7 +167,8 @@ function robarZonaNigromante(s,origen,secundaria,rng,profundidad=0,cola=null){
 }
 function prepararGeneral(s,c,rng,profundidad=0,cola=null){
  prepararReglasCarta(s,c);
- prepararDaily(s,c,rng);
+ prepararEspecial(s,c,rng);
+ if(!dailyIntegrado(s.config)&&c.cardId!=='spawn-especial')prepararDaily(s,c,rng);
  prepararAbominacion(s,c,rng);
  const n=prepararNigromante(s,c,rng);
  if(n)robarZonaNigromante(s,c,n,rng,profundidad,cola);
@@ -177,7 +183,7 @@ function anularEfectos(s,c){
  revertirTransformaciones(s,c.uid);
  for(const n of c.nigromantes||[])anularDependientes(s,n.uid);
  anularNigromantes(s,c);anularAbominaciones(s,c);
- anularDaily(s,c);
+ anularDaily(s,c);anularEspecial(s,c);
  if(c.anulada)unpinCard(s,c.uid);
  sincronizarNigromantes(s);
 }
@@ -188,7 +194,7 @@ export function elegirNigromante(s,uid,opcion,rng=Math.random){
  abrirTandaDaily(s);
  if(opcion==='activacion'){c.resolucionNigromante='activacion';c.accionEnemigo=opcion;}
  else {const n=seleccionarNigromante(s,c,rng,opcion);if(n)robarZonaNigromante(s,c,n,rng);}
- cerrarReglasCarta(s);cerrarTandaDaily(s);
+ cerrarReglasCarta(s);cerrarTandaDaily(s);cerrarEspecial(s,rng);
 }
 export function regenerarNigromante(s,uid,rng=Math.random){
  const anterior=extraccionesSecundarias(s,'nigromantes').find(n=>n.uid===uid);
@@ -197,5 +203,5 @@ export function regenerarNigromante(s,uid,rng=Math.random){
  abrirTandaDaily(s);
  anularDependientes(s,anterior.uid);anularSecundaria(s,anterior);
  recalcularSecundario(s,'nigromantes');sincronizarNigromantes(s);
- const n=seleccionarNigromante(s,c,rng,c.accionEnemigo??'activacion-spawn');if(n)robarZonaNigromante(s,c,n,rng);cerrarTandaDaily(s);return n;
+ const n=seleccionarNigromante(s,c,rng,c.accionEnemigo??'activacion-spawn');if(n)robarZonaNigromante(s,c,n,rng);cerrarTandaDaily(s);cerrarEspecial(s,rng);return n;
 }

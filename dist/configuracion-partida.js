@@ -1,3 +1,5 @@
+import {adoptarEspecial} from './especial.js';
+import {especialActivo,DISPARADOR_ESPECIAL,reposicionDaily} from './especial-config.js';
 import {CATALOG,componer,normalizarConfig,idsSecundarios,enColeccion,datos} from './catalogo.js';
 import {erroresContenido} from './contenido.js';
 import {limitesIniciales} from './limites.js';
@@ -30,14 +32,14 @@ export function aplicarConfiguracionPendiente(s){
  const c=prepararConfiguracion(s.proximaConfig),errores=erroresContenido(c);
  if(errores.length)throw new Error(errores.join(' '));
  const anteriores={...s.initial};
- for(const ficha of CATALOG)if(!s.catalogo.cartas.some(a=>a.id===ficha.id))s.catalogo.cartas.push(structuredClone(ficha));
+ for(const ficha of especialActivo(c)?[...CATALOG,DISPARADOR_ESPECIAL]:CATALOG)if(!s.catalogo.cartas.some(a=>a.id===ficha.id))s.catalogo.cartas.push(structuredClone(ficha));
  s.config=c;s.initial=componer(c,s.catalogo.cartas);
  s.remaining=Object.fromEntries(Object.entries(s.initial).map(([id,n])=>[id,Object.hasOwn(anteriores,id)&&!s.reincorporacionesPendientes?.general?.includes(id)?Math.min(s.remaining[id]??0,n):n]));
  if(Object.values(s.remaining).every(n=>n===0)){s.remaining={...s.initial};s.cycle++;}
  for(const [mazo,catalogo] of [['abominaciones',CARTAS_ABOMINACIONES],['nigromantes',CARTAS_NIGROMANTES],['daily',CARTAS_DAILY]]){
   const ids=mazo==='daily'&&!c.dailyHabilitado?[]:idsSecundarios(c,mazo);
   if(!s[mazo]&&!ids.length)continue;
-  const m=s[mazo]??=crearSecundario(catalogo.filter(a=>ids.includes(a.id)),mazo==='daily'?(c.modoDaily??'sin-reposicion'):c[mazo==='nigromantes'?'modoNigromantes':'modoAbominaciones']);
+  const m=s[mazo]??=crearSecundario(catalogo.filter(a=>ids.includes(a.id)),mazo==='daily'?reposicionDaily(c):c[mazo==='nigromantes'?'modoNigromantes':'modoAbominaciones']);
   const previos=new Set(m.habilitadasIds??m.cartas.map(a=>a.id));
   for(const id of ids){
    if(!m.cartas.some(a=>a.id===id)){m.cartas.push(structuredClone(catalogo.find(a=>a.id===id)));m.remaining[id]=1;}
@@ -45,9 +47,10 @@ export function aplicarConfiguracionPendiente(s){
     delete m.descarte[id];m.remaining[id]=1;
    }
   }
-  m.dinamico=true;m.habilitadasIds=[...ids];m.modo=mazo==='daily'?(c.modoDaily??'sin-reposicion'):c[mazo==='nigromantes'?'modoNigromantes':'modoAbominaciones']??'sin-reposicion';
+  m.dinamico=true;m.habilitadasIds=[...ids];m.modo=mazo==='daily'?reposicionDaily(c):c[mazo==='nigromantes'?'modoNigromantes':'modoAbominaciones']??'sin-reposicion';
   recalcularSecundario(s,mazo);
  }
+ adoptarEspecial(s);
  s.configuracionDinamica=true;s.configuracionPendiente=false;
  delete s.reincorporacionesPendientes;
 }

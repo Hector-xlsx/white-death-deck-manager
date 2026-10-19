@@ -1,5 +1,9 @@
 # Especificación funcional · Gestor de mazos Zombicide
 
+## Ampliación confirmada: Spawn Especial · 18/10/2026
+
+La composición directa se conserva como modalidad inicial. Las modalidades opcionales de disparadores y aparición probabilística, sus cantidades, reposición, Daily integrado, compensación y persistencia se definen en [SPAWN_ESPECIAL.md](SPAWN_ESPECIAL.md), que prevalece sobre las descripciones históricas de expansiones siempre integradas al general.
+
 ## Banderines Daily Spawn en Aparición y Última tanda: 15/10/2026
 
 Pendiente 27 completado. Las siete identidades Daily muestran en la esquina superior izquierda el banderín de su familia de catálogo: Caminante azul, Bruto morado o Corredor ámbar. Se reutilizan recursos y geometría existentes (altura del 20%, margen de 4 px y corrección del lienzo transparente), sin duplicar insignias ni interceptar zoom o controles. Bake-Danuki conserva Caminante en su aparición inicial y el estandarte guardado por dado en su referencia especial final. No se aplica retrospectivamente su última transformación a imágenes de apariciones anteriores.

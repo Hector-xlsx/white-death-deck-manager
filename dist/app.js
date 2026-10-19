@@ -1,3 +1,6 @@
+import {iniciarEspecialUI,leerEspecialUI,actualizarEspecialUI} from './especial-ui.js';
+import {regenerarEspecial} from './especial.js';
+import {ID_DISPARADOR,dailyIntegrado} from './especial-config.js';
 import {fichaZombiHTML} from './fichas-zombis.js';
 import {registrarDerrota} from './derrotas.js';
 import {resumenPuntaje,PUNTOS_ZOMBI} from './puntaje.js';
@@ -28,7 +31,7 @@ import {datos} from './catalogo.js';
 const $=id=>document.getElementById(id);
 const marcadorPuntaje=window.ScoreCounter.create($('score-counter-host'),{theme:'kang',value:0,width:180,assetBase:'./recursos/Imagenes generales/contadores_puntaje/assets/'});
 marcadorPuntaje.element.id='open-zombies';marcadorPuntaje.element.dataset.action='zombis';marcadorPuntaje.element.title='Puntaje y zombis generados';
-let ultimoTemaPuntaje='kang',ultimoPuntaje=0,ultimoPuntajeOculto=false;
+let ultimoTemaPuntaje='kang',ultimoPuntaje=0;
 
 // Depuración temporal: desactivar antes de preparar la versión final.
 const DEBUG_DAILY_SPAWN=true;
@@ -102,17 +105,18 @@ $('save-status').textContent='No se pudo guardar';toast(['CADENA_AUTOMATICA','EN
 }
 function openDialog(id){if(!$(id).open)$(id).showModal();}
 function closeDialog(id,{forzar=false}={}){if(id==='confirm-dialog')confirmAction=null;if(id==='settings-dialog'&&!forzar&&hayCambiosConfiguracion()){confirmarSalidaConfiguracion();return;}$(id).close();}
-function entry(uid){for(const b of state.history)for(const slot of b.slots)for(const c of slot.draws){if(c.uid===uid)return c;const secundaria=[...(c.abominaciones||[]),...(c.nigromantes||[]),...(c.daily||[])].find(a=>a.uid===uid);if(secundaria)return secundaria;}return state.pins.find(c=>c.uid===uid)||state.unpinned.find(c=>c.uid===uid);}
+function entry(uid){for(const b of state.history)for(const slot of b.slots)for(const c of slot.draws){if(c.uid===uid)return c;const secundaria=[...(c.abominaciones||[]),...(c.nigromantes||[]),...(c.daily||[]),...(c.especial||[])].find(a=>a.uid===uid);if(secundaria)return secundaria;}return state.pins.find(c=>c.uid===uid)||state.unpinned.find(c=>c.uid===uid);}
 function imagenCarta(c){const card=catalog[c.cardId];return c.mazo||card.rutaImagen?rutaRecurso(card.rutaImagen??card.image):`./assets/${card.image}`;}
 function cartasTanda(b,historico=false){
- const items=[],etiquetas=etiquetasZonas(b);
+ const items=[],finales=[],etiquetas=etiquetasZonas(b);
  function visitar(t){
   if(!historico&&t.anulada)return;
   const zone=etiquetas.get(t.id)??t.zone;
   for(const c of historico?t.draws:t.draws.slice(-1)){
-   items.push({c,slot:t,zone});
+   if(c.cardId!==ID_DISPARADOR||![...(c.especial||[]),...(c.daily||[])].length)items.push({c,slot:t,zone});
+   for(const a of c.especial||[])if(historico||!a.anulada||c.discarded&&a===c.especial.at(-1))(b.especialIntento?finales:items).push({c:a,slot:t,zone});
    for(const a of referenciasActivacion(c))items.push({c:a,slot:t,zone});
-   for(const d of c.daily||[])if(historico||!d.anulada)items.push({c:d,slot:t,zone});
+   for(const d of c.daily||[])if(historico||!d.anulada||c.discarded&&d.disparadorEspecial&&d===c.daily.at(-1))(d.spawnEspecial&&b.especialIntento?finales:items).push({c:d,slot:t,zone});
    for(const a of c.abominaciones||[])if(historico||!a.anulada)items.push({c:a,slot:t,zone});
    for(const n of c.nigromantes||[])if(historico||!n.anulada){
     items.push({c:n,slot:t,zone});
@@ -121,6 +125,7 @@ function cartasTanda(b,historico=false){
   }
  }
  for(const t of b.slots.filter(t=>b.reglasEnemigos||t.kind!=='derivada'))visitar(t);
+ items.push(...finales);
  items.push(...referenciasReglas(state,b));
  const bake=referenciaBakeDanuki(state,b);if(bake)items.push(bake);
  return items;
@@ -157,6 +162,7 @@ function aporteHTML(c,mini=false){return pintarAporte(c,state.proximaConfig.modo
 
 function miniHTML(c,zone,slot){
  if(c.referenciaAporte)return aporteHTML(c,true);
+ if(c.cardId===ID_DISPARADOR)return `<div class="last-mini">${marcadorZonaHTML(slot,zone,c)}<p class="especial-concepto">Spawn Especial<br>Sin candidatos disponibles</p></div>`;
  const card=catalog[c.cardId],visual=estadoVisualSpawn(c);
 return `<div class="last-mini ${c.discarded?'discarded':''} ${visual==='spawn'||visual==='activacion'||c.transformacionDesde?'spawn-applied':''}" data-extraccion="${c.uid}">${marcadorZonaHTML(slot,zone,c)}<div class="mini-media"><button data-action="zoom" data-uid="${c.referenciaUid??c.uid}" aria-label="Ampliar ${esc(card.name)}"><img src="${esc(imagenCarta(c))}" alt="${esc(card.name)}">${marcoEnemigo(c)}${banderinDailyHTML(c)}${c.discarded?'<span class="discard-cross" aria-hidden="true">×</span>':''}${tieneActivacionAdicional(c)&&c.activaciones===undefined?selloActivacion:''}</button></div>${resultadoBakeHTML(c)}<small class="visually-hidden">${esc(zone)}</small></div>`;
 }
@@ -175,12 +181,13 @@ function cartasHTML(b,historico=false){
 }
 function cardHTML(c,zone='',actions=false,batch=0,slot=0,necro=false,zonaSlot=null){
  if(c.referenciaAporte)return aporteHTML(c);
+ if(c.cardId===ID_DISPARADOR)return `<article class="draw-card" data-extraccion="${c.uid}">${zonaSlot?marcadorZonaHTML(zonaSlot,zone,c):''}<p class="especial-concepto">Spawn Especial<br>Sin candidatos disponibles</p>${actions==='batch'?`<button data-action="replace" data-batch="${batch}" data-slot="${slot}">Regenerar</button><button data-action="discard" data-batch="${batch}" data-slot="${slot}">Descartar</button>`:''}</article>`;
  const secuencia=actions==='batch'&&revelacion?.numero===batch?revelacion:null;
  const bloqueada=secuencia&&(secuencia.espera===null||(!secuencia.resueltas.has(c.uid)&&!c.mazo&&secuencia.espera!==c.uid));
  const card=catalog[c.cardId];
  const info=referenciasPorCarta(c.cardId).length?`<button data-action="info" data-id="${c.cardId}" aria-label="Información de ${esc(card.name)}" title="Información de la carta">ⓘ</button>`:'';
- const secundaria=Boolean(c.mazo),nigromante=c.mazo==='nigromantes'||c.cardId==='nigromante';
- const regenerar=c.mazo==='daily'?'regenerar-daily':nigromante?'regenerar-nigromante':'regenerar-abominacion';
+ const secundaria=Boolean(c.mazo)&&!c.disparadorEspecial,nigromante=c.mazo==='nigromantes'||c.cardId==='nigromante';
+ const regenerar=c.spawnEspecial?'regenerar-especial':c.mazo==='daily'?'regenerar-daily':nigromante?'regenerar-nigromante':'regenerar-abominacion';
  const controls=actions&&!c.referenciaEspecial&&!c.referenciaActivacion&&!c.referenciaBakeDanuki?`<div class="card-actions">${pinButton(c)}${actions==='batch'?`<button data-action="${secundaria?regenerar:'replace'}" data-uid="${c.uid}" data-batch="${batch}" data-slot="${slot}" aria-label="${secundaria?'Regenerar':'Descartar y regenerar'} ${esc(card.name)}" title="${secundaria?'Regenerar enemigo':'Descartar y robar otra'}">${refreshIcon}</button>${secundaria?'':`<button data-action="discard" data-batch="${batch}" data-slot="${slot}" class="discard-button" aria-label="Descartar ${esc(card.name)} sin robar otra" title="Descartar sin robar otra" ${c.discarded?'disabled':''}>${trashIcon}</button>`}`:''}${info}</div>`:'';
  const pendiente=(c.resolucionAbominacion||c.resolucionNigromante)==='pendiente';
  const eleccion=actions==='batch'&&!c.discarded&&pendiente&&(!secuencia||secuencia.espera===c.uid)?`<div class="enemy-choices">${['activacion','spawn','activacion-spawn'].map(opcion=>`<button data-action="${nigromante?'elegir-nigromante':'elegir-abominacion'}" data-uid="${c.uid}" data-value="${opcion}">${esc(NOMBRES_ACCIONES[opcion])}</button>`).join('')}</div>`:'';
@@ -192,7 +199,7 @@ function cardHTML(c,zone='',actions=false,batch=0,slot=0,necro=false,zonaSlot=nu
  const porRevelar=secuencia&&!secuencia.reveladas.has(c.uid);
  const debugDaily=DEBUG_DAILY_SPAWN&&actions==='batch'&&!porRevelar&&c.dailyIntento?`<span class="debug-daily" title="Probabilidad de Daily Spawn usada para esta carta"> - ${esc(c.dailyIntento.probabilidad.toLocaleString('es-CL',{maximumFractionDigits:2}))}%</span>`:'';
  const avisoLimite=c.activacionPorLimite!==undefined&&(visual!=='ninguno'||actions==='history')?`<p class="resolution-tag">Tope alcanzado: ${esc(c.activacionPorLimite)}</p>`:'';
- return `<article class="draw-card ${c.discarded?'discarded':''} ${visual==='spawn'||visual==='activacion'||c.transformacionDesde?'spawn-applied':''} ${volteando?'volteando':''} ${porRevelar?'por-revelar':''} ${bloqueada?'resolucion-bloqueada':''}" ${volteando||porRevelar?'inert':''} ${volteando?`style="--volteo-demora:${volteo.inicio-performance.now()}ms;--volteo-duracion:${volteo.duracion}ms"`:''} data-extraccion="${c.uid}">${zonaSlot?marcadorZonaHTML(zonaSlot,zone,c):''}<span class="zone-label visually-hidden ${necro?'necro-zone':''}" ${visual==='spawn'||visual==='activacion'?'title="Efecto aplicado"':''}>${esc(zone)}</span><div class="card-media"><div class="reveal-front"><button class="card-image" data-action="zoom" data-uid="${c.referenciaUid??c.uid}" aria-label="Ampliar ${esc(card.name)}"><img src="${esc(imagenCarta(c))}" alt="${esc(card.name)}" loading="${volteando?'eager':'lazy'}">${actions==='batch'?marcoEnemigo(c):''}${actions==='batch'||c.referenciaBakeDanuki?banderinDailyHTML(c):''}${c.discarded?'<span class="discard-cross" aria-hidden="true">×</span>':''}${sello}</button>${eleccion}</div><div class="reveal-back" aria-hidden="true"></div></div>${controls}<p class="card-label">${esc(card.name)}${c.referenciaActivacion?' · Activación':''}${debugDaily}${resultadoBakeHTML(c)}</p>${avisoLimite}${c.sinCandidatos?'<p class="resolution-tag">Sin enemigos disponibles · Sin nueva aparición</p>':''}${c.discarded?`<p class="discard-tag">${c.anulada?secundaria?'Anulada · Devuelta al mazo':'Anulada · Sin efecto':'Descartada · Sin efecto'}</p>`:''}</article>`;
+ return `<article class="draw-card ${c.discarded?'discarded':''} ${visual==='spawn'||visual==='activacion'||c.transformacionDesde?'spawn-applied':''} ${volteando?'volteando':''} ${porRevelar?'por-revelar':''} ${bloqueada?'resolucion-bloqueada':''}" ${volteando||porRevelar?'inert':''} ${volteando?`style="--volteo-demora:${volteo.inicio-performance.now()}ms;--volteo-duracion:${volteo.duracion}ms"`:''} data-extraccion="${c.uid}">${zonaSlot?marcadorZonaHTML(zonaSlot,zone,c):''}<span class="zone-label visually-hidden ${necro?'necro-zone':''}" ${visual==='spawn'||visual==='activacion'?'title="Efecto aplicado"':''}>${esc(zone)}</span><div class="card-media"><div class="reveal-front"><button class="card-image" data-action="zoom" data-uid="${c.referenciaUid??c.uid}" aria-label="Ampliar ${esc(card.name)}"><img src="${esc(imagenCarta(c))}" alt="${esc(card.name)}" loading="${volteando?'eager':'lazy'}">${actions==='batch'?marcoEnemigo(c):''}${actions==='batch'||c.referenciaBakeDanuki?banderinDailyHTML(c):''}${c.discarded?'<span class="discard-cross" aria-hidden="true">×</span>':''}${sello}</button>${eleccion}</div><div class="reveal-back" aria-hidden="true"></div></div>${controls}<p class="card-label">${esc(card.name)}${c.spawnEspecial?' · Spawn Especial':''}${c.referenciaActivacion?' · Activación':''}${debugDaily}${resultadoBakeHTML(c)}</p>${avisoLimite}${c.sinCandidatos?'<p class="resolution-tag">Sin enemigos disponibles · Sin nueva aparición</p>':''}${c.discarded?`<p class="discard-tag">${c.anulada?secundaria?'Anulada · Devuelta al mazo':'Anulada · Sin efecto':'Descartada · Sin efecto'}</p>`:''}</article>`;
 }
 const DISTINTIVOS_ENEMIGOS={abominaciones:{archivo:'Banderín rojo de abominación-2.png',nombre:'Abominación'},nigromantes:{archivo:'Estandarte esmeralda del nigromante-1.png',nombre:'Nigromante'},caminantes:{archivo:'Estandarte del caminante zombi.png',nombre:'Caminante'},brutos:{archivo:'Zombi barrigón en estandarte morado.png',nombre:'Bruto'},corredores:{archivo:'Estandarte ámbar del zombi corredor.png',nombre:'Corredor'}};
 function savedCardHTML(reference,archived=false){
@@ -248,25 +255,18 @@ for(const fila of filasAjuste){
  });
 }
 
-function mascaraPuntaje(tema){
- const t=window.ScoreCounter.themes[tema],b=t.box;
- return `<svg class="score-counter__digits" viewBox="0 0 ${t.width} ${t.height}" aria-hidden="true"><text x="${b.x+b.width/2}" y="${b.y+b.height/2}" text-anchor="middle" dominant-baseline="central" fill="${t.palette.outer}" font-family="Georgia,serif" font-size="${b.height*.65}">•••</text></svg>`;
-}
 function renderContadorZombis(){
  const resumen=resumenZombis(state),puntaje=resumenPuntaje(state),tema=state.proximaConfig.temaPuntaje??state.config.temaPuntaje??'kang';
  if(tema!==ultimoTemaPuntaje){marcadorPuntaje.setTheme(tema);ultimoTemaPuntaje=tema;}
  const oculto=state.proximaConfig.ocultarPuntaje??state.config.ocultarPuntaje??false;
- if(puntaje.total!==ultimoPuntaje||oculto!==ultimoPuntajeOculto){marcadorPuntaje.setValue(puntaje.total);ultimoPuntaje=puntaje.total;}
- ultimoPuntajeOculto=oculto;
- if(oculto)marcadorPuntaje.element.querySelector('.score-counter__digits').innerHTML=mascaraPuntaje(tema).replace(/^<svg[^>]*>/,'').replace(/<\/svg>$/,'');
- const etiqueta=oculto?'Puntaje oculto. Abrir contador de zombis':`Puntaje: ${puntaje.total}. Abrir puntaje y zombis generados`;
- marcadorPuntaje.element.setAttribute('aria-label',etiqueta);marcadorPuntaje.element.title=oculto?'Puntaje oculto · Zombis generados':'Puntaje y zombis generados';
- $('toggle-score-visibility').textContent=oculto?'Mostrar puntaje':'Ocultar puntaje';$('toggle-score-visibility').setAttribute('aria-pressed',String(oculto));$('toggle-score-visibility').disabled=storageBlocked;
+ if(puntaje.total!==ultimoPuntaje){marcadorPuntaje.setValue(puntaje.total);ultimoPuntaje=puntaje.total;}
+ $('score-counter-host').hidden=oculto;
+ marcadorPuntaje.element.setAttribute('aria-label',`Puntaje: ${puntaje.total}. Abrir puntaje y zombis generados`);
  $('zombies-total').textContent=String(resumen.total);
- $('score-total').textContent=oculto?'Oculto':String(puntaje.total);
+ $('score-total').textContent=String(puntaje.total);
  const recurso=window.ScoreCounter.themes[tema];
- $('score-dialog-display').innerHTML=`<img class="score-counter__base" src="./recursos/Imagenes generales/contadores_puntaje/assets/${recurso.file}" alt="">${oculto?mascaraPuntaje(tema):window.ScoreCounter.renderScoreSvg(tema,puntaje.total)}`;
- $('score-dialog-display').setAttribute('aria-label',oculto?'Puntaje oculto':`Puntaje: ${puntaje.total}`);
+ $('score-dialog-display').innerHTML=`<img class="score-counter__base" src="./recursos/Imagenes generales/contadores_puntaje/assets/${recurso.file}" alt="">${window.ScoreCounter.renderScoreSvg(tema,puntaje.total)}`;
+ $('score-dialog-display').setAttribute('aria-label',`Puntaje: ${puntaje.total}`);
  $('score-variable-note').hidden=resumen.variables===0;
  $('score-variable-note').textContent=`${resumen.variables} ${resumen.variables===1?'aparición con cantidad variable':'apariciones con cantidad variable'}: agrega sus zombis manualmente en la fila del tipo correspondiente.`;
 
@@ -309,7 +309,7 @@ function render(){
  $('last-preview').innerHTML=batch?`<div class="last-strip">${gruposZonaHTML(cartasTanda(batch),({c,zone,slot})=>miniHTML(c,zone,slot),true)}</div>`:'<div class="empty-state"><strong>El mazo está listo.</strong><p>Pulsa SPAWN para revelar una carta por zona.</p></div>';
  renderFijados();
  if($('batch-dialog').open)renderBatch();if($('history-dialog').open)renderHistory();
- 
+
 }
 function renderBatch(){const b=state.history.find(b=>b.number===visibleBatch)||state.history.at(-1);if(!b)return;visibleBatch=b.number;$('batch-dialog').dataset.revelacion=revelacion?.fase??'lista';$('batch-title').textContent=`Tanda ${b.number} · ${b.normal+b.necro} zonas iniciales`;$('batch-grid').innerHTML=cartasHTML(b);programarVolteos();const anular=$('anular-tanda');anular.disabled=storageBlocked||!puedeAnularTanda(state,b.number);anular.title=anular.disabled?'Esta tanda no tiene un respaldo anterior disponible':'Volver al estado anterior a SPAWN';}
 function programarVolteos(){
@@ -389,7 +389,8 @@ function settings(){
  f.elements.dailyHabilitado.checked=Boolean(state.proximaConfig.dailyHabilitado);
  f.elements.modoDaily.value=state.proximaConfig.modoDaily??'sin-reposicion';
  f.elements.modoAparicionAdicional.value=state.proximaConfig.modoAparicionAdicional??'minimalista';
- f.elements.temaPuntaje.value=state.proximaConfig.temaPuntaje??'kang';
+ iniciarEspecialUI(state.proximaConfig);
+ f.elements.temaPuntaje.value=(state.proximaConfig.ocultarPuntaje??state.config.ocultarPuntaje??false)?'oculto':state.proximaConfig.temaPuntaje??state.config.temaPuntaje??'kang';
  for(const nivel of NIVELES_ADRENALINA){const p=parametrosDailyFormulario(state.proximaConfig,nivel);f.elements[`dailyBase-${nivel}`].value=p.base;f.elements[`dailyIncremento-${nivel}`].value=p.incremento;}
  f.elements.dailyIncrementoPor.value=state.proximaConfig.dailyIncrementoPor??'tanda';
  document.querySelector('[name="filtro-contenido"][value="zombies"]').checked=true;
@@ -399,7 +400,7 @@ function draftConfig(){
  const f=$('settings-form'),valor=n=>f.elements[n].value===''?NaN:Number(f.elements[n].value);
  const dailyPorNivel=Object.fromEntries(NIVELES_ADRENALINA.map(nivel=>[nivel,{base:valor(`dailyBase-${nivel}`),incremento:valor(`dailyIncremento-${nivel}`)}]));
  const limitesPorAdrenalina=Object.fromEntries(FAMILIAS_LIMITES.map(mazo=>[mazo,Object.fromEntries(NIVELES_ADRENALINA.map(nivel=>[nivel,valor(`limite-${mazo}-${nivel}`)]))]));
- return normalizarConfig({...borradorContenido,easy:f.elements.easy.checked,normal:f.elements.normal.checked,threshold:Number(f.elements.threshold.value),modoAbominaciones:f.elements.modoAbominaciones.value,modoNigromantes:f.elements.modoNigromantes.value,reglaNigromantes:f.elements.reglaNigromantes.value,reglaAbominaciones:f.elements.reglaAbominaciones.value,abominacionEstandarId:f.elements.abominacionEstandarId.value,dailyHabilitado:f.elements.dailyHabilitado.checked,modoDaily:f.elements.modoDaily.value,modoAparicionAdicional:f.elements.modoAparicionAdicional.value,temaPuntaje:f.elements.temaPuntaje.value,ocultarPuntaje:state.proximaConfig.ocultarPuntaje??state.config.ocultarPuntaje??false,dailyPorNivel,dailyIncrementoPor:f.elements.dailyIncrementoPor.value,limitesPorAdrenalina});
+ return normalizarConfig({...borradorContenido,spawnEspecial:leerEspecialUI(borradorContenido),easy:f.elements.easy.checked,normal:f.elements.normal.checked,threshold:Number(f.elements.threshold.value),modoAbominaciones:f.elements.modoAbominaciones.value,modoNigromantes:f.elements.modoNigromantes.value,reglaNigromantes:f.elements.reglaNigromantes.value,reglaAbominaciones:f.elements.reglaAbominaciones.value,abominacionEstandarId:f.elements.abominacionEstandarId.value,dailyHabilitado:f.elements.dailyHabilitado.checked,modoDaily:f.elements.modoDaily.value,modoAparicionAdicional:f.elements.modoAparicionAdicional.value,temaPuntaje:f.elements.temaPuntaje.value==='oculto'?(state.proximaConfig.temaPuntaje??state.config.temaPuntaje??'kang'):f.elements.temaPuntaje.value,ocultarPuntaje:f.elements.temaPuntaje.value==='oculto',dailyPorNivel,dailyIncrementoPor:f.elements.dailyIncrementoPor.value,limitesPorAdrenalina});
 }
 function actualizarAbominacionEstandar(){
  const selector=$('abominacion-estandar'),actual=selector.value||borradorContenido.abominacionEstandarId;
@@ -427,6 +428,7 @@ function renderContenido(conservarAbiertos=false){
 }
 function updateSettings(){
  const config=draftConfig(),errores=erroresContenido(config),f=$('settings-form');
+ actualizarEspecialUI(config);
  $('threshold-label').textContent=`${config.threshold}%`;
  $('settings-summary').textContent=`Mazo general: ${total(componer(config))} cartas · Abominaciones: ${idsSecundarios(config,'abominaciones').length} · Nigromantes: ${idsSecundarios(config,'nigromantes').length} · Daily Spawn: ${config.dailyHabilitado?idsSecundarios(config,'daily').length:0}`;
  $('settings-errors').textContent=errores.join(' ');$('settings-errors').hidden=!errores.length;
@@ -438,7 +440,8 @@ function updateSettings(){
   for(const celda of $('limits-config').querySelectorAll(`tr>:nth-child(${columna})`))celda.hidden=!personalizado[mazo];
   for(const nivel of NIVELES_ADRENALINA){const input=f.elements[`limite-${mazo}-${nivel}`];input.min=mazo==='nigromantes'?'0':'1';input.disabled=!personalizado[mazo];}
  }
- for(const input of document.querySelectorAll('.daily-settings input,.daily-settings select'))input.disabled=!config.dailyHabilitado;
+ for(const input of document.querySelectorAll('.daily-settings input,.daily-settings select'))input.disabled=!config.dailyHabilitado||dailyIntegrado(config);
+ $('daily-config').querySelector('.daily-settings').hidden=dailyIntegrado(config);
 }
 function hayCambiosConfiguracion(){return $('settings-dialog').open&&firmaConfiguracionInicial!==null&&firmaContenido(draftConfig())!==firmaConfiguracionInicial;}
 function guardarConfiguracion(){const config=draftConfig();if(commit(s=>programarConfiguracion(s,config))){firmaConfiguracionInicial=firmaContenido(config);toast('Configuración guardada. Modos y contenido se aplicarán a la próxima tanda.');closeDialog('settings-dialog',{forzar:true});}}
@@ -448,6 +451,7 @@ function confirmarSalidaConfiguracion(){
 $('settings-dialog').addEventListener('cancel',e=>{e.preventDefault();closeDialog('settings-dialog');});
 $('settings-dialog').addEventListener('close',()=>{if(!$('settings-dialog').open){borradorContenido=null;firmaConfiguracionInicial=null;}});
 $('threshold').addEventListener('input',updateSettings);
+ $('especial-config').addEventListener('input',e=>{if(e.target.matches('input'))updateSettings();});
 for(const input of document.querySelectorAll('.daily-settings input'))input.addEventListener('input',updateSettings);
 for(const input of document.querySelectorAll('.limit-settings input'))input.addEventListener('input',updateSettings);
 $('content-selector').addEventListener('click',e=>{if(e.target.closest('[name="caja-contenido"]'))e.stopPropagation();});
@@ -459,7 +463,6 @@ $('settings-form').addEventListener('change',e=>{
  if(input.name==='filtro-contenido'){filtroContenido=input.value;renderContenido();}
  if(input.name==='carta'||input.name==='caja')actualizarAbominacionEstandar();updateSettings();
 });
-$('toggle-score-visibility').addEventListener('click',()=>{if(commit(s=>{const ocultar=!(s.proximaConfig.ocultarPuntaje??s.config.ocultarPuntaje??false);s.config.ocultarPuntaje=ocultar;s.proximaConfig.ocultarPuntaje=ocultar;})&&firmaConfiguracionInicial!==null){const inicial=JSON.parse(firmaConfiguracionInicial);inicial.ocultarPuntaje=state.proximaConfig.ocultarPuntaje;firmaConfiguracionInicial=firmaContenido(inicial);}});
 $('save-settings').addEventListener('click',guardarConfiguracion);
 $('settings-form').addEventListener('submit',e=>{e.preventDefault();const config=draftConfig();showConfirm('¿Iniciar nueva partida?','Se borrarán el historial, los fijados, los desfijados y las zonas de nigromante de la partida actual.',[{value:'cancel',label:'Cancelar'},{value:'yes',label:'Iniciar partida',primary:true}],v=>{if(v!=='yes')return;const zones=state.normal;if(commit(s=>{const nueva=newGame(config,zones,0);for(const k of Object.keys(s))delete s[k];Object.assign(s,nueva);},{recover:true})){for(const d of document.querySelectorAll('dialog[open]'))d.close();visibleBatch=null;toast('Nueva partida lista.');}});});
 function revealBatch(){if(state.normal+state.necro===0)throw new Error('No hay zonas de aparición.');const previousCycle=state.cycle;if(!commit(s=>{adoptarLimites(s);spawn(s);},{procedural:true}))throw new Error($('toast').textContent||'No se pudo guardar la tanda.');showBatch();if(state.cycle>previousCycle)toast('El mazo se ha reiniciado.');return state.history.at(-1);}
@@ -492,6 +495,7 @@ document.addEventListener('click',e=>{
  if(b.dataset.action==='regenerar-abominacion')commit(s=>regenerarAbominacion(s,Number(b.dataset.uid)),{animar:true});
  if(b.dataset.action==='elegir-nigromante')commit(s=>elegirNigromante(s,Number(b.dataset.uid),b.dataset.value),{animar:true});
  if(b.dataset.action==='regenerar-nigromante')commit(s=>regenerarNigromante(s,Number(b.dataset.uid)),{animar:true});
+ if(b.dataset.action==='regenerar-especial')commit(s=>regenerarEspecial(s,Number(b.dataset.uid)),{animar:true});
  if(b.dataset.action==='regenerar-daily')commit(s=>regenerarDaily(s,Number(b.dataset.uid)),{animar:true});
 });
 document.addEventListener('click',e=>{const b=e.target.closest('button[data-action]');if(!b)return;const d=b.dataset;switch(d.action){case'info':informacionCarta(d.id);break;case'counter':commit(s=>s[d.kind]=Math.max(0,s[d.kind]+Number(d.delta)));break;case'settings':settings();break;case'history':renderHistory();openDialog('history-dialog');break;case'reopen':showBatch();break;case'close':closeDialog(d.target);break;case'zoom':zoom(Number(d.uid));break;case'pin':{const uid=Number(d.uid);if(isPinned(uid))unpin(uid);else{const c=entry(uid);if(c&&commit(s=>pinCard(s,c)))toast('Carta fijada.');}break;}case'unpin':unpin(Number(d.uid));break;case'add-zone':{const cycle=state.cycle;if(commit(s=>addZoneCard(s,visibleBatch,d.kind)))toast(state.cycle>cycle?'Zona añadida. El mazo se ha reiniciado.':'Zona y carta añadidas a la tanda.');break;}case'discard':if(commit(s=>discardCard(s,Number(d.batch),d.slot)))toast('Carta descartada sin robar otra.');break;case'replace':{const cycle=state.cycle;if(commit(s=>replaceCard(s,Number(d.batch),d.slot)))toast(state.cycle>cycle?'Carta reemplazada. El mazo se ha reiniciado.':'Carta descartada y reemplazada.');break;}case'confirm':{const action=confirmAction;confirmAction=null;closeDialog('confirm-dialog');action?.(d.value);break;}}});

@@ -18,10 +18,14 @@ export function desgloseGenerados(s){
    for(const c of zona.draws){
     if(c.discarded||c.anulada)continue;
     const ficha=s.catalogo.cartas.find(f=>f.id===c.cardId);
-    if(!c.cardId.startsWith('activacion-')&&!['abominacion','nigromante'].includes(ficha?.tipo)){
+    if(c.cardId!=='spawn-especial'&&!c.cardId.startsWith('activacion-')&&!['abominacion','nigromante'].includes(ficha?.tipo)){
      const cantidad=ficha?.levels?.[nivel];
      if(Number.isSafeInteger(cantidad)&&cantidad>=0)sumar(ficha.tipo,cantidad);
      else if(cantidad!=='Sin efecto'&&cantidad!=='Activación adicional')variables++;
+    }
+    for(const a of c.especial||[])if(!a.discarded&&!a.anulada){
+     const f=s.catalogo.cartas.find(f=>f.id===a.cardId),q=f?.levels?.[nivel];
+     if(Number.isSafeInteger(q))sumar(f.tipo,q);else variables++;
     }
     for(const secundaria of [...(c.abominaciones||[]),...(c.nigromantes||[]),...(c.daily||[])]){
      if(secundaria.anulada||secundaria.discarded||vistos.has(secundaria.uid))continue;

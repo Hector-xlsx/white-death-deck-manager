@@ -1,3 +1,4 @@
+import {dailyIntegrado} from './especial-config.js';
 import {cartasTransformadas,mummOcupado,revertirTransformaciones} from './reglas-cartas.js';
 import {aplicarLimite,resolverPendientesPorLimite} from './limites.js';
 export const MODOS_SECUNDARIOS=['sin-reposicion','con-reposicion'];
@@ -35,7 +36,7 @@ export function migrarSecundario(s,mazo,trofeos=[]){
  }
  recalcularSecundario(s,mazo);
 }
-export function recalcularSecundario(s,mazo){
+export function recalcularSecundario(s,mazo,{reiniciarIntegrado=false}={}){
  const m=s[mazo];if(!m)return;
  if(m.version===2){
   if(mazo==='daily'&&m.modo==='con-reposicion')for(const id of Object.keys(m.descarte))if(!s.pins.some(p=>p.mazo===mazo&&p.cardId===id)){
@@ -44,7 +45,7 @@ export function recalcularSecundario(s,mazo){
   for(const p of s.pins.filter(p=>p.mazo===mazo))m.remaining[p.cardId]=0;
   for(const id of [...Object.keys(m.descarte),...Object.keys(m.trofeos)])m.remaining[id]=0;
   const activos=m.habilitadasIds??m.cartas.map(c=>c.id),descartes=Object.keys(m.descarte).filter(id=>activos.includes(id));
-  if(activos.length&&activos.every(id=>m.remaining[id]===0)&&descartes.length){
+  if((mazo!=='daily'||!dailyIntegrado(s.config)||reiniciarIntegrado)&&activos.length&&activos.every(id=>m.remaining[id]===0)&&descartes.length){
    for(const id of descartes){m.remaining[id]=1;delete m.descarte[id];}
    m.cycle++;
   }

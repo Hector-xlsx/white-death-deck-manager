@@ -1,5 +1,9 @@
 # Decisiones pendientes y propuestas
 
+## Spawn Especial confirmado e implementado · 18/10/2026
+
+[SPAWN_ESPECIAL.md](SPAWN_ESPECIAL.md) registra las decisiones explícitas de este chat y su implementación. Las referencias históricas inferiores a aparición probabilística especial y pesos futuros quedan sustituidas únicamente para Spawn Especial y las cantidades de Daily integrado. Daily independiente conserva una copia por identidad. Los pesos adaptativos de otros mazos continúan pendientes. Sin nuevas decisiones sobre campañas o cartas incompletas.
+
 **Antes de la versión final:** retirar el porcentaje de depuración Daily junto al nombre en Aparición (bandera DEBUG_DAILY_SPAWN de dist/app.js, añadido por solicitud del 14/10/2026).
 
 Este documento conserva las propuestas iniciales como registro histórico y separa las decisiones ya cerradas de lo pendiente. Las propuestas antiguas de la tabla A no son instrucciones vigentes; los registros de cierre son el comportamiento aprobado.

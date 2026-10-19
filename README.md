@@ -24,6 +24,10 @@ Si Node no está en PATH, en esta máquina:
 
 El puerto se cambia con `MAZO_PUERTO`. Se necesita HTTP local o HTTPS para los módulos y la PWA; abrir el HTML como archivo no es suficiente.
 
+## Spawn Especial
+
+En Configuración, elige integración directa, disparadores o aparición adicional por probabilidad. Selecciona cartas en Contenido y configura cantidades, reposición, Daily integrado/independiente, destinos y límites. Guardar aplica a la próxima tanda. Las probabilidades nuevas parten en 0% hasta configurarlas. Detalle en [docs/SPAWN_ESPECIAL.md](docs/SPAWN_ESPECIAL.md).
+
 ## Estado
 
 Beta publicada: [Zombicide: White Death — Deck Manager](https://hector-xlsx.github.io/white-death-deck-manager/). Versión `ada49f64804d89a4`; **305/305** pruebas de aplicación y 13 originales aprobadas también en GitHub Actions. Repositorio público [Hector-xlsx/white-death-deck-manager](https://github.com/Hector-xlsx/white-death-deck-manager). Evidencia de publicación en [docs/PUBLICACION_GITHUB.md](docs/PUBLICACION_GITHUB.md); antecedentes y pruebas en mesa en [docs/CONTINUIDAD_GITHUB_Y_MESA.md](docs/CONTINUIDAD_GITHUB_Y_MESA.md).
