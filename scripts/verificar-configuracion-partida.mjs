@@ -1,3 +1,4 @@
+import {abrirSeccionesConfiguracion as secciones} from './ayuda-configuracion.mjs';
 import {createRequire} from 'node:module';
 import assert from 'node:assert/strict';
 import {mkdir} from 'node:fs/promises';
@@ -17,14 +18,14 @@ async function abrir(semilla){
  await context.addInitScript(({key,semilla})=>{if(semilla&&!localStorage.getItem(key))localStorage.setItem(key,JSON.stringify(semilla));Math.random=()=>window.azarConfig?.shift()??.99;},{key,semilla});
  const p=await context.newPage();p.on('pageerror',e=>errores.push(e.message));await p.goto(url);return {context,p};
 }
-const ajustes=p=>p.getByRole('button',{name:'Configuración',exact:true}).click();
+const ajustes=async p=>{await p.getByRole('button',{name:'Configuración',exact:true}).click();await secciones(p,'Mazos',['nigromantes','abominaciones']);await p.locator('#config-nueva-partida').evaluate(d=>d.open=true);};
 const cerrar=async p=>{await p.locator('#batch-dialog [data-action="close"]').click();await p.waitForFunction(k=>!JSON.parse(localStorage.getItem(k)).openBatch,key);};
 async function revelar(p){await p.locator('#spawn').click();await p.locator('#batch-dialog[data-revelacion="lista"]').waitFor();assert.ok(isValid(await estado(p)));}
-async function marcar(p,id,valor){await p.locator('[name="filtro-contenido"][value="abominaciones"]').check();await p.locator(`[name="carta"][value="${id}"]`).setChecked(valor);}
+async function marcar(p,id,valor){await secciones(p,'Contenido',['cartas']);await p.locator('[name="filtro-contenido"][value="abominaciones"]').check();const campo=p.locator(`[name="carta"][value="${id}"]`);await campo.evaluate(e=>{for(let d=e.parentElement;d;d=d.parentElement)if(d.tagName==="DETAILS")d.open=true;});await campo.setChecked(valor);}
 try{
  const s=newGame(config,1);s.config.limitesPorAdrenalina.abominaciones={azul:3,amarillo:3,naranja:3,rojo:3};s.proximaConfig.limitesPorAdrenalina=structuredClone(s.config.limitesPorAdrenalina);s.accionesPredeterminadas={abominacion:'spawn',nigromante:'spawn'};
  sembrar(s,'abominacion');spawn(s,()=>.99);sembrar(s,'abominacion');spawn(s,()=>0);s.openBatch=false;sembrar(s,'abominacion');assert.equal(presentes(s,'abominaciones').length,2);
- const {context,p}=await abrir(s);const historia=structuredClone((await estado(p)).history);await ajustes(p);await p.locator('#regla-abominaciones').selectOption('estandar');assert.equal(await p.locator(`#abominacion-estandar option[value="${trofeo}"]`).count(),0);await p.locator('#abominacion-estandar').selectOption(orca);await p.locator('#save-settings').click();assert.equal((await estado(p)).config.reglaAbominaciones,'personalizado');assert.deepEqual((await estado(p)).history,historia);assert.equal(await p.locator('#accion-abominacion').inputValue(),'estandar');
+ const {context,p}=await abrir(s);const historia=structuredClone((await estado(p)).history);await ajustes(p);await p.locator('#regla-abominaciones').selectOption('estandar');assert.equal(await p.locator(`#abominacion-estandar option[value="${trofeo}"]`).count(),0);await p.locator('#abominacion-estandar').selectOption(orca);await p.locator('#save-settings').click();assert.equal((await estado(p)).config.reglaAbominaciones,'personalizado');assert.deepEqual((await estado(p)).history,historia);await ajustes(p);assert.equal(await p.locator('#revelacion-abominaciones').isVisible(),false);await p.locator('#settings-dialog .close-button').click();
  await p.locator('#reopen').click();assert.deepEqual((await estado(p)).history,historia);await cerrar(p);await p.evaluate(()=>window.azarConfig=[0,.99]);await revelar(p);let actual=await estado(p);const carta=actual.history.at(-1).slots[0].draws[0];assert.equal(carta.resolucionAbominacion,'activacion');assert.equal(carta.activaciones.length,2);assert.equal(actual.config.reglaAbominaciones,'estandar');assert.equal(presentes(actual,'abominaciones').length,2);await cerrar(p);
  const topes=structuredClone(actual.config.limitesPorAdrenalina);await ajustes(p);await p.locator('#regla-abominaciones').selectOption('personalizado');await marcar(p,kan,false);await p.locator('#save-settings').click();assert.equal((await estado(p)).configuracionPendiente,true);await revelar(p);actual=await estado(p);assert.ok(!actual.abominaciones.habilitadasIds.includes(kan));assert.deepEqual(actual.config.limitesPorAdrenalina,topes);await cerrar(p);
  // Trofeo ya derrotado: quitar y volver a marcar no devuelve la carta.

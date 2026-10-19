@@ -1,5 +1,9 @@
 # Plan de implementación por capas
 
+## Corrección de Revelación · 19/10/2026
+
+Personalizado utiliza únicamente los controles nuevos Siempre / Por probabilidad / Nunca. Retirados «Configurar acciones independientes» y «Combinación anterior». «Calcular por: Independiente / Todos juntos» pertenece solo a activación adicional de abominaciones y otros nigromantes, excluyendo al Profanador. Perfiles guardados e historial conservados; perfiles futuros ausentes se completan al guardar configuración o al siguiente SPAWN. Este cierre sustituye las notas anteriores sobre mantener ambas alternativas. Detalle: [REVELACION_ACCIONES_INDEPENDIENTES.md](REVELACION_ACCIONES_INDEPENDIENTES.md).
+
 ## Revelación independiente y Calcular por · 19/10/2026 · Local
 
 Implementados los perfiles independientes de nigromantes y abominaciones, aumento/máximo de Spawn, bloqueos sin activación forzada y condiciones desplegables. Calcular por permite sortear activaciones por enemigo o para todo el grupo; el Profanador mantiene su evaluación propia. 364 pruebas y QA en cinco tamaños, configuración, cuota, próxima tanda y recuperación offline. Sin publicación. Detalle: [REVELACION_ACCIONES_INDEPENDIENTES.md](REVELACION_ACCIONES_INDEPENDIENTES.md).

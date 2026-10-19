@@ -1,6 +1,6 @@
 # Revelación de enemigos: acciones independientes · 19/10/2026
 
-Implementación local verificada, sin commit, push ni publicación. Conserva los cambios locales anteriores de actualización, Death Notes y configuración. No cambia reglas de movimiento, Corrupción, combate o trofeos.
+Corrección solicitada tras publicar e223734: una única configuración en Personalizado, sin interruptor de habilitación ni Combinación anterior. No cambia reglas de movimiento, Corrupción, combate o trofeos.
 
 ## Decisiones confirmadas
 
@@ -18,13 +18,13 @@ Implementación local verificada, sin commit, push ni publicación. Conserva los
 - `calcularPor` admite `independiente` / `juntos` en `otros` o `activacion`. Si falta en un perfil anterior, equivale a Independiente. Siempre/Nunca conservan su efecto determinista. La selección se conserva al ocultar los porcentajes y entre recargas.
 - Se guarda en la configuración de próxima tanda y en cada captura histórica. La validación rechaza resultados mixtos cuando la configuración histórica indicaba Todos juntos.
 
-La decisión del usuario cierra la duda sobre el sorteo de abominaciones y amplía la misma opción a otros nigromantes. Se mantiene la conservación del antiguo Al azar hasta activar y guardar el perfil nuevo; no se aplica una conversión automática.
+La decisión del usuario cierra la duda sobre el sorteo de abominaciones y amplía la misma opción a otros nigromantes. Se retira la alternativa de funcionamiento anterior. Independiente / Todos juntos se refiere exclusivamente al cálculo de activaciones adicionales del grupo.
 
 ## Datos y comportamiento técnico
 
-`config.revelacionEnemigos` es opcional y contiene perfiles por `nigromantes` y/o `abominaciones`. Su ausencia conserva las combinaciones anteriores. Se clona al normalizar configuración y se captura en `configTanda` para conservar la interpretación histórica. Los controles nuevos se guardan explícitamente y se aplican desde la siguiente tanda.
+La app crea y guarda los perfiles de ambos mazos en `config.revelacionEnemigos`. Los campos siguen siendo opcionales al validar guardados históricos. Al pulsar SPAWN se completa cualquier perfil futuro ausente dentro de la misma transacción de guardado; nunca se modifican capturas históricas ni resultados ya resueltos. Los ajustes se guardan explícitamente y se aplican desde la siguiente tanda.
 
-La interfaz conserva «Combinación anterior» cuando el perfil no está habilitado. Activar las acciones independientes muestra los porcentajes que el usuario puede revisar antes de guardar. Las combinaciones deterministas se representan con Siempre/Nunca y 50% para el azar individual. Para el antiguo Al azar se presenta una propuesta editable (Profanador siempre, otros 50%, Spawn 50%; abominaciones 50% y 50%, incremento 0 y máximo 100), sin aplicarla automáticamente ni afirmar equivalencia estadística.
+La interfaz muestra directamente Siempre / Por probabilidad / Nunca para cada acción. No hay casilla «Configurar acciones independientes» ni selector de combinaciones antiguas. Los perfiles guardados conservan sus porcentajes y Calcular por. Cuando falta un perfil, se inicializa desde la combinación guardada: deterministas a Siempre/Nunca; azar individual al 50%. El antiguo Al azar pasa al perfil inicial de Profanador Siempre, otros 50% y Spawn 50%, o activación/Spawn al 50% para abominaciones; incremento 0 y máximo 100. Es un cambio de comportamiento futuro, no una equivalencia estadística ni una repetición del historial. Los modos oficiales conservan sus reglas y ocultan los controles de Personalizado.
 
 Cada extracción registra sus sorteos de activación, referencias de enemigos y resultado de Spawn. «Sin efecto» es un resultado explícito cuando no hubo activaciones ni aparición. Los límites no utilizan el antiguo mecanismo que sustituye Spawn por activación. La validación comprueba familias, IDs, porcentajes, resolución y coherencia de las activaciones guardadas.
 
@@ -32,7 +32,11 @@ El porcentaje de Spawn se reconstruye desde eventos válidos de su propio mazo. 
 
 ## Verificación
 
-- 364/364 pruebas totales, incluidas 23 de acciones independientes: prioridad, Nunca, cálculos independiente/conjunto, Profanador separado, Siempre, extremos 0/100, aumento/máximo/reinicio, bloqueos, continuidad al cambiar parámetros, cancelación/reemplazo/anulación, regeneración, recuperación/cuota, compatibilidad y validación.
+- 366/366 pruebas totales, incluidas 25 de acciones independientes: prioridad, Nunca, cálculos independiente/conjunto, Profanador separado, Siempre, extremos 0/100, aumento/máximo/reinicio, bloqueos, continuidad al cambiar parámetros, cancelación/reemplazo/anulación, regeneración, recuperación/cuota, compatibilidad y validación.
 - Abominaciones: primera aparición, bloqueo sin activar, progreso propio de Spawn, activación Siempre, sorteos por enemigo y un único sorteo conjunto. Nigromantes conjuntos: Profanador activado con grupo inactivo y viceversa.
 - `scripts/verificar-revelacion-independiente.mjs`: título/introducción/condiciones, perfiles y porcentaje máximo, ambos selectores Calcular por, ayuda dinámica, guardado explícito y próxima tanda, Sin efecto, cuota, cinco tamaños, recuperación y offline.
-- QA anterior de Configuración conserva pestañas, borradores, topes y Daily. Sin dispositivos físicos ni publicación.
+- QA anterior de Configuración conserva pestañas, borradores, topes y Daily. Sin verificación en dispositivos físicos.
+
+## Validación de la corrección
+
+366/366 pruebas y 13/13 de base-web. Navegador: revelación única (incluido SPAWN sin abrir configuración desde un guardado sin perfiles), configuración, ajustes Daily/Especial, modos, configuración durante partida y vista de mesa. Verificados cinco tamaños, guardado explícito y fallo de cuota, perfiles persistidos, historial intacto, reposición, cambio a modos oficiales, anulación y recarga offline. Los scripts de modos y configuración durante partida se adaptaron a pestañas y desplegables que sus versiones históricas aún no recorrían. Sin dispositivos físicos.

@@ -1,5 +1,9 @@
 # Organización de Configuración · 19/10/2026
 
+## Corrección de Revelación · 19/10/2026
+
+Personalizado utiliza únicamente los controles nuevos Siempre / Por probabilidad / Nunca. Retirados «Configurar acciones independientes» y «Combinación anterior». «Calcular por: Independiente / Todos juntos» pertenece solo a activación adicional de abominaciones y otros nigromantes, excluyendo al Profanador. Perfiles guardados e historial conservados; perfiles futuros ausentes se completan al guardar configuración o al siguiente SPAWN. Este cierre sustituye las notas anteriores sobre mantener ambas alternativas. Detalle: [REVELACION_ACCIONES_INDEPENDIENTES.md](REVELACION_ACCIONES_INDEPENDIENTES.md).
+
 Refinamiento local posterior: nombres explícitos de mazos, Cartas Spawn especial, grupos plegables con consulta, ayudas por opción y elegibilidad Daily seleccionable. El porcentaje Daily se conserva al cambiar de adrenalina. Prevalece [AJUSTES_CONFIGURACION_Y_DAILY.md](AJUSTES_CONFIGURACION_Y_DAILY.md) para estos cambios; pendientes de publicación.
 
 Cambio de interfaz solicitado y autorizado para publicar por el usuario. Conserva la estética, los controles y la lógica de la aplicación.

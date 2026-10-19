@@ -20,6 +20,15 @@ export function perfilDesdeCombinacion(mazo,accion='azar'){
  if(mazo==='nigromantes')return {profanador:opcion(azar?'siempre':activa?'siempre':'nunca',100),otros:opcion(azar||accion.includes('azar')?'probabilidad':'nunca'),spawn:aparicion};
  return {activacion:opcion(azar?'probabilidad':activa?'siempre':'nunca'),spawn:aparicion};
 }
+// Solo para la configuración futura de la app; nunca reescribir capturas históricas.
+export function configuracionRevelacionActual(config,acciones={}){
+ const c=structuredClone(config);
+ c.revelacionEnemigos??={};
+ for(const [mazo,tipo] of [['nigromantes','nigromante'],['abominaciones','abominacion']]){
+  c.revelacionEnemigos[mazo]??=perfilDesdeCombinacion(mazo,acciones[tipo]??'azar');
+ }
+ return c;
+}
 export function probabilidadSpawnEnemigo(s,mazo,config=s.history.at(-1)?.configTanda??s.config){
  const actual=config.revelacionEnemigos?.[mazo]?.spawn;if(!actual)return 0;
  let p=null;

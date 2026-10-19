@@ -25,13 +25,9 @@ export function iniciarConfiguracionUI(){
  const dificultad=campo('Dificultad'),contenido=campo('Contenido'),nigromantes=campo('Mazo de nigromantes'),abominaciones=campo('Mazo de abominaciones'),reinicio=campo('Reiniciar mazo general de forma anticipada');
  const titulo=dialog.querySelector('h2');titulo.id='config-title';dialog.setAttribute('aria-labelledby',titulo.id);
  const coleccion=form.querySelector('.collection-section');
- const acciones=dialog.querySelector('.enemy-actions-settings');
  for(const [mazo,campoDestino,tipo] of [['nigromantes',nigromantes,'nigromante'],['abominaciones',abominaciones,'abominacion']]){
   const bloque=document.createElement('div');bloque.className='config-acciones';
-  const label=$(`accion-${tipo}`).closest('label'),nota=document.createElement('p');nota.className='field-note config-auto-note';nota.textContent='Esta acción se guarda al elegirla y se aplica a la próxima tanda.';
-  label.querySelector('span').textContent='Combinación anterior';
-  const descripcion=document.createElement('p');descripcion.id=`descripcion-spawn-${tipo}`;descripcion.className='field-note';
-  iniciarRevelacionUI(bloque,mazo,label,descripcion,nota);campoDestino.append(bloque);
+  iniciarRevelacionUI(bloque,mazo);campoDestino.append(bloque);
   for(const [selector,id] of [[`regla-${mazo}`,`descripcion-modo-${tipo}`],[`modo-${mazo}`,`descripcion-reposicion-${tipo}`]]){
    const ayuda=document.createElement('span');ayuda.id=id;ayuda.className='field-note';$(selector).after(ayuda);
   }
@@ -42,7 +38,7 @@ export function iniciarConfiguracionUI(){
   const notaLimite=document.createElement('p');notaLimite.className='field-note';notaLimite.textContent=mazo==='nigromantes'?'No incluye al Profanador. Los topes no pueden disminuir de Azul a Rojo.':'Incluye la primera abominación. Los topes no pueden disminuir de Azul a Rojo.';
   limites.append(table,notaLimite);campoDestino.append(limites);
  }
- acciones.remove();$('limits-config').remove();
+ $('limits-config').remove();
  // Mover los nodos conserva nombres, valores y manejadores de los controles originales.
  const nav=document.createElement('div');nav.id='config-tabs';nav.className='config-tabs';nav.setAttribute('role','tablist');nav.setAttribute('aria-label','Secciones de configuración');
  const panels=document.createElement('div');panels.id='config-panels';panels.className='config-panels';
@@ -90,10 +86,8 @@ export function actualizarConfiguracionUI(config){
  const integrado=dailyIntegrado(config);texto('daily',!config.dailyHabilitado?'Desactivado':`${integrado?'Integrado en el mazo especial':'Independiente'} · ${identidades(idsSecundarios(config,'daily').length)}`);
  $('config-daily-integrado').hidden=!integrado;if(notaDaily)notaDaily.hidden=integrado||!config.dailyHabilitado;
  const descripciones={nigromante:{estandar:'Solo participa el Profanador: aparece si está fuera de juego y se activa si ya está presente.',varios:'Si falta el Profanador, aparece primero. Si ya está en juego, se activa y aparece otro nigromante disponible.',personalizado:'Permite elegir el funcionamiento de Spawn y el máximo de nigromantes adicionales por adrenalina. El Profanador tiene prioridad y no cuenta para ese máximo.'},abominacion:{estandar:'Usa la abominación elegida, sin trofeo: aparece si no hay ninguna en juego; si ya hay presencia, las abominaciones presentes se activan.',festival:'Si no hay abominaciones, aparece una. Si ya hay, se activan las presentes y aparece otra disponible.',personalizado:'Permite elegir el funcionamiento de Spawn y el máximo total de abominaciones por adrenalina.'}};
- const acciones={nigromante:{activacion:'Activa al Profanador.', 'activacion-azar':'Activa al Profanador y sortea por separado una posibilidad del 50% de activar a cada nigromante adicional.',spawn:'Hace aparecer un nigromante adicional disponible.', 'activacion-spawn':'Activa al Profanador y hace aparecer un nigromante adicional.', 'activacion-azar-spawn':'Activa al Profanador, sortea la activación de cada adicional al 50% y hace aparecer otro nigromante.',azar:'Elige al azar uno de los cinco funcionamientos disponibles que respete el cupo y las cartas disponibles.'},abominacion:{activacion:'Activa las abominaciones presentes.',spawn:'Hace aparecer una abominación disponible.', 'activacion-spawn':'Activa las abominaciones presentes y hace aparecer otra disponible.',azar:'Elige al azar entre activar, hacer aparecer o activar y hacer aparecer, respetando el cupo y la disponibilidad.'}};
  for(const [tipo,mazo,campo,modo] of [['nigromante','nigromantes','reglaNigromantes','modoNigromantes'],['abominacion','abominaciones','reglaAbominaciones','modoAbominaciones']]){
   $(`descripcion-modo-${tipo}`).textContent=descripciones[tipo][config[campo]??'personalizado'];
-  $(`descripcion-spawn-${tipo}`).textContent=config[campo]==='personalizado'?`${acciones[tipo][$(`accion-${tipo}`).value]??''} Se aplica cuando ya hay presencia; sin candidatos o al alcanzar el tope solo se activa.`:'Funcionamiento fijado por el modo seleccionado.';
   $(`descripcion-reposicion-${tipo}`).textContent=(config[modo]==='con-reposicion'?'Al derrotarlo/desfijarlo, vuelve al mazo.':'Al derrotarlo/desfijarlo, queda en descarte hasta reiniciar el mazo al agotarse.')+(tipo==='abominacion'?' Los trofeos permanecen fuera.':'');
  }
  $('daily-nota-incremento').textContent=config.dailyIncrementoPor==='carta'?'El porcentaje aumenta por cada carta elegible sin aparición Daily; se reinicia a la base del nivel al aparecer un Daily.':'El porcentaje aumenta una vez por tanda sin aparición Daily; se reinicia a la base del nivel al aparecer un Daily. Los intentos se realizan por cada carta elegible.';

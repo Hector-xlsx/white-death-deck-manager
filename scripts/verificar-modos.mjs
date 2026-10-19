@@ -1,3 +1,4 @@
+import {abrirSeccionesConfiguracion as secciones} from './ayuda-configuracion.mjs';
 import {createRequire} from 'node:module';
 import assert from 'node:assert/strict';
 import {mkdir} from 'node:fs/promises';
@@ -17,28 +18,27 @@ async function abrir(semilla,reducida=true){
  const p=await context.newPage();p.on('pageerror',e=>errores.push(e.message));await p.goto(url);return {context,p};
 }
 const estado=p=>p.evaluate(k=>JSON.parse(localStorage.getItem(k)),key);
-const ajustes=p=>p.getByRole('button',{name:'Configuración',exact:true}).click();
+const ajustes=async p=>{await p.getByRole('button',{name:'Configuración',exact:true}).click();await secciones(p,'Mazos',['nigromantes','abominaciones']);await p.locator('#config-nueva-partida').evaluate(d=>d.open=true);};
 const cerrar=async p=>{await p.locator('#batch-dialog [data-action="close"]').click();await p.waitForFunction(k=>!JSON.parse(localStorage.getItem(k)).openBatch,key);};
 try{
  const {context,p}=await abrir(null);await ajustes(p);
- assert.equal(await p.locator('#regla-nigromantes').inputValue(),'personalizado');assert.equal(await p.locator('#regla-abominaciones').inputValue(),'personalizado');assert.equal(await p.locator('#abominacion-estandar').inputValue(),'enemigo-abominacion-kan');assert.ok(await p.locator('#limits-config').isVisible());
- await p.locator('#regla-nigromantes').selectOption('personalizado');await p.locator('#regla-abominaciones').selectOption('personalizado');assert.ok(await p.locator('#limits-config').isVisible());
- await p.locator('[name="filtro-contenido"][value="nigromantes"]').check();assert.ok(await p.locator(`[name="carta"][value="${PROFANADOR}"]`).isChecked());assert.ok(await p.locator(`[name="carta"][value="${PROFANADOR}"]`).isDisabled());
- assert.equal(await p.locator('[name="limite-nigromantes-azul"]').inputValue(),'0');
+ assert.equal(await p.locator('#regla-nigromantes').inputValue(),'personalizado');assert.equal(await p.locator('#regla-abominaciones').inputValue(),'personalizado');assert.equal(await p.locator('#abominacion-estandar').inputValue(),'enemigo-abominacion-kan');assert.ok(await p.locator('#config-limites-nigromantes').isVisible());
+ await p.locator('#regla-nigromantes').selectOption('personalizado');await p.locator('#regla-abominaciones').selectOption('personalizado');assert.ok(await p.locator('#config-limites-nigromantes').isVisible());
+ await secciones(p,'Contenido',['cartas']);await p.locator('[name="filtro-contenido"][value="nigromantes"]').check();assert.ok(await p.locator(`[name="carta"][value="${PROFANADOR}"]`).isChecked());assert.ok(await p.locator(`[name="carta"][value="${PROFANADOR}"]`).isDisabled());
+ await secciones(p,'Mazos',['nigromantes','abominaciones']);assert.equal(await p.locator('[name="limite-nigromantes-azul"]').inputValue(),'0');
  for(const [nombre,width,height] of sizes){
-  await p.setViewportSize({width,height});await p.locator('#limits-config').scrollIntoViewIfNeeded();
+  await p.setViewportSize({width,height});await p.locator('#config-limites-nigromantes').scrollIntoViewIfNeeded();
   assert.equal(await p.evaluate(()=>document.documentElement.scrollWidth>innerWidth),false);
-  const fuera=await p.locator('#settings-form select,#limits-config input').evaluateAll(ns=>ns.filter(n=>n.getClientRects().length).filter(n=>{const r=n.getBoundingClientRect();return r.left<0||r.right>innerWidth;}).map(n=>n.name));assert.deepEqual(fuera,[]);
+  const fuera=await p.locator('#settings-form select,#config-limites-nigromantes input').evaluateAll(ns=>ns.filter(n=>n.getClientRects().length).filter(n=>{const r=n.getBoundingClientRect();return r.left<0||r.right>innerWidth;}).map(n=>n.name));assert.deepEqual(fuera,[]);
   await p.locator('#settings-dialog').screenshot({path:`docs/verificacion/modos-config-${nombre}.png`});
  }
  await p.setViewportSize({width:844,height:390});await p.locator('[name="limite-nigromantes-azul"]').fill('-1');assert.ok(await p.locator('#save-settings').isDisabled());await p.locator('[name="limite-nigromantes-azul"]').fill('0');
  await p.locator('#regla-abominaciones').selectOption('festival');assert.ok(await p.locator('#abominacion-estandar-label').isHidden());await p.locator('#regla-abominaciones').selectOption('estandar');assert.ok(await p.locator('#abominacion-estandar-label').isVisible());
  await p.locator('#abominacion-estandar').selectOption('enemigo-abominacion-orca');
  await p.locator('#new-game').click();await p.locator('#confirm-actions [data-value="yes"]').click();let s=await estado(p);assert.ok(isValid(s));assert.equal(s.config.abominacionEstandarId,'enemigo-abominacion-orca');assert.equal(s.abominaciones.cartas.length,1);
- assert.equal(await p.locator('#accion-nigromante option').count(),6);assert.equal(await p.locator('#accion-nigromante option[value="elegir"]').count(),0);assert.equal(await p.locator('#accion-abominacion option').count(),1);assert.equal(await p.locator('#accion-abominacion').inputValue(),'estandar');
- await p.locator('#accion-nigromante').selectOption('activacion-azar-spawn');assert.equal((await estado(p)).accionesPredeterminadas.nigromante,'activacion-azar-spawn');
+ await ajustes(p);assert.equal(await p.locator('#revelacion-abominaciones').isVisible(),false);assert.equal(await p.locator('[name="revelacion-nigromantes-otros-modo"]').isVisible(),true);await p.locator('#settings-dialog .close-button').click();
  // Guardar un modo nuevo conserva la tanda actual y prepara la siguiente.
- await ajustes(p);await p.locator('#regla-nigromantes').selectOption('varios');await p.locator('#save-settings').click();s=await estado(p);assert.equal(s.config.reglaNigromantes,'personalizado');assert.equal(s.proximaConfig.reglaNigromantes,'varios');assert.equal(s.accionesPredeterminadas.nigromante,'activacion-azar-spawn');
+ await ajustes(p);await p.locator('#regla-nigromantes').selectOption('varios');await p.locator('#save-settings').click();s=await estado(p);assert.equal(s.config.reglaNigromantes,'personalizado');assert.equal(s.proximaConfig.reglaNigromantes,'varios');assert.equal(s.proximaConfig.revelacionEnemigos.nigromantes.otros.modo,'probabilidad');
  // Fallo de cuota no guarda parcialmente configuración ni cierra el formulario.
  await ajustes(p);await p.locator('#regla-abominaciones').selectOption('festival');const antes=await estado(p);
  await p.evaluate(()=>{window.setAnterior=Storage.prototype.setItem;Storage.prototype.setItem=()=>{throw new DOMException('quota','QuotaExceededError');};});await p.locator('#save-settings').click();assert.deepEqual(await estado(p),antes);assert.ok(await p.locator('#settings-dialog').isVisible());await p.evaluate(()=>Storage.prototype.setItem=window.setAnterior);
@@ -55,7 +55,7 @@ try{
  for(const [nombre,width,height] of sizes){await q.setViewportSize({width,height});await q.locator('#batch-grid').screenshot({path:`docs/verificacion/modos-activacion-${nombre}.png`});assert.equal(await q.evaluate(()=>document.documentElement.scrollWidth>innerWidth),false);assert.deepEqual(await q.locator('#batch-grid .card-image').evaluateAll(ns=>ns.map(n=>({nombre:n.alt,ancho:n.getBoundingClientRect().width})).filter(n=>Math.abs(n.ancho-155)>=1)),[]);assert.deepEqual(await estado(q),congelado);}
  await q.setViewportSize({width:844,height:390});await cerrar(q);
  await q.locator('[data-action="history"]').click();assert.ok(await q.locator('#history-list .activation-stamp').count()>0);await q.locator('#history-dialog [data-action="close"]').click();assert.ok(await q.locator('#last-preview .activation-stamp').count()>0);
- await q.locator('#offline-status').filter({hasText:'Disponible offline'}).waitFor({timeout:90000});const guardado=await estado(q);await vista.context.setOffline(true);await q.reload();assert.deepEqual(await estado(q),guardado);assert.equal(await q.locator('#accion-nigromante').inputValue(),'varios');
+ await q.locator('#offline-status').filter({hasText:'Disponible offline'}).waitFor({timeout:90000});const guardado=await estado(q);await vista.context.setOffline(true);await q.reload();assert.deepEqual(await estado(q),guardado);assert.equal((await estado(q)).config.reglaNigromantes,'varios');
  await q.locator('#reopen').click();assert.equal(await q.locator('#batch-grid .enemy-choices').count(),0);await q.locator('#anular-tanda').click();await q.locator('#confirm-actions [data-value="yes"]').click();assert.equal((await estado(q)).history.length,1);assert.ok(isValid(await estado(q)));await vista.context.close();
  // Revelación real: la derivada espera boca abajo y se revela después de las normales.
  const animada=newGame(config,2);sembrar(animada,'nigromante');const anim=await abrir(animada,false),r=anim.p;await r.locator('#spawn').click();const b=(await estado(r)).history[0],uidNormal=b.slots[1].draws[0].uid,uidFinal=b.slots.at(-1).draws[0].uid;

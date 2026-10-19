@@ -21,7 +21,7 @@ try{
  assert.match(await p.locator('#config-seccion-general legend').last().textContent(),/Reiniciar mazo general/);
  await secciones(p,'Mazos',['nigromantes','abominaciones']);
  for(const [modo,texto] of [['estandar','Solo participa el Profanador'],['varios','se activa y aparece otro'],['personalizado','máximo de nigromantes adicionales']]){await p.locator('#regla-nigromantes').selectOption(modo);assert.ok((await p.locator('#descripcion-modo-nigromante').textContent()).includes(texto));}
- await p.locator('#accion-nigromante').selectOption('activacion-azar-spawn');assert.match(await p.locator('#descripcion-spawn-nigromante').textContent(),/50%/);
+ await p.locator('[name="revelacion-nigromantes-otros-modo"]').selectOption('probabilidad');assert.match(await p.locator('[data-revelacion-accion="otros"] [data-revelacion-explicacion]').textContent(),/sorteo independiente/);
  await p.locator('#regla-abominaciones').selectOption('festival');assert.match(await p.locator('#descripcion-modo-abominacion').textContent(),/aparece otra/);
  await secciones(p,'Mazos',['daily']);
  assert.equal(await p.locator('#daily-nota-probabilidad').evaluate(e=>e.previousElementSibling.tagName),'TABLE');assert.match(await p.locator('#daily-nota-probabilidad').textContent(),/se mantiene el porcentaje actual/);

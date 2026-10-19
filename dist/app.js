@@ -1,4 +1,5 @@
 import {iniciarConfiguracionUI,actualizarConfiguracionUI,leerElegiblesDailyUI} from './configuracion-ui.js';
+import {configuracionRevelacionActual} from './acciones-independientes.js';
 import {cargarRevelacionUI,leerRevelacionUI} from './revelacion-ui.js';
 import {iniciarEspecialUI,leerEspecialUI,actualizarEspecialUI} from './especial-ui.js';
 import {regenerarEspecial} from './especial.js';
@@ -19,12 +20,12 @@ import {selectorContenido,selectorColeccion,iniciarInformacion,informacionCarta}
 import {configContenido,marcarContenido,visiblesContenido,erroresContenido,firmaContenido,marcarCaja,resumenCaja,seleccionarContenido} from './contenido.js';
 import {prepararOffline} from './pwa.js';
 import {estadoVisualSpawn,agruparRevelaciones,tieneActivacionAdicional,etiquetasZonas,agruparZonas} from './presentacion.js';
-import {OPCIONES_ENEMIGOS,NOMBRES_ACCIONES} from './acciones-enemigos.js';
+import {NOMBRES_ACCIONES} from './acciones-enemigos.js';
 import {DURACION_ACTIVACION} from './volteo.js';
 import {crearRevelacion,avanzarRevelacion} from './revelacion.js';
 import {NIVELES_ADRENALINA,NOMBRES_ADRENALINA,nivelAdrenalina,cambiarNivelAdrenalina} from './adrenalina.js';
 import {FAMILIAS_LIMITES,limitesIniciales,adoptarLimites} from './limites.js';
-import {PROFANADOR,NOMBRES_MODOS,ACCIONES_NIGROMANTES,NOMBRES_ACCIONES_NIGROMANTES} from './modos-enemigos.js';
+import {PROFANADOR} from './modos-enemigos.js';
 import {referenciasActivacion} from './presentacion.js';
 import {programarConfiguracion,actualizarPartidaDePrueba} from './engine.js';
 import {REVISION_REGLAS} from './configuracion-partida.js';
@@ -39,7 +40,7 @@ let ultimoTemaPuntaje='kang',ultimoPuntaje=0;
 // Depuración temporal: desactivar antes de preparar la versión final.
 const DEBUG_DAILY_SPAWN=true;
 let catalog=Object.fromEntries(CATALOG.map(c=>[c.id,c]));
-let state=newGame({easy:true,normal:true,threshold:20,modoNigromantes:'sin-reposicion',reglaNigromantes:'personalizado',reglaAbominaciones:'personalizado',abominacionEstandarId:'enemigo-abominacion-kan',dailyPorNivel:perfilDailyInicial(),limitesPorAdrenalina:limitesIniciales(true)}),storageBlocked=false,guardadoObservado=null;
+let state=newGame(configuracionRevelacionActual({easy:true,normal:true,threshold:20,modoNigromantes:'sin-reposicion',reglaNigromantes:'personalizado',reglaAbominaciones:'personalizado',abominacionEstandarId:'enemigo-abominacion-kan',dailyPorNivel:perfilDailyInicial(),limitesPorAdrenalina:limitesIniciales(true)})),storageBlocked=false,guardadoObservado=null;
 try{guardadoObservado=localStorage.getItem(KEY);state=recuperar(localStorage)||state;guardadoObservado=localStorage.getItem(KEY);}
 catch(e){storageBlocked=true;$('status-alert').hidden=false;$('status-alert').textContent='No se pudo recuperar la partida guardada. Inicia una nueva partida desde Configuración para continuar.';}
 if(!storageBlocked&&state.revisionReglas!==REVISION_REGLAS){
@@ -284,17 +285,9 @@ function renderContadorZombis(){
 function render(){
  renderContadorZombis();
  const nivel=nivelAdrenalina(state),indice=NIVELES_ADRENALINA.indexOf(nivel);
- const siguiente=state.configuracionPendiente?state.proximaConfig:state.config;
  $('nivel-adrenalina').textContent=NOMBRES_ADRENALINA[nivel];$('nivel-adrenalina').dataset.nivel=nivel;$('deck-progress').dataset.nivel=nivel;
  for(const boton of document.querySelectorAll('[data-action="adrenalina"]'))boton.disabled=storageBlocked||state.openBatch||(Number(boton.dataset.delta)<0?indice===0:indice===NIVELES_ADRENALINA.length-1);
- for(const tipo of ['nigromante','abominacion']){
-  const selector=$(`accion-${tipo}`),regla=siguiente[tipo==='nigromante'?'reglaNigromantes':'reglaAbominaciones'];
-  const opciones=regla&&regla!=='personalizado'?[regla]:regla?(tipo==='nigromante'?[...ACCIONES_NIGROMANTES,'azar']:['activacion','spawn','activacion-spawn','azar']):OPCIONES_ENEMIGOS;
-  const nombres=tipo==='nigromante'&&regla?NOMBRES_ACCIONES_NIGROMANTES:NOMBRES_ACCIONES;
-  selector.innerHTML=opciones.map(v=>`<option value="${v}">${esc(NOMBRES_MODOS[v]??nombres[v])}</option>`).join('');
-  selector.value=regla&&regla!=='personalizado'?regla:state.accionesPredeterminadas?.[tipo]??(regla?'azar':'elegir');selector.disabled=storageBlocked||state.openBatch||Boolean(regla&&regla!=='personalizado')||!state[tipo==='nigromante'?'nigromantes':'abominaciones'];
-  selector.title=selector.selectedOptions[0]?.textContent??'';
- }
+
  catalog=Object.fromEntries([...state.catalogo.cartas,...(state.abominaciones?.cartas||[]),...(state.nigromantes?.cartas||[]),...(state.daily?.cartas||[])].map(c=>[c.id,{...c,name:nombreVisible(c.name)}]));
  const size=total(state.initial),left=total(state.remaining),count=state.normal+state.necro;
  $('normal-count').textContent=state.normal;$('necro-count').textContent=state.necro;
@@ -472,7 +465,7 @@ $('settings-form').addEventListener('change',e=>{
 $('save-settings').addEventListener('click',guardarConfiguracion);
 $('settings-form').addEventListener('input',e=>{if(e.target.name?.startsWith('revelacion-'))updateSettings();});
 $('settings-form').addEventListener('submit',e=>{e.preventDefault();const config=draftConfig();showConfirm('¿Iniciar nueva partida?','Se borrarán el historial, los fijados, los desfijados y las zonas de nigromante de la partida actual.',[{value:'cancel',label:'Cancelar'},{value:'yes',label:'Iniciar partida',primary:true}],v=>{if(v!=='yes')return;const zones=state.normal;if(commit(s=>{const nueva=newGame(config,zones,0);for(const k of Object.keys(s))delete s[k];Object.assign(s,nueva);},{recover:true})){for(const d of document.querySelectorAll('dialog[open]'))d.close();visibleBatch=null;toast('Nueva partida lista.');}});});
-function revealBatch(){if(state.normal+state.necro===0)throw new Error('No hay zonas de aparición.');const previousCycle=state.cycle;if(!commit(s=>{adoptarLimites(s);spawn(s);},{procedural:true}))throw new Error($('toast').textContent||'No se pudo guardar la tanda.');showBatch();if(state.cycle>previousCycle)toast('El mazo se ha reiniciado.');return state.history.at(-1);}
+function revealBatch(){if(state.normal+state.necro===0)throw new Error('No hay zonas de aparición.');const previousCycle=state.cycle;if(!commit(s=>{adoptarLimites(s);const config=s.configuracionPendiente?s.proximaConfig:s.config;if(!config.revelacionEnemigos?.nigromantes||!config.revelacionEnemigos?.abominaciones)programarConfiguracion(s,configuracionRevelacionActual(config,s.accionesPredeterminadas));spawn(s);},{procedural:true}))throw new Error($('toast').textContent||'No se pudo guardar la tanda.');showBatch();if(state.cycle>previousCycle)toast('El mazo se ha reiniciado.');return state.history.at(-1);}
 function confirmarAnulacion(){
  const numero=visibleBatch,guardado=guardadoObservado;
  if(!puedeAnularTanda(state,numero))return;
@@ -484,10 +477,7 @@ function confirmarAnulacion(){
  anulacionPendiente=true;
 }
 $('spawn').addEventListener('click',()=>{try{revealBatch();}catch(e){toast(e.message);}});
-for(const tipo of ['nigromante','abominacion'])$(`accion-${tipo}`).addEventListener('change',e=>{
- const opcion=e.target.value;
- if(!commit(s=>{s.accionesPredeterminadas={...s.accionesPredeterminadas,[tipo]:opcion};}))render();
-});
+
 document.addEventListener('click',e=>{
  const b=e.target.closest('button[data-action]');if(!b)return;
  if(b.dataset.action==='ver-en-juego'){zoomEnJuego=100;openDialog('inplay-dialog');renderEnJuego();$('inplay-gallery').scrollTo(0,0);return;}

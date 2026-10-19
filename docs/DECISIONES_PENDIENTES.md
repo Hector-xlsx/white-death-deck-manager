@@ -1,5 +1,9 @@
 # Decisiones pendientes y propuestas
 
+## Corrección de Revelación · 19/10/2026
+
+Personalizado utiliza únicamente los controles nuevos Siempre / Por probabilidad / Nunca. Retirados «Configurar acciones independientes» y «Combinación anterior». «Calcular por: Independiente / Todos juntos» pertenece solo a activación adicional de abominaciones y otros nigromantes, excluyendo al Profanador. Perfiles guardados e historial conservados; perfiles futuros ausentes se completan al guardar configuración o al siguiente SPAWN. Este cierre sustituye las notas anteriores sobre mantener ambas alternativas. Detalle: [REVELACION_ACCIONES_INDEPENDIENTES.md](REVELACION_ACCIONES_INDEPENDIENTES.md).
+
 ## Revelación independiente de enemigos · 19/10/2026
 
 Confirmadas acciones independientes Siempre/Por probabilidad/Nunca, incremento/máximo del Spawn y bloqueos sin activación forzada. Duda de activación cerrada por el usuario: «Calcular por: Independiente / Todos juntos» para otros nigromantes y abominaciones; el Profanador siempre se evalúa separado. El trabajo local conserva las combinaciones existentes hasta activar el nuevo perfil. Implementado y verificado, sin publicar. Véase [REVELACION_ACCIONES_INDEPENDIENTES.md](REVELACION_ACCIONES_INDEPENDIENTES.md).

@@ -3,9 +3,20 @@ import assert from 'node:assert/strict';
 import {newGame,spawn,isValid,discardCard,replaceCard,anularTanda,programarConfiguracion,regenerarNigromante,regenerarAbominacion} from '../dist/engine.js';
 import {limitesIniciales} from '../dist/limites.js';
 import {presentes,PROFANADOR} from '../dist/modos-enemigos.js';
-import {probabilidadSpawnEnemigo,configuracionAccionesValida} from '../dist/acciones-independientes.js';
+import {probabilidadSpawnEnemigo,configuracionAccionesValida,configuracionRevelacionActual} from '../dist/acciones-independientes.js';
 import {guardarAccion,recuperar,KEY} from '../dist/persistencia.js';
 const opcion=(modo='nunca',probabilidad=50)=>({modo,probabilidad});
+test('configuración única: completar perfiles futuros preserva los guardados y el original',()=>{
+ const original={reglaNigromantes:'personalizado',reglaAbominaciones:'personalizado',threshold:20,revelacionEnemigos:{nigromantes:{profanador:opcion('nunca'),otros:{...opcion('probabilidad',37),calcularPor:'juntos'},spawn:{...opcion('probabilidad',12),incremento:3,maximo:65}}}};
+ const bytes=JSON.stringify(original),actual=configuracionRevelacionActual(original,{abominacion:'spawn'});
+ assert.equal(JSON.stringify(original),bytes);assert.deepEqual(actual.revelacionEnemigos.nigromantes,original.revelacionEnemigos.nigromantes);assert.equal(actual.revelacionEnemigos.abominaciones.spawn.modo,'siempre');assert.equal(actual.revelacionEnemigos.abominaciones.activacion.modo,'nunca');assert.equal(configuracionAccionesValida(actual),true);
+});
+test('configuración única: aplicar a próxima tanda no reescribe ni vuelve a sortear el historial',()=>{
+ const s=newGame({easy:true,normal:true,threshold:0,selectedIds:['abominacion'],reglaNigromantes:'personalizado',reglaAbominaciones:'personalizado',modoNigromantes:'sin-reposicion'},1);
+ spawn(s,()=>.99);s.openBatch=false;const historia=structuredClone(s.history);
+ programarConfiguracion(s,configuracionRevelacionActual(s.proximaConfig));assert.deepEqual(s.history,historia);assert.equal(s.config.revelacionEnemigos,undefined);
+ spawn(s,()=>.99);assert.ok(s.history.at(-1).configTanda.revelacionEnemigos.abominaciones);assert.ok(s.history.at(-1).slots[0].draws[0].revelacionIndependiente);assert.deepEqual(s.history.slice(0,-1),historia);assert.equal(isValid(s),true);
+});
 const perfil=(extra={})=>({profanador:opcion(),otros:opcion(),spawn:{...opcion('probabilidad',20),incremento:15,maximo:60},...extra});
 const crear=(p=perfil(),familia='nigromantes')=>{
  const limites=limitesIniciales(true);for(const familia of Object.keys(limites))for(const n of Object.keys(limites[familia]))limites[familia][n]=4;
