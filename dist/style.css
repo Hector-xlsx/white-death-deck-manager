@@ -498,6 +498,8 @@ body.revelacion-procedural #pins,body.revelacion-procedural #last-preview,body.r
 
 body:has(#actualizacion-disponible:not([hidden])){padding-bottom:120px}
 .config-acciones>.check-row{display:flex;flex-direction:row;align-items:center;justify-content:flex-start;gap:8px}.config-acciones>.check-row input{width:20px;flex:0 0 20px}
+#daily-elegibles .check-row{display:grid;grid-template-columns:minmax(0,1fr) 20px;align-items:center;gap:12px;min-height:44px}
+#daily-elegibles .check-row input{width:20px;height:20px;min-height:20px;margin:0;padding:0}
 
 #settings-dialog label>.field-note{display:block;line-height:1.4;font-weight:normal}.especial-set{margin:8px 0;padding:8px 10px;border:1px solid var(--line);border-radius:8px}.especial-set>summary{cursor:pointer;min-height:32px;line-height:1.5}.especial-carta .text-button{min-width:36px;min-height:36px}
 
