@@ -1,5 +1,11 @@
 # Implementación actual
 
+## Pantalla completa · 19/10/2026
+
+Botón junto a Configuración para entrar/salir de pantalla completa mediante un gesto del usuario. Cambia su icono y nombre accesible, refleja salidas realizadas desde el navegador y mantiene los controles táctiles de al menos 44 px. La solicitud utiliza el documento completo para conservar acceso a diálogos. No guarda preferencias ni modifica la partida, no se activa automáticamente al abrir y no fuerza la instalación de la PWA. Si falta soporte o el navegador rechaza la solicitud, muestra un aviso recuperable. Compatibilidad por detección de API estándar/WebKit.
+
+Verificación: scripts/verificar-pantalla-completa.mjs comprueba entrada/salida real en Chrome, salida externa, Configuración dentro de pantalla completa, cinco tamaños sin solapes, API no permitida, rechazo, variante WebKit simulada, guardado intacto y recarga offline. Regresiones de vista de mesa y Configuración aprobadas; capturas de tablet y teléfono revisadas. Sin verificación en el tablet físico ni en Safari real. El nuevo módulo se incluye en el paquete offline.
+
 ## Revisión de claridad · 19/10/2026
 
 Textos de configuración y avisos revisados para explicar los mazos, topes, intentos, porcentajes y tandas sin depender del desarrollo. Ajustes solo de presentación; reglas, valores internos y guardados conservados. Ejemplos, alcance y propuestas separadas en [REVISION_TEXTOS_INTERFAZ.md](REVISION_TEXTOS_INTERFAZ.md).

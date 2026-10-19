@@ -389,17 +389,21 @@ body.revelacion-procedural #pins,body.revelacion-procedural #last-preview,body.r
 /* Adrenalina en el centro real; marcador centrado en el espacio derecho. */
 .brand{grid-template-columns:minmax(0,1fr) auto minmax(0,1fr)}
 .brand>.adrenalina-selector{grid-column:2;grid-row:1;justify-self:center}
-.brand-score-tools{grid-column:3;grid-row:1;display:grid;grid-template-columns:minmax(0,1fr) 48px;gap:16px;align-items:center;min-width:0}
+.brand-score-tools{grid-column:3;grid-row:1;display:grid;grid-template-columns:minmax(0,1fr) auto;gap:16px;align-items:center;min-width:0}
 .brand-score-tools>.score-counter-host{grid-column:1;grid-row:1;justify-self:center;width:100%;max-width:300px}
 .brand-score-tools>.settings-button{grid-column:2;grid-row:1;justify-self:end}
+.brand-window-tools{grid-column:2;grid-row:1;justify-self:end;display:flex;align-items:center;gap:8px}
+.brand-window-tools>.icon-button{flex:0 0 48px}
 @media(max-width:760px){
- .brand{grid-template-columns:minmax(0,1fr) 48px}
+ .brand{grid-template-columns:minmax(0,1fr) auto}
  .brand-identity{grid-column:1;grid-row:1}
  .brand-score-tools{display:contents}
  .brand>.adrenalina-selector{grid-column:1/-1;grid-row:2}
  .brand-score-tools>.settings-button{grid-column:2;grid-row:1}
+ .brand-window-tools{grid-column:2;grid-row:1}
  .brand-score-tools>.score-counter-host{grid-column:1/-1;grid-row:3;width:min(100%,300px);justify-self:center}
 }
+@media(max-width:360px){.brand-window-tools{gap:4px}.brand-window-tools>.icon-button{width:44px;height:44px;flex-basis:44px}.brand-identity .wordmark h1{font-size:1.1rem}}
 
 /* Zonas en una fila a la derecha de SPAWN, alineadas con su centro. */
 .console{grid-template-columns:minmax(190px,1fr) minmax(0,2fr) auto;gap:24px}
