@@ -1,5 +1,9 @@
 # Implementación actual
 
+## Revisión de claridad · 19/10/2026
+
+Textos de configuración y avisos revisados para explicar los mazos, topes, intentos, porcentajes y tandas sin depender del desarrollo. Ajustes solo de presentación; reglas, valores internos y guardados conservados. Ejemplos, alcance y propuestas separadas en [REVISION_TEXTOS_INTERFAZ.md](REVISION_TEXTOS_INTERFAZ.md).
+
 ## Corrección de Revelación · 19/10/2026
 
 Personalizado utiliza únicamente los controles nuevos Siempre / Por probabilidad / Nunca. Retirados «Configurar acciones independientes» y «Combinación anterior». «Calcular por: Independiente / Todos juntos» pertenece solo a activación adicional de abominaciones y otros nigromantes, excluyendo al Profanador. Perfiles guardados e historial conservados; perfiles futuros ausentes se completan al guardar configuración o al siguiente SPAWN. Este cierre sustituye las notas anteriores sobre mantener ambas alternativas. Detalle: [REVELACION_ACCIONES_INDEPENDIENTES.md](REVELACION_ACCIONES_INDEPENDIENTES.md).
