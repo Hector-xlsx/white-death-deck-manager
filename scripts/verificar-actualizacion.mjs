@@ -128,6 +128,11 @@ try{
   return paquetes.length===1&&paquetes[0].endsWith('4444444444444444');
  });
  // Una sola pulsación busca, descarga y aplica una versión que aún no estaba en espera.
+ // Simula la ventana entre installed y la publicación de registration.waiting.
+ await final.evaluate(()=>{
+  const proto=ServiceWorkerRegistration.prototype,descriptor=Object.getOwnPropertyDescriptor(proto,'waiting');let detectada=null;
+  Object.defineProperty(proto,'waiting',{...descriptor,get(){const worker=descriptor.get.call(this);if(worker){detectada??=performance.now();if(performance.now()-detectada<150)return null;}return worker;}});
+ });
  fase=4;await final.getByRole('button',{name:'Configuración',exact:true}).click();await final.getByRole('tab',{name:'General',exact:true}).click();
  await Promise.all([final.waitForEvent('load'),final.locator('#buscar-actualizacion').click()]);
  await final.locator('#offline-status').filter({hasText:'Disponible offline'}).waitFor({timeout:90000});

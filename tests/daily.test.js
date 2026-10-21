@@ -101,7 +101,7 @@ test('expansiones: cinco cartas completas suman 24 copias y dificultad sin compe
  assert.equal(total(newGame(c).initial),80);assert.equal(total(newGame({...c,easy:false}).initial),57);assert.equal(total(newGame({...c,normal:false}).initial),51);assert.equal(total(newGame({...c,easy:false,normal:false}).initial),28);
  assert.ok(!Object.keys(newGame(c).initial).includes('spawn-bestias-divinas-aparicion'));
  for(const s of [newGame(c),newGame({...c,coleccionIds:['core']})])validar(s);
- const exp=CATALOG.find(c=>c.id==='spawn-559');assert.deepEqual(exp.levels,[5,5,5,5]);assert.equal(dificultadVisible(exp.difficulty),'Estándar');
+ const exp=CATALOG.find(c=>c.id==='spawn-559');assert.deepEqual(exp.levels,[5,5,5,5]);assert.equal(dificultadVisible(exp.difficulty),'Avanzado');
 });
 test('migracion: partidas congeladas antiguas conservan 56 cartas y no reciben Daily',()=>{
  const s=newGame();s.catalogo={version:1,cartas:structuredClone(CATALOGO_BASE)};spawn(s,()=>.5);

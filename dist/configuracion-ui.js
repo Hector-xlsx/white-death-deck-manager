@@ -59,7 +59,7 @@ export function iniciarConfiguracionUI(){
  const integrado=document.createElement('div');integrado.id='config-daily-integrado';integrado.innerHTML='<p class="field-note">Daily participa en el mazo especial. Sus cantidades y reposición se configuran allí; cada zombi Daily puede estar una sola vez en juego.</p><button type="button" class="text-button">Ir a Spawn Especial</button>';
  integrado.querySelector('button').addEventListener('click',()=>{mostrarPestanaConfiguracion('mazos');general.open=true;general.scrollIntoView({block:'start'});$('especial-config').querySelector('select').focus();});$('daily-config').append(integrado);
  const nueva=$('new-game'),advertencia=nueva.nextElementSibling;
- const gestion=document.createElement('details');gestion.id='config-nueva-partida';gestion.className='config-new-game';gestion.innerHTML='<summary>Iniciar nueva partida</summary>';gestion.append(advertencia,nueva);panels.append(gestion);
+ const gestion=document.createElement('details');gestion.id='config-nueva-partida';gestion.className='config-new-game';gestion.innerHTML='<summary>Iniciar nueva partida</summary>';gestion.append(advertencia,nueva);$('config-panel-general').append(gestion);
  const pie=document.createElement('div');pie.className='config-footer';pie.append($('settings-summary'),$('settings-errors'),$('save-settings'));form.append(pie);
  const nota=document.createElement('p');nota.className='config-save-note';nota.textContent='Una tanda es cada pulsación de SPAWN. Contenido y reglas: siguiente tanda. Apariencia: al guardar.';pie.prepend(nota);
  dificultad.querySelector('.field-note').textContent='Filtra las cartas elegidas. Guardar aplica los cambios a la próxima tanda.';
@@ -80,7 +80,7 @@ export function actualizarConfiguracionUI(config){
  const o=opcionesEspecial(config),sumar=m=>Object.values(m).reduce((a,b)=>a+b,0);
  const texto=(id,s)=>secciones[id].resumen.textContent=s,identidades=n=>`${n} ${n===1?'carta seleccionada':'cartas seleccionadas'}`;
  const cajas=config.coleccionIds?.length??0;$('collection-selector').closest('details').querySelector('summary').textContent=`Colección · ${cajas} ${cajas===1?'caja':'cajas'}`;
- texto('dificultad',[config.easy?'Fácil':null,config.normal?'Estándar':null].filter(Boolean).join(' + ')||'Sin Fácil ni Estándar');
+ texto('dificultad',[config.easy?'Base':null,config.normal?'Avanzado':null].filter(Boolean).join(' + ')||'Sin Base ni Avanzado');
  texto('cartas',`${sumar(componer(config))} cartas en el mazo general · ${config.coleccionIds?.length??0} cajas seleccionadas`);
  const modos={directo:'Integración directa',disparadores:`${o.disparadores} cartas Spawn especial`,probabilidad:`Probabilidad por ${o.frecuencia==='carta'?'carta':'tanda'}`};
  texto('general',modos[o.modo]+(o.modo==='directo'?'':` · ${o.reposicion==='con-reposicion'?'Con':'Sin'} reposición`));

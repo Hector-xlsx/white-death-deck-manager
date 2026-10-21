@@ -8,6 +8,10 @@ const tipos={'.html':'text/html; charset=utf-8','.js':'text/javascript; charset=
 http.createServer(async(req,res)=>{
  try{
   const url=new URL(req.url,'http://localhost');
+  if(url.pathname==='/mazo/__servidor_local__'){
+   res.writeHead(200,{'Content-Type':'application/json; charset=utf-8','Cache-Control':'no-store'});
+   res.end(JSON.stringify({proyecto:'white-death-deck-manager',raiz:path.resolve(raiz,'..'),pid:process.pid}));return;
+  }
   if(!url.pathname.startsWith('/mazo/')){res.writeHead(302,{Location:'/mazo/'});res.end();return;}
   const relativa=decodeURIComponent(url.pathname.slice('/mazo/'.length))||'index.html';
   const archivo=path.resolve(raiz,relativa);

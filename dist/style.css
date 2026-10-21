@@ -205,6 +205,8 @@ body.revelacion-procedural #pins,body.revelacion-procedural #last-preview,body.r
 #nivel-adrenalina[data-nivel=amarillo]{background:#8c6b00;border-color:#e8c743}
 #nivel-adrenalina[data-nivel=naranja]{background:#b74b0a}
 #nivel-adrenalina[data-nivel=rojo]{background:#bb303a}
+.adrenalina-insignia{display:inline-grid;place-items:center;min-height:32px;padding:4px 9px;border-radius:7px;border:1px solid #ffffff40;color:#fff;font-size:.85rem;font-weight:700;text-shadow:0 1px 2px #0008;white-space:nowrap}
+.adrenalina-insignia[data-nivel=azul]{background:#1765ae}.adrenalina-insignia[data-nivel=amarillo]{background:#8c6b00;border-color:#e8c743}.adrenalina-insignia[data-nivel=naranja]{background:#b74b0a}.adrenalina-insignia[data-nivel=rojo]{background:#bb303a}
 @media(max-width:1100px){.brand-identity{flex-direction:column;align-items:flex-start;gap:4px}.brand-identity .test-tag{margin:0}}
 @media(max-width:560px){.brand{grid-template-columns:minmax(0,1fr) auto;gap:12px}.brand .settings-button{grid-column:2;grid-row:1}.adrenalina-selector{grid-column:1/-1;grid-row:2;justify-self:center}}
 /* Reserva uniforme entre zonas: alinear tokens, centros de cartas y botones, con o sin marco. */
@@ -579,7 +581,9 @@ body:has(#actualizacion-disponible:not([hidden])){padding-bottom:120px}
 .mesa-corruption-separator{flex:1 1 80px;height:24px;background:url("./recursos/Imagenes generales/Franja modular de corrupción verde.png") center/auto 64px repeat-x;pointer-events:none}
 #toggle-ultima-tanda{display:flex;align-items:center;gap:6px;margin:0;padding:0 6px;font-weight:600;font-size:1.05rem;background:transparent;border-color:transparent}
 #toggle-ultima-tanda>span{font-size:1.6rem;line-height:1;transition:transform .12s}#toggle-ultima-tanda[aria-expanded=true]>span{transform:rotate(90deg)}
-.board .last-heading #reopen{min-width:calc(90px / var(--escala-mesa,1));padding:6px 10px;font-size:.8rem}
+.board .last-heading #reopen,.board .inplay-heading>.text-button{min-width:0;padding:6px 10px;font-size:.8rem}
+.board .mesa-section-heading .inplay-heading{flex:0 1 auto;max-width:100%;flex-wrap:wrap}
+.batch-heading{flex-wrap:wrap}
 .board .pin-strip{padding:4px 2px 8px;gap:10px}.board .pin-strip .empty-state{min-height:60px;padding:12px}
 .board .pinned-card .unpin{width:calc(44px / var(--escala-mesa,1));min-height:calc(44px / var(--escala-mesa,1))}
 #last-preview .last-strip{padding:4px 0;gap:10px}#last-preview .mini-media,#last-preview .last-zone-group .mini-media{margin:28px 0}

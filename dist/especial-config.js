@@ -6,15 +6,24 @@ export function opcionesEspecial(config){
  return {modo:'directo',disparadores:6,reposicion:'sin-reposicion',daily:'independiente',cantidades:{},destinos:{},frecuencia:'carta',base:0,incremento:0,limite:null,compensar:false,...config.spawnEspecial};
 }
 export const especialActivo=c=>opcionesEspecial(c).modo!=='directo';
+// La marca explícita preserva configuraciones históricas de disparadores, que
+// podían guardar destinos del modo probabilístico sin aplicarlos en este modo.
+export const destinosEspecialHabilitados=c=>{const o=opcionesEspecial(c);return o.modo==='probabilidad'||o.modo==='disparadores'&&o.destinosEnDisparadores===true;};
 export const dailyIntegrado=c=>especialActivo(c)&&opcionesEspecial(c).daily==='integrado'&&Boolean(c.dailyHabilitado);
 export const reposicionDaily=config=>dailyIntegrado(config)?opcionesEspecial(config).reposicion:config.modoDaily??'sin-reposicion';
 export const esExpansionEspecial=c=>c.id.startsWith('spawn-')&&c.id!==ID_DISPARADOR&&!['abominacion','nigromante','asedio'].includes(c.tipo)&&!c.id.startsWith('activacion-');
+export const esBasicaEspecial=c=>c.expansionId==='core-white-death'&&['caminantes','brutos','corredores'].includes(c.tipo);
+export const esCartaConfigurable=c=>esExpansionEspecial(c)||esBasicaEspecial(c);
+export function destinoCartaEspecial(config,c){
+ if(!especialActivo(config))return 'general';
+ return destinosEspecialHabilitados(config)?opcionesEspecial(config).destinos[c.id]??(esBasicaEspecial(c)?'general':'especial'):esBasicaEspecial(c)?'general':'especial';
+}
 export const cantidadEspecial=(config,c)=>opcionesEspecial(config).cantidades[c.id]??c.copies??1;
 export function ajustarGeneralEspecial(config,composicion,cartas){
  const o=opcionesEspecial(config);if(o.modo==='directo')return composicion;
  const general={...composicion};
- for(const c of cartas.filter(esExpansionEspecial))if(Object.hasOwn(general,c.id)){
-  if(o.modo==='probabilidad'&&o.destinos[c.id]==='general')general[c.id]=cantidadEspecial(config,c);
+ for(const c of cartas.filter(esCartaConfigurable))if(Object.hasOwn(general,c.id)){
+  if(destinoCartaEspecial(config,c)==='general')general[c.id]=cantidadEspecial(config,c);
   else delete general[c.id];
  }
  if(o.modo==='disparadores')general[ID_DISPARADOR]=o.disparadores;
@@ -23,7 +32,8 @@ export function ajustarGeneralEspecial(config,composicion,cartas){
   const motor=core.filter(c=>['nigromante','abominacion','asedio'].includes(c.tipo));
   const otros=core.filter(c=>!motor.includes(c)).reduce((n,c)=>n+composicion[c.id],0);
   const extra=Object.entries(general).filter(([id])=>!core.some(c=>c.id===id)).reduce((n,[,q])=>n+q,0);
-  if(otros>0)for(const c of motor)general[c.id]=Math.round(composicion[c.id]*(otros+extra)/otros);
+  const otrosActuales=core.filter(c=>!motor.includes(c)).reduce((n,c)=>n+(general[c.id]??0),0);
+  if(otros>0)for(const c of motor)general[c.id]=Math.round(composicion[c.id]*(otros+Math.max(0,otrosActuales-otros)+extra)/otros);
  }
  return general;
 }
@@ -31,8 +41,9 @@ export function configEspecialValida(config,cartas,dailyIds){
  if(config.spawnEspecial===undefined)return true;
  const o=opcionesEspecial(config),entero=n=>Number.isSafeInteger(n)&&n>=1,porcentaje=n=>Number.isFinite(n)&&n>=0&&n<=100;
  if(!config.spawnEspecial||typeof config.spawnEspecial!=='object'||Array.isArray(config.spawnEspecial))return false;
+ if(o.destinosEnDisparadores!==undefined&&typeof o.destinosEnDisparadores!=='boolean')return false;
  if(!['directo','disparadores','probabilidad'].includes(o.modo)||!['sin-reposicion','con-reposicion'].includes(o.reposicion)||!['independiente','integrado'].includes(o.daily)||!['carta','tanda'].includes(o.frecuencia)||!entero(o.disparadores)||typeof o.compensar!=='boolean'||!porcentaje(o.base)||!porcentaje(o.incremento)||o.limite!==null&&!entero(o.limite))return false;
- const expansiones=cartas.filter(esExpansionEspecial).map(c=>c.id),ids=[...expansiones,...dailyIds];
+ const expansiones=cartas.filter(esCartaConfigurable).map(c=>c.id),ids=[...expansiones,...dailyIds];
  for(const [campo,validar] of [['cantidades',([id,q])=>ids.includes(id)&&entero(q)],['destinos',([id,d])=>expansiones.includes(id)&&['general','especial'].includes(d)]]){
   const mapa=o[campo];if(!mapa||typeof mapa!=='object'||Array.isArray(mapa)||!Object.entries(mapa).every(validar))return false;
  }

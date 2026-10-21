@@ -14,7 +14,7 @@ export function prepararExportacion(estado,fecha=new Date()){
    'Incluye la partida actual y su configuración guardada, incluida la pendiente de la próxima tanda.',
    'No incluye cambios sin guardar del formulario ni partidas anteriores reemplazadas al iniciar otra.',
    'Los niveles y ajustes reflejan lo registrado en la aplicación, no acciones físicas sin registrar.',
-   'No es un registro de cada interacción: una tanda anulada deja de formar parte del historial.',
+   'registroActividad conserva cambios guardados y anulaciones desde la incorporación del registro; no reconstruye acciones anteriores ni clics sin cambios.',
    'Las referencias son datos de catálogo de esta versión; las imágenes no están incluidas.'
   ]
  };

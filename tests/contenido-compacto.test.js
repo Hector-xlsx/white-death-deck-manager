@@ -7,13 +7,13 @@ test('zombis comunes muestran dificultad confirmada, sin inferirla del nombre',(
  const cartas=fichasContenido('zombies').filter(c=>c.operativa);
  assert.equal(cartas.length,11);assert.ok(cartas.every(c=>['Fácil','Normal'].includes(c.dificultad)));
 });
-test('filas compactas muestran Fácil antes de Estándar con copias y casilla al final',()=>{
+test('filas compactas muestran Base antes de Avanzado con copias y casilla al final',()=>{
  const html=selectorContenido(config,'zombies');assert.equal((html.match(/class="content-row zombie-row"/g)||[]).length,6);
  for(const tipo of ['brutos','caminantes','corredores']){
   const faciles=fichasContenido('zombies').find(c=>c.id===`${tipo}-facil`),normales=fichasContenido('zombies').find(c=>c.id===`${tipo}-normal`);
   assert.ok(html.indexOf(`value="${faciles.id}"`)<html.indexOf(`value="${normales.id}"`));
-  assert.match(html,new RegExp(`<span>Fácil</span><strong>${faciles.copias}</strong><input[^>]+value="${faciles.id}"`));
-  assert.match(html,new RegExp(`<span>Estándar</span><strong>${normales.copias}</strong><input[^>]+value="${normales.id}"`));
+  assert.match(html,new RegExp(`<span>Base</span><strong>${faciles.copias}</strong><input[^>]+value="${faciles.id}"`));
+  assert.match(html,new RegExp(`<span>Avanzado</span><strong>${normales.copias}</strong><input[^>]+value="${normales.id}"`));
  }
  assert.doesNotMatch(html,/<summary>(Brutos|Caminantes|Corredores)<\/summary>/);
 });

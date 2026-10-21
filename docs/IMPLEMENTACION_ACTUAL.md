@@ -1,5 +1,21 @@
 # Implementación actual
 
+## Publicación del lote autorizada · 21/10/2026
+
+El usuario autorizó subir a GitHub el lote local acumulado: lanzadores, feedback de mesa, registro exportable, actualización desde General, etiquetas Base/Avanzado, destinos y cantidades del Core/expansiones y nuevos valores iniciales. Esta autorización sustituye las indicaciones de mantenerlo local que figuran en los apartados históricos inferiores. Se utiliza `main` y su workflow existente de pruebas y publicación en Pages. Validación local vigente: 390 pruebas de aplicación y 13 originales; QA descrito en los documentos de cada ajuste. Versión preparada `1a752bc0680f2356`.
+
+## Comunes y activaciones configurables; nuevos valores iniciales · 21/10/2026 · Solo local
+
+Destino y copias incluye Caminantes, Brutos, Corredores y sus activaciones adicionales en los dos modos de Especial. General y cantidades originales por defecto; grupos de activación separados, variantes/filtros conservados, motor excluido, historial y anulación preservados. Arranque sin configuración: puntaje oculto y cartas de acompañantes, conservando preferencias existentes. 390 pruebas de aplicación y 13 originales, QA de Especial/defaults e imágenes/zoom aprobados. Versión `1a752bc0680f2356`. Mantener local, sin publicar. Detalle vigente al inicio de [SPAWN_ESPECIAL.md](SPAWN_ESPECIAL.md).
+
+## Destinos en Cartas Spawn especial · 21/10/2026 · Solo local
+
+Mazos → Mazo general y mazo especial → Cartas Spawn especial permite elegir General/Especial por set y por carta, igual que la modalidad probabilística. Copias es el total configurado por carta: 6 → 8 significa ocho copias, no catorce. Destinos y composición se adoptan en la próxima tanda; se conserva el historial y la anulación. Configuraciones anteriores de disparadores mantienen su interpretación hasta guardar las nuevas opciones mediante la marca explícita `destinosEnDisparadores`. Daily integrado conserva su destino especial. 384/384 pruebas aprobadas; QA de destinos por grupo/carta, caso mixto, cantidad ocho, próxima tanda, cinco tamaños, cuota y recuperación offline. Versión local `e99c54d147b880c7`. No subir a GitHub.
+
+## Feedback de tablet y registro · 21/10/2026 · Solo local
+
+Insignia histórica de adrenalina en Aparición; botones Ver/Ampliar/Desfijados junto a sus títulos; nueva partida exclusivamente en General. Registro exportable de cambios guardados con timestamps, conservado al anular y sin reconstruir actividad anterior. Actualización manual espera la disponibilidad de la versión instalada. Usuario confirma pantalla encendida en tablet. Mantener este lote y los lanzadores locales sin subir a GitHub. Detalle y validación: [FEEDBACK_LOCAL_REGISTRO_Y_ADRENALINA.md](FEEDBACK_LOCAL_REGISTRO_Y_ADRENALINA.md).
+
 ## Autorización de carga conjunta · 21/10/2026
 
 El usuario autorizó subir el lote de pantalla principal compacta y selector por iconos a GitHub. Sustituye la indicación anterior de mantenerlo solo local. Se conserva el workflow de pruebas y publicación automática en `main`; no se añaden otros cambios funcionales.

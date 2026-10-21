@@ -27,11 +27,16 @@ export async function prepararOffline(elemento,{puedeActualizar=()=>true,puedeAc
   buscar?.addEventListener('click',async()=>{
    if(!puedeActualizarConfiguracion()){informar('Guarda o descarta los cambios de configuración y cierra los otros paneles antes de actualizar.');return;}
    buscar.disabled=true;informar('Buscando y descargando actualizaciones…');
+   let detectado=reg.installing;
+   const detectar=()=>{detectado=reg.installing||detectado;};
+   reg.addEventListener('updatefound',detectar);
    try{
     if(!reg.waiting&&!versionDistinta){
      if(!navigator.onLine){informar('Sin conexión: no se pueden buscar versiones nuevas. La partida se conserva.');habilitar();return;}
      await reg.update();
-     const instalando=reg.installing;
+     // updatefound y waiting pueden publicarse en tareas posteriores a update().
+     await new Promise(resolve=>setTimeout(resolve,0));
+     const instalando=reg.installing||detectado;
      if(instalando)await new Promise((resolve,reject)=>{
       const terminar=()=>{
        if(!['installed','activated','redundant'].includes(instalando.state))return;
@@ -41,11 +46,18 @@ export async function prepararOffline(elemento,{puedeActualizar=()=>true,puedeAc
       const limite=setTimeout(()=>{instalando.removeEventListener('statechange',terminar);reject(new Error('Tiempo agotado'));},30000);
       instalando.addEventListener('statechange',terminar);terminar();
      });
+     if(instalando?.state==='installed'&&!reg.waiting){
+      await new Promise((resolve,reject)=>{
+       const inicio=Date.now();
+       const esperar=()=>{if(reg.waiting||instalando.state==='activated'){resolve();return;}if(instalando.state==='redundant'||Date.now()-inicio>3000){reject(new Error('No se pudo completar la instalación'));return;}setTimeout(esperar,25);};esperar();
+      });
+     }
     }
     await comprobar();
     if(reg.waiting||versionDistinta)activar(true);
     else{informar('No hay actualizaciones pendientes.');habilitar();}
    }catch{informar('No se pudo comprobar o descargar la actualización. Revisa la conexión y vuelve a intentarlo. La partida se conserva.');habilitar();}
+   finally{reg.removeEventListener('updatefound',detectar);}
   });
   async function comprobar(){
    mostrarActualizacion();

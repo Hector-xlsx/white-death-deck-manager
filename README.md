@@ -4,6 +4,15 @@ Aplicación estática en español para partidas físicas. Conserva la interfaz y
 
 ## Ejecutar
 
+En Windows también puedes hacer doble clic en los archivos de la raíz:
+
+- `INICIAR_LOCAL.cmd`: prepara la aplicación e inicia el servidor; si ya está iniciado, lo informa sin duplicarlo.
+- `REINICIAR_LOCAL.cmd`: prepara la última versión y reinicia únicamente el servidor identificado de este proyecto.
+
+Deja abierta la ventana del servidor y entra a http://127.0.0.1:8080/mazo/ . Para detenerlo, pulsa Ctrl+C en esa ventana. Si un servidor antiguo no se puede identificar, ciérralo desde su terminal con Ctrl+C y vuelve a ejecutar el lanzador. Ninguno de estos archivos borra partidas ni almacenamiento del navegador.
+
+Después de reiniciar, usa **Configuración → General → Buscar y aplicar actualización** en la aplicación: el reinicio del servidor por sí solo no sustituye la versión offline que mantiene el navegador. Conserva la misma dirección para acceder a tu partida local.
+
 Con Node moderno, desde la raíz:
 
 ```sh

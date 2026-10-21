@@ -1,5 +1,27 @@
 # Spawn Especial · 18/10/2026
 
+## Cartas básicas configurables · 21/10/2026 · Solo local
+
+En Cartas Spawn especial y Spawn adicional por probabilidad, Destino y copias de las cartas incorpora las seis variantes de Caminantes, Brutos y Corredores y sus tres activaciones adicionales. Parten en General con sus cantidades originales. Base/Avanzado conservan IDs, cantidades y filtros independientes. Las activaciones forman grupos separados: trasladar Brutos no traslada implícitamente su activación. Nigromante, Abominación y Asedio siguen fuera de esta selección.
+
+Cada carta solo participa en su destino y con la cantidad configurada. Se respetan selección de Contenido, cajas y dificultades. El modo directo conserva su composición anterior y no aplica estos ajustes. Sin destinos/cantidades nuevos, las partidas y tandas anteriores mantienen su composición. Guardar adopta los cambios en próxima tanda con la política existente de restantes; anular restaura ambos mazos y conserva el registro de actividad.
+
+La compensación opcional sigue aumentando únicamente Nigromante, Abominación y Asedio, sin reducir sus cantidades base: ahora también contempla aumentos netos de copias de comunes que permanecen en General. Mover cartas al especial no provoca una reducción automática del motor. Las cartas básicas del especial usan sus imágenes originales y sus cantidades por adrenalina; una activación no suma miniaturas, puntos ni un resultado variable.
+
+Validación: 390/390 pruebas de aplicación y 13/13 originales aprobadas. Seis pruebas nuevas verifican defaults, exclusividad en ambos modos, ocho Corredores, activaciones por nivel, conteo/puntaje, regeneración, descarte, cuota, recuperación, anulación, cambios durante partida, filtros y compensación. QA ampliado de Especial en Chrome: set/carta, activación separada, imágenes/zoom, distintos tamaños y recuperación offline. No se modifica la partida del usuario ni el servidor de 8080. Pendiente revisión en tablet física.
+
+Valores iniciales de interfaz solicitados: puntaje oculto y apariciones adicionales como cartas de acompañantes. Se establecen solo en el arranque sin partida guardada; formatos anteriores sin esos campos conservan su presentación anterior y las preferencias explícitas se respetan. Verificado en un navegador limpio y con partidas previas aisladas. Versión local preparada: `1a752bc0680f2356`. No subir a GitHub.
+
+## Ampliación local · 21/10/2026
+
+La elección General/Especial por set y por carta también está disponible en **Cartas Spawn especial**. Cada carta participa únicamente en su destino; Daily integrado permanece en el especial. Copias es el total por carta: pasar de 6 a 8 configura ocho, no catorce ni ocho zombis por aparición. Un set aplica el destino a sus cartas seleccionadas; después se pueden hacer excepciones individuales y el selector del grupo muestra Personalizado por carta.
+
+Guardar configura la próxima tanda. Los cambios conservan tandas anteriores y el respaldo de anulación; aumentar una cantidad durante un ciclo no repone de inmediato las copias usadas (se conserva el criterio de disponibilidad existente). La cantidad inicial del nuevo ciclo utiliza el total configurado. El modo activo sigue requiriendo candidatos en el especial.
+
+Compatibilidad: `spawnEspecial.destinosEnDisparadores: true` habilita estos destinos en la configuración nueva. Sin esa marca, los destinos que una partida anterior pudiera haber guardado al usar el modo probabilístico siguen sin afectar sus disparadores ni sus tandas históricas. No se migra ni reinicia la partida. Al abrir esas configuraciones se muestra el destino efectivo y guardar adopta las elecciones visibles.
+
+384/384 pruebas de aplicación aprobadas, incluidas cuatro nuevas sobre destino exclusivo, ocho copias, compatibilidad histórica, próxima tanda, anulación y validación. QA de Especial en Chrome aislado: destino por set, excepción individual, ocho copias, adopción, varios tamaños y recuperación offline; se conservan las comprobaciones de probabilidad, Daily, cuota y descarte. Captura revisada en `docs/verificacion/especial-destinos-disparadores.png`. Versión preparada `e99c54d147b880c7`. Mantener solo en local por instrucción del usuario.
+
 ## Alcance y decisiones confirmadas
 
 Diseño solicitado y aclarado por el usuario en este chat. Es una configuración personalizada del gestor, no una regla oficial del juego. Mantiene la integración directa existente y añade dos modalidades. Solo usa cartas confirmadas y habilitadas del catálogo; no incorpora cartas o reglas nuevas de campañas citadas como ejemplos. Bestias divinas Aparición continúa pendiente.

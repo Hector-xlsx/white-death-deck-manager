@@ -46,7 +46,7 @@ let ultimoTemaPuntaje='kang',ultimoPuntaje=0;
 // Depuración temporal: desactivar antes de preparar la versión final.
 const DEBUG_DAILY_SPAWN=false;
 let catalog=Object.fromEntries(CATALOG.map(c=>[c.id,c]));
-let state=newGame(configuracionRevelacionActual({easy:true,normal:true,threshold:20,modoNigromantes:'sin-reposicion',reglaNigromantes:'personalizado',reglaAbominaciones:'personalizado',abominacionEstandarId:'enemigo-abominacion-kan',dailyPorNivel:perfilDailyInicial(),limitesPorAdrenalina:limitesIniciales(true)})),storageBlocked=false,guardadoObservado=null;
+let state=newGame(configuracionRevelacionActual({easy:true,normal:true,threshold:20,ocultarPuntaje:true,modoAparicionAdicional:'cartas-custom',modoNigromantes:'sin-reposicion',reglaNigromantes:'personalizado',reglaAbominaciones:'personalizado',abominacionEstandarId:'enemigo-abominacion-kan',dailyPorNivel:perfilDailyInicial(),limitesPorAdrenalina:limitesIniciales(true)})),storageBlocked=false,guardadoObservado=null;
 try{guardadoObservado=localStorage.getItem(KEY);state=recuperar(localStorage)||state;guardadoObservado=localStorage.getItem(KEY);}
 catch(e){storageBlocked=true;$('status-alert').hidden=false;$('status-alert').textContent='No se pudo recuperar la partida guardada. Inicia una nueva partida desde Configuración para continuar.';}
 if(!storageBlocked&&state.revisionReglas!==REVISION_REGLAS){
@@ -114,7 +114,7 @@ function commit(fn,{recover=false,animar=false,procedural=false,celebrar=false}=
  if(storageBlocked&&!recover){toast('Inicia una nueva partida desde Configuración para continuar.');return false;}
  const next=state;
  const anteriores=animar?idsVisibles():[];
- try{state=guardarAccion(next,fn,localStorage,{esperado:guardadoObservado});guardadoObservado=JSON.stringify(state);storageBlocked=false;$('status-alert').hidden=true;$('save-status').textContent='Guardado local';if(animar||procedural)prepararRevelacion(anteriores,procedural,next.history.at(-1));else if(revelacion)avanzarPresentacion();render();if(celebrar)pulsarPuntaje();return true;}
+ try{state=guardarAccion(next,fn,localStorage,{esperado:guardadoObservado,nuevaPartida:recover});guardadoObservado=JSON.stringify(state);storageBlocked=false;$('status-alert').hidden=true;$('save-status').textContent='Guardado local';if(animar||procedural)prepararRevelacion(anteriores,procedural,next.history.at(-1));else if(revelacion)avanzarPresentacion();render();if(celebrar)pulsarPuntaje();return true;}
  catch(e){
   if(e.code==='PARTIDA_CAMBIADA'){
    try{terminarVolteos();state=recuperar(localStorage)||state;guardadoObservado=localStorage.getItem(KEY);render();toast('La partida cambió en otra pestaña. Repite la acción.');return false;}catch{storageBlocked=true;}
@@ -125,7 +125,7 @@ $('save-status').textContent='No se pudo guardar';toast(['CADENA_AUTOMATICA','EN
 function openDialog(id){if(!$(id).open)$(id).showModal();}
 function closeDialog(id,{forzar=false}={}){if(id==='confirm-dialog')confirmAction=null;if(id==='settings-dialog'&&!forzar&&hayCambiosConfiguracion()){confirmarSalidaConfiguracion();return;}$(id).close();}
 function entry(uid){for(const b of state.history)for(const slot of b.slots)for(const c of slot.draws){if(c.uid===uid)return c;const secundaria=[...(c.abominaciones||[]),...(c.nigromantes||[]),...(c.daily||[]),...(c.especial||[])].find(a=>a.uid===uid);if(secundaria)return secundaria;}return state.pins.find(c=>c.uid===uid)||state.unpinned.find(c=>c.uid===uid);}
-function imagenCarta(c){const card=catalog[c.cardId];return c.mazo||card.rutaImagen?rutaRecurso(card.rutaImagen??card.image):`./assets/${card.image}`;}
+function imagenCarta(c){const card=catalog[c.cardId];return card.rutaImagen||c.mazo&&c.mazo!=='especial'?rutaRecurso(card.rutaImagen??card.image):`./assets/${card.image}`;}
 function cartasTanda(b,historico=false){
  const items=[],finales=[],etiquetas=etiquetasZonas(b);
  function visitar(t){
@@ -326,7 +326,7 @@ function render(){
  if($('batch-dialog').open)renderBatch();if($('history-dialog').open)renderHistory();
 
 }
-function renderBatch(){const b=state.history.find(b=>b.number===visibleBatch)||state.history.at(-1);if(!b)return;visibleBatch=b.number;$('batch-dialog').dataset.revelacion=revelacion?.fase??'lista';$('batch-title').textContent=`Tanda ${b.number} · ${b.normal+b.necro} zonas iniciales`;$('batch-grid').innerHTML=cartasHTML(b);$('batch-detalles-tanda').innerHTML=detallesTandaHTML(b);programarVolteos();const anular=$('anular-tanda');anular.disabled=storageBlocked||!puedeAnularTanda(state,b.number);anular.title=anular.disabled?'Esta tanda no tiene un respaldo anterior disponible':'Volver al estado anterior a SPAWN';}
+function renderBatch(){const b=state.history.find(b=>b.number===visibleBatch)||state.history.at(-1);if(!b)return;visibleBatch=b.number;$('batch-dialog').dataset.revelacion=revelacion?.fase??'lista';$('batch-title').textContent=`Tanda ${b.number} · ${b.normal+b.necro} zonas iniciales`;const insignia=$('batch-adrenalina');insignia.dataset.nivel=b.nivelAdrenalina??'azul';insignia.textContent=NOMBRES_ADRENALINA[b.nivelAdrenalina??'azul'];$('batch-grid').innerHTML=cartasHTML(b);$('batch-detalles-tanda').innerHTML=detallesTandaHTML(b);programarVolteos();const anular=$('anular-tanda');anular.disabled=storageBlocked||!puedeAnularTanda(state,b.number);anular.title=anular.disabled?'Esta tanda no tiene un respaldo anterior disponible':'Volver al estado anterior a SPAWN';}
 function programarVolteos(){
  clearTimeout(temporizadorRevelacion);
  if(revelacion&&revelacion.espera===null)temporizadorRevelacion=setTimeout(()=>{avanzarPresentacion();if($('batch-dialog').open)renderBatch();},Math.max(0,revelacion.hasta-performance.now()));

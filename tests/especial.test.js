@@ -44,6 +44,29 @@ test('Especial: elegibilidad seleccionable incluye activaciones y excluye grupos
 test('Especial: destinos del modo probabilístico son exclusivos y usan cantidades editadas',()=>{
  const s=crear({destinos:{'spawn-559':'general'},cantidades:{'spawn-559':3}});assert.equal(s.initial['spawn-559'],3);assert.equal(s.especial.initial['spawn-559'],undefined);assert.equal(s.especial.initial['spawn-565'],6);const c=gen(revelar(s,'spawn-559'));assert.equal(c.especial[0].cardId,'spawn-565');
 });
+test('Especial: disparadores admiten destino general con ocho copias totales y conservan el especial separado',()=>{
+ const s=crear({modo:'disparadores',destinosEnDisparadores:true,destinos:{'spawn-559':'general'},cantidades:{'spawn-559':8},disparadores:4});
+ assert.equal(s.initial['spawn-559'],8);assert.equal(s.initial[ID_DISPARADOR],4);
+ assert.equal(s.especial.initial['spawn-559'],undefined);assert.equal(s.especial.initial['spawn-565'],6);
+ const directa=gen(revelar(s,'spawn-559'));assert.equal(directa.especial,undefined);
+ const disparador=gen(revelar(s,ID_DISPARADOR));assert.equal(disparador.especial[0].cardId,'spawn-565');assert.ok(isValid(s));
+});
+test('Especial: disparadores históricos ignoran destinos probabilísticos guardados y conservan sus bytes',()=>{
+ const s=crear({modo:'disparadores',destinos:{'spawn-559':'general'},cantidades:{'spawn-559':8}});
+ assert.equal(s.initial['spawn-559'],undefined);assert.equal(s.especial.initial['spawn-559'],8);
+ revelar(s,ID_DISPARADOR);const bytes=JSON.stringify(s);assert.equal(JSON.stringify(recuperar({getItem:k=>k===KEY?bytes:null})),bytes);
+});
+test('Especial: cambio de destino en disparadores se adopta en próxima tanda y anular restaura ambos mazos',()=>{
+ const s=crear({modo:'disparadores'},{modoNigromantes:'sin-reposicion',reglaNigromantes:'personalizado',reglaAbominaciones:'personalizado'});revelar(s,ID_DISPARADOR);s.openBatch=false;const historia=structuredClone(s.history);
+ programarConfiguracion(s,{...s.proximaConfig,spawnEspecial:{...s.config.spawnEspecial,destinosEnDisparadores:true,destinos:{'spawn-559':'general'},cantidades:{'spawn-559':8}}});
+ assert.equal(s.initial['spawn-559'],undefined);const antes=structuredClone(s);
+ spawn(s,()=>0);assert.equal(s.initial['spawn-559'],8);assert.equal(s.especial.initial['spawn-559'],undefined);assert.deepEqual(s.history.slice(0,1),historia);assert.ok(isValid(s));
+ anularTanda(s);assert.deepEqual(s,{...antes,openBatch:false,respaldoTanda:null});
+});
+test('Especial: disparadores rechazan destino que vacía el mazo especial y marca de compatibilidad inválida',()=>{
+ assert.throws(()=>crear({modo:'disparadores',destinosEnDisparadores:true,destinos:{'spawn-559':'general','spawn-565':'general'}}),/al menos una carta/);
+ assert.equal(configEspecialValida({spawnEspecial:{destinosEnDisparadores:'sí'}},CATALOG,[]),false);
+});
 test('Especial: compensación entera usa Core filtrado y contabiliza disparadores/general',()=>{
  const config={easy:true,normal:true,threshold:0,selectedIds:CATALOG.map(c=>c.id),spawnEspecial:{modo:'disparadores',compensar:true}};
  let m=componer(config);assert.equal(m.nigromante,11);assert.equal(m.abominacion,7);assert.equal(m.asedio,11);assert.equal(Object.values(m).reduce((a,b)=>a+b,0),67);

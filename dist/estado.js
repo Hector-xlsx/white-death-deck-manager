@@ -1,4 +1,5 @@
 import {validarEspecial} from './especial.js';
+import {registroActividadValido} from './registro-actividad.js';
 import {configEspecialValida,DISPARADOR_ESPECIAL} from './especial-config.js';
 import {derrotasValidas} from './derrotas.js';
 import {resumenPuntaje} from './puntaje.js';
@@ -31,6 +32,7 @@ function configValida(c,ids){
 }
 export function isValid(s){
  try{
+  if(!registroActividadValido(s?.registroActividad))return false;
   if(!s||!s.config||![1,2].includes(s.version)||!Array.isArray(s.history)||!Array.isArray(s.pins))return false;
   if(!derrotasValidas(s.derrotasEnemigos)||!ajustesZombisValidos(s.ajustesZombis))return false;
   if(s.nivelAdrenalina!==undefined&&!NIVELES_ADRENALINA.includes(s.nivelAdrenalina))return false;

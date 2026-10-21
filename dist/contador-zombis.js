@@ -25,7 +25,7 @@ export function desgloseGenerados(s){
     }
     for(const a of c.especial||[])if(!a.discarded&&!a.anulada){
      const f=s.catalogo.cartas.find(f=>f.id===a.cardId),q=f?.levels?.[nivel];
-     if(Number.isSafeInteger(q))sumar(f.tipo,q);else variables++;
+     if(Number.isSafeInteger(q))sumar(f.tipo,q);else if(q!=='Sin efecto'&&q!=='Activación adicional')variables++;
     }
     for(const secundaria of [...(c.abominaciones||[]),...(c.nigromantes||[]),...(c.daily||[])]){
      if(secundaria.anulada||secundaria.discarded||vistos.has(secundaria.uid))continue;

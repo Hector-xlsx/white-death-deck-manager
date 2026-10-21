@@ -1,5 +1,5 @@
 import {CATALOG,componer,idsSecundarios,enColeccion} from './catalogo.js';
-import {opcionesEspecial,especialActivo,dailyIntegrado,cantidadEspecial,esExpansionEspecial,ID_DISPARADOR} from './especial-config.js';
+import {opcionesEspecial,especialActivo,dailyIntegrado,cantidadEspecial,esCartaConfigurable,ID_DISPARADOR,destinoCartaEspecial} from './especial-config.js';
 import {disponiblesSecundario,recalcularSecundario,robarSecundario,anularSecundaria} from './secundarios.js';
 import {prepararReglasCarta} from './reglas-cartas.js';
 
@@ -7,7 +7,7 @@ const suma=m=>Object.values(m).reduce((a,b)=>a+b,0);
 const configTanda=s=>s.history.at(-1)?.configEspecial??s.config;
 export function cartasEspecial(config){
  const incluidas=new Set(config.selectedIds??CATALOG.map(c=>c.id)),o=opcionesEspecial(config);
- return CATALOG.filter(c=>esExpansionEspecial(c)&&incluidas.has(c.id)&&enColeccion(c.id,config)&&(!c.difficulty||(c.difficulty==='Fácil'?config.easy:config.normal))&&(o.modo!=='probabilidad'||o.destinos[c.id]!=='general'));
+ return CATALOG.filter(c=>esCartaConfigurable(c)&&incluidas.has(c.id)&&enColeccion(c.id,config)&&(!c.difficulty||(c.difficulty==='Fácil'?config.easy:config.normal))&&destinoCartaEspecial(config,c)==='especial');
 }
 export function erroresEspecial(config){
  if(!especialActivo(config))return [];
@@ -130,7 +130,7 @@ export function regenerarEspecial(s,uid,rng=Math.random){
 export function validarEspecial(s){
  if(especialActivo(s.config)&&!s.especial)return false;
  const m=s.especial;
- if(m&&(!['con-reposicion','sin-reposicion'].includes(m.reposicion)||!Number.isSafeInteger(m.cycle)||m.cycle<1||m.version!==1||!m.initial||!m.remaining||Object.keys(m.initial).length!==Object.keys(m.remaining).length||!Object.entries(m.initial).every(([id,n])=>CATALOG.some(c=>c.id===id&&esExpansionEspecial(c))&&Number.isSafeInteger(n)&&n>0&&Number.isSafeInteger(m.remaining[id])&&m.remaining[id]>=0&&m.remaining[id]<=n)))return false;
+ if(m&&(!['con-reposicion','sin-reposicion'].includes(m.reposicion)||!Number.isSafeInteger(m.cycle)||m.cycle<1||m.version!==1||!m.initial||!m.remaining||Object.keys(m.initial).length!==Object.keys(m.remaining).length||!Object.entries(m.initial).every(([id,n])=>CATALOG.some(c=>c.id===id&&esCartaConfigurable(c))&&Number.isSafeInteger(n)&&n>0&&Number.isSafeInteger(m.remaining[id])&&m.remaining[id]>=0&&m.remaining[id]<=n)))return false;
  if(especialActivo(s.config)&&m.reposicion!==opcionesEspecial(s.config).reposicion)return false;
  if(especialActivo(s.config)){const esperado=crearEspecial(s.config).initial;if(Object.keys(m.initial).length!==Object.keys(esperado).length||!Object.entries(esperado).every(([id,n])=>m.initial[id]===n))return false;}
  for(const b of s.history){

@@ -7,7 +7,7 @@ export const CATALOGO_BASE=datos.base.cartas.map(c=>({
  tipo:c.tipo_zombi,juegoId:c.juego_id,expansionId:c.expansion_id,referenciasIds:c.referencias_ids
 }));
 export const CATALOG=[...CATALOGO_BASE,...datos.expansiones.cartas.filter(c=>c.habilitada_para_sorteo&&c.datos_confirmados).map(c=>({id:c.id,name:c.nombre_sugerido,copies:c.cantidad_inicial,difficulty:c.dificultad,image:c.imagen.split('/').at(-1),rutaImagen:c.imagen,levels:c.efectos_por_nivel,tipo:c.tipo_zombi_sugerido,juegoId:c.juego_id,expansionId:c.expansion_id,referenciasIds:[]}))];
-export const dificultadVisible=dificultad=>dificultad==='Normal'?'Estándar':dificultad;
+export const dificultadVisible=dificultad=>dificultad==='Fácil'?'Base':dificultad==='Normal'?'Avanzado':dificultad;
 export const nombreVisible=nombre=>nombre.replace(/\bnormal\b/gi,'estándar');
 export const IDS_OTROS=CATALOG.filter(c=>['nigromante','abominacion','asedio'].includes(c.tipo)||c.id.startsWith('activacion-')).map(c=>c.id);
 export const cajaCarta=id=>datos.coleccion.cartas.find(c=>c.id===id)?.cajaId;

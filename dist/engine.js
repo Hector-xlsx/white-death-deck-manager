@@ -58,7 +58,7 @@ export function spawn(s,rng=Math.random) {
  sincronizarNigromantes(s);
  const count=s.normal+s.necro; if(count===0) return null;
  if(!total(s.initial))throw new Error('Mazo vacío');
- const {respaldoTanda:anterior,...sinRespaldo}=s;
+ const {respaldoTanda:anterior,registroActividad,...sinRespaldo}=s;
  s.respaldoTanda={numero:s.history.length+1,estado:structuredClone(sinRespaldo)};
  aplicarConfiguracionPendiente(s);
  const batch={number:s.history.length+1,date:Date.now(),normal:s.normal,necro:s.necro,nivelAdrenalina:nivelAdrenalina(s),slots:[]};
@@ -85,9 +85,10 @@ export function puedeAnularTanda(s,numero=s.history.at(-1)?.number){
 }
 export function anularTanda(s,numero=s.history.at(-1)?.number){
  if(!puedeAnularTanda(s,numero))throw new Error('La tanda no tiene un respaldo anterior disponible.');
- const anterior=structuredClone(s.respaldoTanda.estado);
+ const anterior=structuredClone(s.respaldoTanda.estado),registro=s.registroActividad;
  for(const campo of Object.keys(s))delete s[campo];
  Object.assign(s,anterior,{openBatch:false,respaldoTanda:null});
+ if(registro)s.registroActividad=registro;
 }
 export function replaceCard(s,batchNumber,slotIndex,rng=Math.random) {
  const slot=posicionActual(s,batchNumber,slotIndex);

@@ -61,7 +61,7 @@ test('recuperacion conserva respaldo sin sortear y permite anular tras cerrar la
  let actual=guardarAccion(s,n=>spawn(n,()=>.99),a);
  actual=guardarAccion(actual,n=>n.openBatch=false,a);
  const recuperado=recuperar(a);assert.deepEqual(recuperado,actual);
- actual=guardarAccion(recuperado,n=>anularTanda(n),a);assert.deepEqual(actual,antes);assert.deepEqual(recuperar(a),antes);
+ actual=guardarAccion(recuperado,n=>anularTanda(n),a);const {registroActividad,...restaurado}=actual;assert.deepEqual(restaurado,antes);assert.equal(registroActividad.eventos.at(-1).tipo,'tanda-anulada');assert.deepEqual(recuperar(a),actual);
 });
 test('cuota fallida conserva tanda, referencias, mazos y respaldo intactos',()=>{
  const s=newGame();spawn(s,()=>.99);const antes=structuredClone(s);
