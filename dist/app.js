@@ -1,4 +1,5 @@
 import {iniciarPantallaCompleta} from './pantalla-completa.js';
+import {prepararExportacion,descargarExportacion} from './exportacion.js';
 import {iniciarConfiguracionUI,actualizarConfiguracionUI,leerElegiblesDailyUI} from './configuracion-ui.js';
 import {configuracionRevelacionActual} from './acciones-independientes.js';
 import {cargarRevelacionUI,leerRevelacionUI} from './revelacion-ui.js';
@@ -96,6 +97,15 @@ function avanzarPresentacion(){
  if(paso.terminada){revelacion=null;document.body.classList.remove('revelacion-procedural');}
 }
 function toast(text){$('toast').textContent=text;$('toast').classList.add('visible');clearTimeout(toastTimer);toastTimer=setTimeout(()=>$('toast').classList.remove('visible'),2800);}
+function exportarPartida(){
+ try{
+  if(storageBlocked)throw new Error('No se pudo recuperar la partida guardada. Conserva los datos antes de iniciar otra.');
+  if(localStorage.getItem(KEY)!==guardadoObservado)throw new Error('La partida cambió en otra pestaña. Espera a que se actualice y vuelve a exportar.');
+  descargarExportacion(prepararExportacion(state));
+  toast('Archivo preparado. Revisa las descargas de tu dispositivo.');
+ }catch(e){toast(e.message||'No se pudo preparar el archivo. Vuelve a intentarlo.');}
+}
+$('exportar-partida').addEventListener('click',exportarPartida);
 function commit(fn,{recover=false,animar=false,procedural=false,celebrar=false}={}){
  if(storageBlocked&&!recover){toast('Inicia una nueva partida desde Configuración para continuar.');return false;}
  const next=state;
@@ -505,7 +515,7 @@ window.addEventListener('storage',e=>{if(e.key!==KEY)return;terminarVolteos();gu
 const observadorEnJuego=new ResizeObserver(distribuirEnJuego);observadorEnJuego.observe($('inplay-gallery'));
 iniciarPantallaCompleta($('pantalla-completa'),toast);
 iniciarInformacion();render();if(state.openBatch&&state.history.length)showBatch();
-prepararOffline($('offline-status'),{puedeActualizar:()=>!storageBlocked&&!document.querySelector('dialog[open]')});
+prepararOffline($('offline-status'),{puedeActualizar:()=>!storageBlocked&&!document.querySelector('dialog[open]'),puedeActualizarConfiguracion:()=>!storageBlocked&&!hayCambiosConfiguracion()&&![...document.querySelectorAll('dialog[open]')].some(d=>d.id!=='settings-dialog')});
 
 // Optional browser agent interface uses the same actions and local state as the UI.
 if(document.modelContext?.registerTool){

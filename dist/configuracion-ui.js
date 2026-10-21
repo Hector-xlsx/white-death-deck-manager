@@ -52,6 +52,9 @@ export function iniciarConfiguracionUI(){
  const general=seccion('general','Mazo general y mazo especial',[$('especial-config'),reinicio]);
  $('config-panel-mazos').append(general,seccion('nigromantes','Nigromantes',[nigromantes]),seccion('abominaciones','Abominaciones',[abominaciones]),seccion('daily','Daily Spawn',[$('daily-config')]));
  $('config-panel-apariencia').append(seccion('apariciones','Apariciones adicionales',[campo('Apariciones adicionales')]),seccion('puntaje','Marcador de puntaje',[campo('Marcador de puntaje')]));
+ const actualizacion=document.createElement('fieldset');
+ actualizacion.innerHTML='<legend>Actualización de la aplicación</legend><p class="field-note">Busca una versión nueva y la aplica en esta pestaña conservando la partida. Guarda los cambios de configuración antes de actualizar.</p><button id="buscar-actualizacion" type="button" class="secondary-button" aria-describedby="actualizacion-estado">Buscar y aplicar actualización</button><p id="actualizacion-estado" class="field-note" role="status" aria-live="polite"></p>';
+ $('config-panel-apariencia').append(seccion('actualizacion','Actualizar aplicación',[actualizacion]));
  notaDaily=$('daily-nota-probabilidad');
  const integrado=document.createElement('div');integrado.id='config-daily-integrado';integrado.innerHTML='<p class="field-note">Daily participa en el mazo especial. Sus cantidades y reposición se configuran allí; cada zombi Daily puede estar una sola vez en juego.</p><button type="button" class="text-button">Ir a Spawn Especial</button>';
  integrado.querySelector('button').addEventListener('click',()=>{mostrarPestanaConfiguracion('mazos');general.open=true;general.scrollIntoView({block:'start'});$('especial-config').querySelector('select').focus();});$('daily-config').append(integrado);

@@ -1,5 +1,9 @@
 # Plan de implementación por capas
 
+## Exportación y feedback de mesa · 20/10/2026
+
+Exportación JSON de partida/configuración y actualización manual desde Apariencia completadas y verificadas. Subida a GitHub y publicación automática autorizadas el 20/10/2026. Siguiente paso: comprobar el despliegue, extraer el archivo desde la tablet cuando esté disponible el botón, revisarlo junto a la imagen y elegir un ajuste visual concreto. Compactación, zoom independiente, intercambio de secciones y Última tanda plegable continúan como propuestas. Detalle en [EXPORTACION_Y_FEEDBACK_PRIMERA_PARTIDA.md](EXPORTACION_Y_FEEDBACK_PRIMERA_PARTIDA.md).
+
 ## Corrección de Revelación · 19/10/2026
 
 Personalizado utiliza únicamente los controles nuevos Siempre / Por probabilidad / Nunca. Retirados «Configurar acciones independientes» y «Combinación anterior». «Calcular por: Independiente / Todos juntos» pertenece solo a activación adicional de abominaciones y otros nigromantes, excluyendo al Profanador. Perfiles guardados e historial conservados; perfiles futuros ausentes se completan al guardar configuración o al siguiente SPAWN. Este cierre sustituye las notas anteriores sobre mantener ambas alternativas. Detalle: [REVELACION_ACCIONES_INDEPENDIENTES.md](REVELACION_ACCIONES_INDEPENDIENTES.md).

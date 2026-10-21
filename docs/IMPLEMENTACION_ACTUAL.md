@@ -1,5 +1,17 @@
 # Implementación actual
 
+## Subida autorizada · 20/10/2026
+
+El usuario autorizó subir la exportación JSON y el control de actualización desde Apariencia al repositorio conectado, rama `main`, con publicación automática mediante el workflow existente. Las secciones siguientes registran las verificaciones locales previas. No se implementan propuestas de compactación, zoom ni cambio de orden de secciones. Los datos guardados en localhost y Pages siguen separados por origen.
+
+## Actualización desde Apariencia · 20/10/2026 · Local
+
+Configuración → Apariencia → Actualizar aplicación incorpora Buscar y aplicar actualización. Comprueba explícitamente el service worker, espera la descarga y aplica la versión completa recargando solo esta pestaña, sin cerrar Configuración previamente. Bloquea la aplicación si hay borradores sin guardar, almacenamiento bloqueado u otros diálogos abiertos; revalida esas condiciones al terminar la búsqueda. Informa ausencia de cambios, falta de conexión y fallo recuperable de descarga. Conserva el aviso de actualización anterior y la protección de otras pestañas. 369/369 pruebas actuales y QA de actualización ampliado: búsqueda/descarga/aplicación en una pulsación, versión ya pendiente, cinco tamaños, borradores, dos pestañas, offline y descarga fallida, sin pérdida de partida. Sin dispositivo físico ni publicación. Para acceder por primera vez al botón debe cargarse esta versión usando el mecanismo de actualización anterior.
+
+## Exportación de partida y configuración · 20/10/2026 · Local
+
+Historial incorpora Exportar partida (JSON): estado completo, configuración vigente/pendiente, versión, fecha y referencias de catálogo, sin imágenes embebidas ni envíos externos. No modifica la partida; rechaza formato inválido o conflicto de pestaña y funciona offline. No incluye borradores, importación ni acciones físicas sin registrar. 369/369 pruebas actuales y 13/13 originales; descarga real, cinco tamaños, cuota sin escrituras, conflicto y recarga offline verificados en Chrome. Sin tablet física ni publicación. Uso, límites y propuestas de compactación aún sin implementar en [EXPORTACION_Y_FEEDBACK_PRIMERA_PARTIDA.md](EXPORTACION_Y_FEEDBACK_PRIMERA_PARTIDA.md).
+
 ## Pantalla completa · 19/10/2026
 
 Botón junto a Configuración para entrar/salir de pantalla completa mediante un gesto del usuario. Cambia su icono y nombre accesible, refleja salidas realizadas desde el navegador y mantiene los controles táctiles de al menos 44 px. La solicitud utiliza el documento completo para conservar acceso a diálogos. No guarda preferencias ni modifica la partida, no se activa automáticamente al abrir y no fuerza la instalación de la PWA. Si falta soporte o el navegador rechaza la solicitud, muestra un aviso recuperable. Compatibilidad por detección de API estándar/WebKit.

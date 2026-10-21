@@ -6,7 +6,7 @@ import assert from 'node:assert/strict';
 import {newGame,spawn} from '../dist/engine.js';
 import {abrirSeccionesConfiguracion} from './ayuda-configuracion.mjs';
 const require=createRequire(import.meta.url),{chromium}=require(process.env.MAZO_PLAYWRIGHT||'playwright');
-const raiz=path.resolve('dist'),versiones=['1111111111111111','2222222222222222','3333333333333333','4444444444444444'];
+const raiz=path.resolve('dist'),versiones=['1111111111111111','2222222222222222','3333333333333333','4444444444444444','5555555555555555'];
 let fase=0,fallarDescarga=false;
 const tipos={'.js':'text/javascript','.html':'text/html','.css':'text/css','.png':'image/png','.svg':'image/svg+xml','.webmanifest':'application/manifest+json'};
 const servidor=http.createServer(async(req,res)=>{
@@ -34,6 +34,16 @@ try{
  bytes=await p.evaluate(k=>localStorage.getItem(k),key);
  assert.equal(JSON.parse(bytes).history.length,1);
  assert.equal(await p.locator('#actualizacion-disponible').isVisible(),false);
+ // Búsqueda explícita desde Apariencia: sin cambios, offline y borrador protegido.
+ await p.getByRole('button',{name:'Configuración',exact:true}).click();
+ await abrirSeccionesConfiguracion(p,'Apariencia',['actualizacion']);
+ const buscar=p.locator('#buscar-actualizacion'),estado=p.locator('#actualizacion-estado');
+ await buscar.click();await estado.filter({hasText:'No hay actualizaciones pendientes'}).waitFor();
+ await ctx.setOffline(true);await buscar.click();await estado.filter({hasText:'Sin conexión'}).waitFor();await ctx.setOffline(false);
+ await abrirSeccionesConfiguracion(p,'Apariencia',['puntaje','actualizacion']);await p.locator('#tema-puntaje').selectOption('dragon');
+ await buscar.click();assert.match(await estado.textContent(),/Guarda o descarta/);assert.equal(await p.locator('#tema-puntaje').inputValue(),'dragon');
+ assert.equal(await p.evaluate(k=>localStorage.getItem(k),key),bytes);
+ await p.locator('#tema-puntaje').selectOption('kang');await p.locator('#settings-dialog .close-button').click();
  await p.getByRole('button',{name:'Configuración',exact:true}).click();
  await abrirSeccionesConfiguracion(p,'Contenido',['cartas']);
  await p.locator('[name="filtro-contenido"][value="nigromantes"]').check();
@@ -64,8 +74,12 @@ try{
  await p.evaluate(()=>document.getElementById('actualizar-app').click());
  assert.match(await p.locator('#actualizacion-mensaje').textContent(),/Guarda o cierra/);
  assert.equal(await p.evaluate(async()=>Boolean((await navigator.serviceWorker.getRegistration()).waiting)),true);
- await p.locator('#settings-dialog .close-button').click();
- await Promise.all([p.waitForEvent('load'),p.locator('#actualizar-app').click()]);
+ await abrirSeccionesConfiguracion(p,'Apariencia',['actualizacion']);
+ for(const [w,h] of [[1440,900],[1024,768],[844,390],[390,844],[320,568]]){
+  await p.setViewportSize({width:w,height:h});await buscar.scrollIntoViewIfNeeded();const b=await buscar.boundingBox();assert.ok(b&&b.width>=44&&b.height>=44&&b.x>=0&&b.x+b.width<=w);
+ }
+ await p.setViewportSize({width:1024,height:768});await p.screenshot({path:'docs/verificacion/actualizacion-apariencia.png'});
+ await Promise.all([p.waitForEvent('load'),buscar.click()]);
  await p.locator('#offline-status').filter({hasText:'Disponible offline'}).waitFor({timeout:90000});
  assert.equal(await p.evaluate(async()=>(await import('./version.js')).VERSION_APP),versiones[1]);
  assert.equal(await p.evaluate(k=>localStorage.getItem(k),key),bytes);
@@ -90,7 +104,8 @@ try{
  assert.equal(await p.evaluate(async()=>(await import('./version.js')).VERSION_APP),versiones[2]);
  assert.equal(await p.evaluate(k=>localStorage.getItem(k),key),guardado);
  await ctx.setOffline(false);fase=3;fallarDescarga=true;
- await p.evaluate(async()=>{await (await navigator.serviceWorker.getRegistration()).update();});
+ await p.getByRole('button',{name:'Configuración',exact:true}).click();await abrirSeccionesConfiguracion(p,'Apariencia',['actualizacion']);await buscar.click();
+ await estado.filter({hasText:'No se pudo comprobar o descargar'}).waitFor({timeout:45000});assert.equal(await buscar.isEnabled(),true);
  await p.locator('#offline-status').filter({hasText:'Descarga offline incompleta'}).waitFor({timeout:90000});
  assert.equal(await p.evaluate(async()=>Boolean((await navigator.serviceWorker.getRegistration()).waiting)),false);
  assert.equal(await p.locator('#actualizacion-disponible').isVisible(),false);
@@ -112,6 +127,12 @@ try{
   const paquetes=(await caches.keys()).filter(k=>k.startsWith('white-death-')&&!k.endsWith('-clientes'));
   return paquetes.length===1&&paquetes[0].endsWith('4444444444444444');
  });
+ // Una sola pulsación busca, descarga y aplica una versión que aún no estaba en espera.
+ fase=4;await final.getByRole('button',{name:'Configuración',exact:true}).click();await abrirSeccionesConfiguracion(final,'Apariencia',['actualizacion']);
+ await Promise.all([final.waitForEvent('load'),final.locator('#buscar-actualizacion').click()]);
+ await final.locator('#offline-status').filter({hasText:'Disponible offline'}).waitFor({timeout:90000});
+ assert.equal(await final.evaluate(async()=>(await import('./version.js')).VERSION_APP),versiones[4]);
+ assert.equal(await final.evaluate(k=>localStorage.getItem(k),key),guardado);
  assert.deepEqual(errores,[]);await ctx.close();
  console.log('Actualización: Death Notes seleccionable y consultable, aviso y cinco tamaños, protección de paneles, dos pestañas y borrador conservados, paquetes independientes, actualizaciones sucesivas, activación offline, descarga fallida y activación automática sin pérdida de partida.');
 }finally{await browser.close();await new Promise(resolve=>servidor.close(resolve));}

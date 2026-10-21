@@ -1,5 +1,9 @@
 # Decisiones pendientes y propuestas
 
+## Feedback de primera partida · 20/10/2026
+
+Usuario prioriza exportar JSON de partida/configuración: implementado y verificado localmente, sin publicar. Revisión visual posterior: compactación horizontal, eliminación de información secundaria, adrenalina visible, modos de distribución y zoom independiente. Añade dos opciones pendientes: intercambiar En juego y Última tanda, y plegar Última tanda. No se ha elegido distribución ni se autorizaron esos cambios de interfaz. Registro completo y límites en [EXPORTACION_Y_FEEDBACK_PRIMERA_PARTIDA.md](EXPORTACION_Y_FEEDBACK_PRIMERA_PARTIDA.md).
+
 ## Corrección de Revelación · 19/10/2026
 
 Personalizado utiliza únicamente los controles nuevos Siempre / Por probabilidad / Nunca. Retirados «Configurar acciones independientes» y «Combinación anterior». «Calcular por: Independiente / Todos juntos» pertenece solo a activación adicional de abominaciones y otros nigromantes, excluyendo al Profanador. Perfiles guardados e historial conservados; perfiles futuros ausentes se completan al guardar configuración o al siguiente SPAWN. Este cierre sustituye las notas anteriores sobre mantener ambas alternativas. Detalle: [REVELACION_ACCIONES_INDEPENDIENTES.md](REVELACION_ACCIONES_INDEPENDIENTES.md).
