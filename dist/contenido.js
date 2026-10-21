@@ -9,6 +9,15 @@ export const campoFiltro=filtro=>filtro==='abominaciones'?'selectedAbominaciones
 export function configContenido(config){
  return normalizarConfig({...config,coleccionIds:config.coleccionIds??datos.coleccion.cajas.map(c=>c.id),selectedAbominacionesIds:config.selectedAbominacionesIds??datos.abominaciones.cartas_ids,selectedNigromantesIds:config.selectedNigromantesIds??datos.nigromantes.cartas_ids,selectedDailyIds:config.selectedDailyIds??datos.daily.cartas_ids});
 }
+export function contenidoSinDificultad(config){
+ const resultado=configContenido(config),cartas=new Map(CATALOG.map(c=>[c.id,c]));
+ // Materializar el filtro anterior en la selección, sin tocar la partida activa.
+ resultado.selectedIds=resultado.selectedIds.filter(id=>{
+  const dificultad=cartas.get(id)?.difficulty;
+  return !dificultad||(dificultad==='Fácil'?config.easy:config.normal);
+ });
+ return {...resultado,easy:true,normal:true};
+}
 export function fichasContenido(filtro){
  if(filtro==='daily')return datos.daily.cartas.map(c=>({id:c.id,nombre:c.nombre,copias:1,cajaId:cajaCarta(c.id),operativa:true,obligatoria:false}));
  if(filtro==='abominaciones'||filtro==='nigromantes')return datos.enemigos.enemigos.filter(c=>datos[filtro].cartas_ids.includes(c.id)).map(c=>({id:c.id,nombre:c.nombre,copias:1,cajaId:cajaCarta(c.id),operativa:true,obligatoria:false}));

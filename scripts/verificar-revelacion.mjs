@@ -29,7 +29,7 @@ try{
    window.azarPrueba=manual?[0,.4,0,.99]:[0,0,0,0,.99,.4,0,.99];window.insertadas=[];window.volteadas=[];const vistas=new Set(),giradas=new Set();
    new MutationObserver(()=>{for(const c of document.querySelectorAll('#batch-grid article')){const uid=Number(c.dataset.extraccion);if(!vistas.has(uid)){vistas.add(uid);window.insertadas.push({uid,t:performance.now()});}if(c.classList.contains('volteando')&&!giradas.has(uid)){giradas.add(uid);window.volteadas.push({uid,t:performance.now()});}}}).observe(document.querySelector('#batch-grid'),{childList:true,subtree:true});
   },manual);
-  await p.locator('#spawn').click();
+  await p.locator('#spawn').click();await p.waitForFunction(()=>document.querySelector('#batch-grid .volteando'));
   const inicial=await estado(p),b=inicial.history.at(-1),raices=b.slots.filter(t=>t.kind!=='derivada').map(t=>t.draws.at(-1).uid);
   assert.equal(raices.length,3);assert.deepEqual(await p.locator('#batch-grid article').evaluateAll(cs=>cs.map(c=>Number(c.dataset.extraccion))),raices);
   assert.equal(await p.locator('#batch-grid .enemy-choices').count(),0);assert.equal(await p.locator('#batch-grid .spawn-applied').count(),0);

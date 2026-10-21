@@ -1,3 +1,4 @@
+import {compactarConfiguracion,iniciarAyudasConfiguracion} from './ayuda-configuracion.js';
 import {componer,idsSecundarios,CATALOG,nombreVisible,escapar} from './catalogo.js';
 import {idsElegiblesDaily} from './daily.js';
 import {iniciarRevelacionUI,actualizarRevelacionUI} from './revelacion-ui.js';
@@ -62,13 +63,20 @@ export function iniciarConfiguracionUI(){
  }
  const coleccionResumen=coleccion.querySelector('summary');coleccionResumen.textContent='Colección';
  form.prepend(nav,panels);
- $('config-panel-contenido').append(coleccion,seccion('dificultad','Dificultad',[dificultad]),seccion('cartas','Cartas de la partida',[contenido]));
+ $('config-panel-contenido').append(coleccion,seccion('cartas','Cartas de la partida',[contenido]));
  const general=seccion('general','Mazo general y mazo especial',[$('especial-config'),reinicio]);
  $('config-panel-mazos').append(general,seccion('nigromantes','Nigromantes',[nigromantes]),seccion('abominaciones','Abominaciones',[abominaciones]),seccion('daily','Daily Spawn',[$('daily-config')]));
- $('config-panel-apariencia').append(seccion('apariciones','Apariciones adicionales',[campo('Apariciones adicionales')]),seccion('puntaje','Marcador de puntaje',[campo('Marcador de puntaje')]));
+ for(const [id,titulo] of [['apariciones','Apariciones adicionales'],['puntaje','Marcador de puntaje']]){
+  const f=campo(titulo),label=f.querySelector('label');label.firstChild.textContent=titulo;
+  const fila=document.createElement('div');fila.id='config-seccion-'+id;fila.className='config-apariencia-fila';
+  label.append(f.querySelector('.field-note'));fila.append(label);$('config-panel-apariencia').append(fila);f.remove();
+ }
  const generalDispositivo=document.createElement('div');generalDispositivo.className='config-general';
  generalDispositivo.innerHTML='<div id="config-actualizacion" class="config-general-row"><button id="buscar-actualizacion" type="button" class="secondary-button" aria-describedby="actualizacion-descripcion actualizacion-estado">Buscar y aplicar actualización</button><div><p id="actualizacion-descripcion">Busca una versión nueva y la aplica en esta pestaña conservando la partida. Guarda los cambios de configuración antes de actualizar.</p><p id="actualizacion-estado" class="field-note" role="status" aria-live="polite"></p></div></div><div class="config-general-row"><label class="check-row"><input id="mantener-pantalla" type="checkbox" aria-describedby="pantalla-descripcion pantalla-estado"><span>Mantener pantalla encendida</span></label><div><p id="pantalla-descripcion">Evita el bloqueo automático mientras esta página esté visible, si el navegador lo permite. La preferencia se guarda en este dispositivo.</p><p id="pantalla-estado" class="field-note" role="status" aria-live="polite"></p></div></div>';
  $('config-panel-general').append(generalDispositivo);
+ const proteccion=document.createElement('div');proteccion.id='config-proteccion-almacenamiento';proteccion.className='config-general-row';
+ proteccion.innerHTML='<button id="solicitar-proteccion" type="button" class="secondary-button" aria-describedby="proteccion-descripcion proteccion-estado">Solicitar protección del almacenamiento</button><div><p id="proteccion-descripcion">Se solicita al abrir la página. Puedes volver a pedirla aquí si no fue concedida. El navegador decide si muestra un aviso. No impide el borrado manual ni garantiza protección frente a limpiadores del dispositivo; exporta la partida como respaldo.</p><p id="proteccion-estado" class="field-note" role="status" aria-live="polite"></p></div>';
+ generalDispositivo.append(proteccion);
  notaDaily=$('daily-nota-probabilidad');
  const integrado=document.createElement('div');integrado.id='config-daily-integrado';integrado.innerHTML='<p class="field-note">Daily participa en el mazo especial. Sus cantidades y reposición se configuran allí; cada zombi Daily puede estar una sola vez en juego.</p><button type="button" class="text-button">Ir a Spawn Especial</button>';
  integrado.querySelector('button').addEventListener('click',()=>{mostrarPestanaConfiguracion('mazos');general.open=true;general.scrollIntoView({block:'start'});$('especial-config').querySelector('select').focus();});$('daily-config').append(integrado);
@@ -76,7 +84,7 @@ export function iniciarConfiguracionUI(){
  const gestion=document.createElement('details');gestion.id='config-nueva-partida';gestion.className='config-new-game';gestion.innerHTML='<summary>Iniciar nueva partida</summary>';gestion.append(advertencia,nueva);$('config-panel-general').append(gestion);
  const pie=document.createElement('div');pie.className='config-footer';pie.append($('settings-summary'),$('settings-errors'),$('save-settings'));form.append(pie);
  const nota=document.createElement('p');nota.className='config-save-note';nota.textContent='Una tanda es cada pulsación de SPAWN. Contenido y reglas: siguiente tanda. Apariencia: al guardar.';pie.prepend(nota);
- dificultad.querySelector('.field-note').textContent='Filtra las cartas elegidas. Guardar aplica los cambios a la próxima tanda.';
+ dificultad.remove();
  // Ayuda secundaria plegable; los avisos de guardado y los errores permanecen visibles.
  for(const f of [reinicio,nigromantes,abominaciones,$('daily-config'),campo('Apariciones adicionales')]){
   const notas=[...f.querySelectorAll(':scope>.field-note')].filter(p=>p!==notaDaily&&p.id!=='nigromantes-status'&&p.id!=='abominaciones-status');
@@ -85,18 +93,18 @@ export function iniciarConfiguracionUI(){
  nav.addEventListener('click',e=>{const t=e.target.closest('[role="tab"]');if(t)mostrarPestanaConfiguracion(t.dataset.pestana);});
  nav.addEventListener('keydown',e=>{if(!['ArrowLeft','ArrowRight','Home','End'].includes(e.key))return;e.preventDefault();const tabs=[...nav.querySelectorAll('[role="tab"]')],i=tabs.indexOf(document.activeElement),n=e.key==='Home'?0:e.key==='End'?tabs.length-1:(i+(e.key==='ArrowRight'?1:-1)+tabs.length)%tabs.length;mostrarPestanaConfiguracion(tabs[n].dataset.pestana,{enfocar:true});});
  form.addEventListener('invalid',e=>{const p=e.target.closest('[role="tabpanel"]');if(p)mostrarPestanaConfiguracion(p.id.replace('config-panel-',''));abrirAncestros(e.target);},true);
+ iniciarAyudasConfiguracion(dialog);compactarConfiguracion(form);
  mostrarPestanaConfiguracion(pestanaActual);
 }
 export function actualizarConfiguracionUI(config){
  const porNivel=$('daily-limite-tipo').value==='nivel';$('daily-limite-general').hidden=porNivel;$('daily-limites-nivel').hidden=!porNivel;
  for(const e of $('daily-limites').querySelectorAll('input,select')){const oculto=e.closest('[hidden]');e.disabled=!config.dailyHabilitado||Boolean(oculto&&$('daily-limites').contains(oculto));}
  actualizarRevelacionUI(config);
- for(const nota of $('especial-config').querySelectorAll('p.field-note:not(#especial-composicion):not([data-especial-descripcion])')){if(nota.closest('.config-help')||nota.closest('#especial-cartas'))continue;const ayuda=document.createElement('details');ayuda.className='config-help';const summary=document.createElement('summary');summary.textContent=nota.textContent.startsWith('Daily integrado')?'Sobre Daily integrado':'Cómo funciona';ayuda.append(summary);nota.before(ayuda);ayuda.append(nota);}
+
 
  const o=opcionesEspecial(config),sumar=m=>Object.values(m).reduce((a,b)=>a+b,0);
  const texto=(id,s)=>secciones[id].resumen.textContent=s,identidades=n=>`${n} ${n===1?'carta seleccionada':'cartas seleccionadas'}`;
  const cajas=config.coleccionIds?.length??0;$('collection-selector').closest('details').querySelector('summary').textContent=`Colección · ${cajas} ${cajas===1?'caja':'cajas'}`;
- texto('dificultad',[config.easy?'Base':null,config.normal?'Avanzado':null].filter(Boolean).join(' + ')||'Sin Base ni Avanzado');
  texto('cartas',`${sumar(componer(config))} cartas en el mazo general · ${config.coleccionIds?.length??0} cajas seleccionadas`);
  const modos={directo:'Integración directa',disparadores:`${o.disparadores} cartas Spawn especial`,probabilidad:`Probabilidad por ${o.frecuencia==='carta'?'carta':'tanda'}`};
  texto('general',modos[o.modo]+(o.modo==='directo'?'':` · ${o.reposicion==='con-reposicion'?'Con':'Sin'} reposición`));
@@ -104,6 +112,7 @@ export function actualizarConfiguracionUI(config){
  for(const [mazo,campo] of [['nigromantes','reglaNigromantes'],['abominaciones','reglaAbominaciones']])texto(mazo,`${nombres[config[campo]]??'Personalizado'} · ${identidades(idsSecundarios(config,mazo).length)}`);
  const integrado=dailyIntegrado(config);texto('daily',!config.dailyHabilitado?'Desactivado':`${integrado?'Integrado en el mazo especial':'Independiente'} · ${identidades(idsSecundarios(config,'daily').length)}`);
  $('config-daily-integrado').hidden=!integrado;if(notaDaily)notaDaily.hidden=integrado||!config.dailyHabilitado;
+ $('modo-nigromantes').closest('label').hidden=config.reglaNigromantes==='estandar';
  const descripciones={nigromante:{estandar:'Solo participa el Profanador: aparece si está fuera de juego y se activa si ya está presente.',varios:'Si falta el Profanador, aparece primero. Si ya está en juego, se activa y aparece otro nigromante disponible.',personalizado:'Permite elegir el funcionamiento de Spawn y el máximo de nigromantes adicionales por adrenalina. El Profanador tiene prioridad y no cuenta para ese máximo.'},abominacion:{estandar:'Usa la abominación elegida, sin trofeo: aparece si no hay ninguna en juego; si ya hay presencia, las abominaciones presentes se activan.',festival:'Si no hay abominaciones, aparece una. Si ya hay, se activan las presentes y aparece otra disponible.',personalizado:'Permite elegir el funcionamiento de Spawn y el máximo total de abominaciones por adrenalina.'}};
  for(const [tipo,mazo,campo,modo] of [['nigromante','nigromantes','reglaNigromantes','modoNigromantes'],['abominacion','abominaciones','reglaAbominaciones','modoAbominaciones']]){
   $(`descripcion-modo-${tipo}`).textContent=descripciones[tipo][config[campo]??'personalizado'];
@@ -114,7 +123,8 @@ export function actualizarConfiguracionUI(config){
  const general=componer(config),lista=CATALOG.filter(c=>Object.hasOwn(general,c.id)),host=$('daily-elegibles'),firma=JSON.stringify(lista.map(c=>c.id));
  if(host.dataset.firma!==firma){const elegibles=new Set(idsElegiblesDaily(config));host.innerHTML=lista.map(c=>`<label class="check-row"><span>${escapar(nombreVisible(c.name))}</span><input type="checkbox" data-daily-elegible="${c.id}" ${elegibles.has(c.id)?'checked':''}></label>`).join('');host.dataset.firma=firma;}
  for(const input of host.querySelectorAll('input'))input.disabled=!config.dailyHabilitado||integrado;
- texto('apariciones',config.modoAparicionAdicional==='cartas-custom'?'Cartas de acompañantes':'Minimalista');texto('puntaje',config.ocultarPuntaje?'Oculto':({kang:'Kang',dragon:'Dragón',cabeza:'Cabeza'}[config.temaPuntaje??'kang']));
+ compactarConfiguracion($('settings-form'));
+
 }
 export function leerElegiblesDailyUI(config){
  const controles=$('daily-elegibles')?.querySelectorAll('[data-daily-elegible]');

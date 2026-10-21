@@ -1,6 +1,7 @@
 import {iniciarPantallaCompleta} from './pantalla-completa.js';
 import {iniciarVistaMesa} from './vista-mesa.js';
 import {iniciarPantallaEncendida} from './pantalla-encendida.js';
+import {iniciarProteccionAlmacenamiento} from './proteccion-almacenamiento.js';
 import {iniciarEscalaAparicion} from './escala-aparicion.js';
 import {detallesProbabilidadesHTML,detallesTandaHTML} from './detalles-aparicion.js';
 import {prepararExportacion,descargarExportacion} from './exportacion.js';
@@ -23,7 +24,7 @@ import {escapar as esc,referenciasPorCarta,rutaRecurso,componer,normalizarConfig
 import {perfilDailyInicial,parametrosDailyFormulario} from './daily.js';
 import {KEY,recuperar,guardarAccion} from './persistencia.js';
 import {selectorContenido,selectorColeccion,iniciarInformacion,informacionCarta} from './informacion.js';
-import {configContenido,marcarContenido,visiblesContenido,erroresContenido,firmaContenido,marcarCaja,resumenCaja,seleccionarContenido} from './contenido.js';
+import {contenidoSinDificultad,marcarContenido,visiblesContenido,erroresContenido,firmaContenido,marcarCaja,resumenCaja,seleccionarContenido} from './contenido.js';
 import {prepararOffline} from './pwa.js';
 import {estadoVisualSpawn,agruparRevelaciones,tieneActivacionAdicional,etiquetasZonas,agruparZonas} from './presentacion.js';
 import {NOMBRES_ACCIONES} from './acciones-enemigos.js';
@@ -83,7 +84,7 @@ movimientoReducido.addEventListener('change',e=>{if(e.matches){terminarVolteos()
 function prepararRevelacion(anteriores,inicial=false,previa=null){
  const b=state.history.at(-1);if(!b)return;
  const items=cartasTanda(b),ahora=performance.now();
- if(inicial){terminarVolteos();revelacion=crearRevelacion(items,b.number,ahora,{reducida:movimientoReducido.matches});}
+ if(inicial){terminarVolteos();revelacion=crearRevelacion(items,b.number,ahora,{reducida:movimientoReducido.matches,pausaInicial:400});}
  else if(!revelacion){
   const pendientes=new Set((previa?cartasTanda(previa):[]).filter(({c})=>(c.resolucionNigromante||c.resolucionAbominacion)==='pendiente').map(({c})=>c.uid));
   const porResolver=items.filter(({c})=>pendientes.has(c.uid)&&tieneActivacionAdicional(c)).map(({c})=>c.uid);
@@ -250,10 +251,10 @@ function renderEnJuego(){
 function renderFijados(){
  if($('inplay-dialog').open)renderEnJuego();
  const boton=$('toggle-desfijados');
- boton.textContent=mostrarDesfijados?'Ocultar desfijados':'Mostrar desfijados';
+ boton.textContent=mostrarDesfijados?'Ocultar derrotados':'Mostrar derrotados';
  boton.setAttribute('aria-expanded',String(mostrarDesfijados));
  const vacio=!state.pins.length&&(!mostrarDesfijados||!state.unpinned.length);
- $('pins').innerHTML=`${state.pins.map(c=>savedCardHTML(c)).join('')}<div id="desfijados" class="unpinned-strip" ${mostrarDesfijados&&state.unpinned.length?'':'hidden'}>${state.unpinned.length?`<div class="unpinned-divider"><span>Desfijados</span><small>${state.unpinned.length}</small></div>${state.unpinned.map(c=>savedCardHTML(c,true)).join('')}`:''}</div>${vacio?`<div class="empty-state"><p>${state.unpinned.length?'No hay cartas fijadas.':'Fija una carta durante una aparición para tenerla aquí.'}</p></div>`:''}`;
+ $('pins').innerHTML=`${state.pins.map(c=>savedCardHTML(c)).join('')}<div id="desfijados" class="unpinned-strip" ${mostrarDesfijados&&state.unpinned.length?'':'hidden'}>${state.unpinned.length?`<div class="unpinned-divider"><span>Derrotados</span><small>${state.unpinned.length}</small></div>${state.unpinned.map(c=>savedCardHTML(c,true)).join('')}`:''}</div>${vacio?`<div class="empty-state"><p>${state.unpinned.length?'No hay cartas fijadas.':'Fija una carta durante una aparición para tenerla aquí.'}</p></div>`:''}`;
 }
 
 
@@ -339,7 +340,7 @@ function programarVolteos(){
  }
 }
 function renderHistory(){$('history-list').innerHTML=state.history.length?[...state.history].reverse().map(b=>`<section class="history-group"><div class="history-heading"><h3>Tanda ${b.number}</h3><small>${new Date(b.date).toLocaleTimeString('es-CL',{hour:'2-digit',minute:'2-digit'})} · ${b.normal+b.necro} zonas iniciales</small></div><div class="history-cards">${cartasHTML(b,true)}</div></section>`).join(''):'<div class="empty-state"><p>Las cartas aparecerán aquí después de la primera tanda.</p></div>';}
-function showBatch(){visibleBatch=state.history.at(-1)?.number;if(!visibleBatch)return;if(!state.openBatch&&!commit(s=>s.openBatch=true))return;renderBatch();openDialog('batch-dialog');}
+function showBatch(){visibleBatch=state.history.at(-1)?.number;if(!visibleBatch)return;if(!state.openBatch&&!commit(s=>s.openBatch=true))return;renderBatch();openDialog('batch-dialog');if(revelacion?.fase==='espera-inicial'&&!revelacion.pausaAnclada){revelacion.pausaAnclada=true;revelacion.hasta=performance.now()+400;programarVolteos();}}
 function zoom(uid){
  const c=entry(uid);if(!c)return;zoomUid=uid;const card=catalog[c.cardId];
  $('zoom-title').textContent=card.name;
@@ -389,8 +390,8 @@ function unpin(uid){const c=state.pins.find(c=>c.uid===uid);if(!c)return;
  else commit(s=>remove(s),{celebrar:true});
 }
 function settings(){
- borradorContenido=configContenido(state.proximaConfig);filtroContenido='zombies';
- const f=$('settings-form');f.elements.easy.checked=state.proximaConfig.easy;f.elements.normal.checked=state.proximaConfig.normal;f.elements.threshold.value=state.config.threshold;
+ borradorContenido=contenidoSinDificultad(state.proximaConfig);filtroContenido='zombies';
+ const f=$('settings-form');f.elements.threshold.value=state.config.threshold;
  const limites=state.proximaConfig.limitesPorAdrenalina??state.config.limitesPorAdrenalina??limitesIniciales();
  for(const mazo of FAMILIAS_LIMITES)for(const nivel of NIVELES_ADRENALINA)f.elements[`limite-${mazo}-${nivel}`].value=mazo==='nigromantes'&&state.proximaConfig.reglaNigromantes===undefined?limites[mazo][nivel]:limites[mazo][nivel];
  f.elements.reglaNigromantes.value=state.proximaConfig.reglaNigromantes??'personalizado';
@@ -417,7 +418,7 @@ function draftConfig(){
  const f=$('settings-form'),valor=n=>f.elements[n].value===''?NaN:Number(f.elements[n].value);
  const dailyPorNivel=Object.fromEntries(NIVELES_ADRENALINA.map(nivel=>[nivel,{base:valor(`dailyBase-${nivel}`),incremento:valor(`dailyIncremento-${nivel}`)}]));
  const limitesPorAdrenalina=Object.fromEntries(FAMILIAS_LIMITES.map(mazo=>[mazo,Object.fromEntries(NIVELES_ADRENALINA.map(nivel=>[nivel,valor(`limite-${mazo}-${nivel}`)]))]));
- return normalizarConfig({...borradorContenido,...leerLimitesDailyUI(),revelacionEnemigos:leerRevelacionUI(),dailyElegibles:leerElegiblesDailyUI(borradorContenido),spawnEspecial:leerEspecialUI(borradorContenido),easy:f.elements.easy.checked,normal:f.elements.normal.checked,threshold:Number(f.elements.threshold.value),modoAbominaciones:f.elements.modoAbominaciones.value,modoNigromantes:f.elements.modoNigromantes.value,reglaNigromantes:f.elements.reglaNigromantes.value,reglaAbominaciones:f.elements.reglaAbominaciones.value,abominacionEstandarId:f.elements.abominacionEstandarId.value,dailyHabilitado:f.elements.dailyHabilitado.checked,modoDaily:f.elements.modoDaily.value,modoAparicionAdicional:f.elements.modoAparicionAdicional.value,temaPuntaje:f.elements.temaPuntaje.value==='oculto'?(state.proximaConfig.temaPuntaje??state.config.temaPuntaje??'kang'):f.elements.temaPuntaje.value,ocultarPuntaje:f.elements.temaPuntaje.value==='oculto',dailyPorNivel,dailyIncrementoPor:f.elements.dailyIncrementoPor.value,limitesPorAdrenalina});
+ return normalizarConfig({...borradorContenido,...leerLimitesDailyUI(),revelacionEnemigos:leerRevelacionUI(),dailyElegibles:leerElegiblesDailyUI(borradorContenido),spawnEspecial:leerEspecialUI(borradorContenido),easy:true,normal:true,threshold:Number(f.elements.threshold.value),modoAbominaciones:f.elements.modoAbominaciones.value,modoNigromantes:f.elements.modoNigromantes.value,reglaNigromantes:f.elements.reglaNigromantes.value,reglaAbominaciones:f.elements.reglaAbominaciones.value,abominacionEstandarId:f.elements.abominacionEstandarId.value,dailyHabilitado:f.elements.dailyHabilitado.checked,modoDaily:f.elements.modoDaily.value,modoAparicionAdicional:f.elements.modoAparicionAdicional.value,temaPuntaje:f.elements.temaPuntaje.value==='oculto'?(state.proximaConfig.temaPuntaje??state.config.temaPuntaje??'kang'):f.elements.temaPuntaje.value,ocultarPuntaje:f.elements.temaPuntaje.value==='oculto',dailyPorNivel,dailyIncrementoPor:f.elements.dailyIncrementoPor.value,limitesPorAdrenalina});
 }
 function actualizarAbominacionEstandar(){
  const selector=$('abominacion-estandar'),actual=selector.value||borradorContenido.abominacionEstandarId;
@@ -524,6 +525,7 @@ const observadorEnJuego=new ResizeObserver(distribuirEnJuego);observadorEnJuego.
 iniciarVistaMesa();
 iniciarPantallaCompleta($('pantalla-completa'),toast);
 iniciarPantallaEncendida($('mantener-pantalla'),$('pantalla-estado'));
+iniciarProteccionAlmacenamiento($('solicitar-proteccion'),$('proteccion-estado'));
 iniciarEscalaAparicion(toast);
 iniciarInformacion();render();if(state.openBatch&&state.history.length)showBatch();
 prepararOffline($('offline-status'),{puedeActualizar:()=>!storageBlocked&&!document.querySelector('dialog[open]'),puedeActualizarConfiguracion:()=>!storageBlocked&&!hayCambiosConfiguracion()&&![...document.querySelectorAll('dialog[open]')].some(d=>d.id!=='settings-dialog')});

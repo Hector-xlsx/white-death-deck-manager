@@ -1,9 +1,10 @@
 import {duracionCarta,DURACION_ACTIVACION} from './volteo.js';
 import {tieneActivacionAdicional} from './presentacion.js';
 
-export function crearRevelacion(items,numero,ahora,{conocidos=null,porResolver=[],reducida=false}={}){
+export function crearRevelacion(items,numero,ahora,{conocidos=null,porResolver=[],reducida=false,pausaInicial=0}={}){
  const iniciales=items.filter(({c,slot})=>!c.mazo&&slot.kind!=='derivada').map(({c})=>c.uid);
- return {numero,reducida,visibles:new Set(conocidos??iniciales),reveladas:new Set(conocidos??[]),resueltas:new Set((conocidos??[]).filter(uid=>!porResolver.includes(uid))),espera:null,activacion:null,fase:'resolviendo',hasta:ahora};
+ const pausa=reducida?0:pausaInicial;
+ return {numero,reducida,visibles:new Set(conocidos??iniciales),reveladas:new Set(conocidos??[]),resueltas:new Set((conocidos??[]).filter(uid=>!porResolver.includes(uid))),espera:null,activacion:null,fase:pausa?'espera-inicial':'resolviendo',hasta:ahora+pausa};
 }
 
 // Recorrer el orden visual actualizado permite incorporar una elección sin rehacer la cadena.

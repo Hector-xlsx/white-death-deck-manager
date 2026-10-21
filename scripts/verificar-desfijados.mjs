@@ -18,7 +18,7 @@ try{
  await p.goto(url);await p.locator('#offline-status').filter({hasText:'Disponible offline'}).waitFor({timeout:90000});
  const bytes=await p.evaluate(k=>localStorage.getItem(k),key);
  assert.equal(await p.locator('.pin-section h2').textContent(),'En juego 1');
- assert.equal(await p.locator('#toggle-desfijados').textContent(),'Mostrar desfijados');
+ assert.equal(await p.locator('#toggle-desfijados').textContent(),'Mostrar derrotados');
  assert.equal(await p.locator('#toggle-desfijados').getAttribute('aria-expanded'),'false');
  assert.equal(await p.locator('#desfijados').isVisible(),false);
  await p.locator('#toggle-desfijados').click();
@@ -26,7 +26,7 @@ try{
   await p.setViewportSize(tamano);
   assert.equal(await p.locator('#desfijados .archived-card:visible').count(),1);
   await p.locator('#toggle-desfijados').click();
-  assert.equal(await p.locator('#toggle-desfijados').textContent(),'Mostrar desfijados');
+  assert.equal(await p.locator('#toggle-desfijados').textContent(),'Mostrar derrotados');
   assert.equal(await p.locator('#toggle-desfijados').getAttribute('aria-expanded'),'false');
   assert.equal(await p.locator('#desfijados').isVisible(),false);
   assert.equal(await p.locator('#pins > .pinned-card:visible').count(),1);
@@ -35,7 +35,7 @@ try{
   })));
   await p.locator('.pin-section').screenshot({path:fileURLToPath(new URL(`desfijados-ocultos-${nombre}.png`,salida))});
   await p.locator('#toggle-desfijados').click();
-  assert.equal(await p.locator('#toggle-desfijados').textContent(),'Ocultar desfijados');
+  assert.equal(await p.locator('#toggle-desfijados').textContent(),'Ocultar derrotados');
   assert.equal(await p.locator('#desfijados .archived-card:visible').count(),1);
   assert.equal(await p.evaluate(k=>localStorage.getItem(k),key),bytes);
  }
@@ -48,7 +48,7 @@ try{
  assert.equal(await p.locator('#pins > .pinned-card:visible').count(),1);
  assert.equal(await p.locator('#desfijados .archived-card:visible').count(),1);
  await context.setOffline(true);await p.reload();
- assert.equal(await p.locator('#toggle-desfijados').textContent(),'Mostrar desfijados');
+ assert.equal(await p.locator('#toggle-desfijados').textContent(),'Mostrar derrotados');
  assert.equal(await p.locator('#desfijados').isVisible(),false);
  const sinRed=await p.evaluate(k=>localStorage.getItem(k),key);
  await p.locator('#toggle-desfijados').click();assert.equal(await p.locator('#desfijados').isVisible(),true);

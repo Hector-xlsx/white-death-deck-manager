@@ -4,6 +4,14 @@ import {crearRevelacion,avanzarRevelacion} from '../dist/revelacion.js';
 import {DURACION_VOLTEO,DURACION_DERIVADA,DURACION_ACTIVACION,duracionCarta} from '../dist/volteo.js';
 const item=(uid,{mazo,derivada=false,pendiente=false}={})=>({c:{uid,...(mazo?{mazo}:{}),...(pendiente?{resolucionNigromante:'pendiente'}:{})},slot:{kind:derivada?'derivada':'normal'}});
 const items=[item(1),item(6,{mazo:'nigromantes'}),item(7,{derivada:true}),item(8,{mazo:'abominaciones'}),item(2),item(9,{mazo:'abominaciones'}),item(3)];
+
+test('pausa inicial de SPAWN conserva reversos 400 ms sin cambiar orden ni duración',()=>{
+ const antes=structuredClone(items),p=crearRevelacion(items,1,100,{pausaInicial:400});
+ assert.equal(p.fase,'espera-inicial');assert.equal(p.hasta,500);
+ assert.deepEqual(avanzarRevelacion(p,items,100),{demora:400});assert.deepEqual(avanzarRevelacion(p,items,499),{demora:1});assert.equal(p.reveladas.size,0);
+ assert.deepEqual(avanzarRevelacion(p,items,500),{revelar:1,demora:DURACION_VOLTEO});assert.deepEqual(items,antes);
+ const reducido=crearRevelacion(items,1,100,{pausaInicial:400,reducida:true});assert.deepEqual(avanzarRevelacion(reducido,items,100),{terminada:true});
+});
 test('tiempos iniciales 700, secundarios y generales derivados 1000',()=>{
  assert.equal(DURACION_VOLTEO,700);assert.equal(DURACION_ACTIVACION,1000);
  assert.equal(duracionCarta(item(1)),700);assert.equal(duracionCarta(item(2,{mazo:'abominaciones'})),1000);assert.equal(duracionCarta(item(3,{derivada:true})),1000);

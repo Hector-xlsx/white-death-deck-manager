@@ -16,7 +16,7 @@ try{
   await context.addInitScript(({key,semilla})=>{if(!localStorage.getItem(key))localStorage.setItem(key,JSON.stringify(semilla));Math.random=()=>0;},{key,semilla});
   const p=await context.newPage();p.on('pageerror',e=>errores.push(e.message));await p.goto(url);
   await p.locator('#offline-status').filter({hasText:'Disponible offline'}).waitFor({timeout:90000});
-  await p.locator('#spawn').click();
+  await p.locator('#spawn').click();await p.waitForFunction(()=>document.querySelector('#batch-grid .volteando'));
   assert.equal(await p.locator('#batch-grid .volteando .reveal-back').count(),1);
   assert.equal(await p.locator('#batch-grid .por-revelar').count(),zonas-1);
   assert.ok(await p.locator('#batch-grid .volteando').evaluateAll(async cartas=>(await Promise.all(cartas.map(async c=>{const reverso=c.querySelector('.reveal-back'),css=getComputedStyle(reverso),imagen=new Image();imagen.src=css.backgroundImage.slice(5,-2);await imagen.decode();return c.inert&&css.backgroundSize==='contain'&&imagen.naturalWidth>0&&imagen.src.includes('Contratapa')&&reverso.textContent==='';}))).every(Boolean)));

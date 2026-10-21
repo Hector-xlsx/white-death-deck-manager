@@ -1,11 +1,23 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
-import {configContenido,visiblesContenido,marcarContenido,erroresContenido,firmaContenido} from '../dist/contenido.js';
+import {configContenido,contenidoSinDificultad,visiblesContenido,marcarContenido,erroresContenido,firmaContenido} from '../dist/contenido.js';
 import {IDS_OTROS,datos,componer,idsSecundarios} from '../dist/catalogo.js';
 import {selectorContenido,selectorColeccion} from '../dist/informacion.js';
 import {newGame,spawn,anularTanda,isValid} from '../dist/engine.js';
 import {KEY,recuperar,guardarAccion} from '../dist/persistencia.js';
 const inicial=()=>configContenido({easy:true,normal:true,threshold:0,modoNigromantes:'sin-reposicion',modoAbominaciones:'sin-reposicion'});
+test('retirar dificultad conserva composición, selección ajena e historial de entrada',()=>{
+ for(const [easy,normal] of [[true,false],[false,true],[true,true],[false,false]]){
+  const previo={...inicial(),easy,normal},bytes=JSON.stringify(previo),nuevo=contenidoSinDificultad(previo);
+  assert.deepEqual(componer(nuevo),componer(previo));assert.equal(JSON.stringify(previo),bytes);
+  assert.equal(nuevo.easy,true);assert.equal(nuevo.normal,true);
+  assert.deepEqual(nuevo.selectedNigromantesIds,previo.selectedNigromantesIds);
+  assert.deepEqual(contenidoSinDificultad(nuevo),nuevo);
+ }
+ const previo={...inicial(),easy:true,normal:false};
+ const nuevo=marcarContenido(contenidoSinDificultad(previo),'zombies',true);
+ assert.ok(componer(nuevo)['corredores-normal']>0,'Las cartas antes filtradas se pueden marcar individualmente');
+});
 function almacen(s){let bytes=JSON.stringify(s);return{getItem:()=>bytes,setItem:(k,v)=>{bytes=v;}};}
 
 test('coleccion: seis cajas por Excel, Core obligatorio y retrocompatibilidad separada',()=>{

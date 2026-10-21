@@ -1,5 +1,21 @@
 # Implementación actual
 
+## Carga conjunta autorizada · 21/10/2026
+
+El usuario autorizó subir el lote local completo: protección del almacenamiento, botones unificados, Mostrar derrotados, pausa inicial de revelación y configuración en filas con ayudas. Versión preparada `92b0153136372df1`. Validación previa: 406 pruebas de aplicación, 13 originales y verificaciones de navegador descritas abajo. Las indicaciones «Solo local» de estas tres entregas representan su estado anterior a esta autorización. Confirmar el workflow de Pages y la versión servida antes de declarar la publicación completada.
+
+## Configuración en filas y ayudas · 21/10/2026 · Solo local
+
+Etiquetas/controles horizontales, selectores acotados, porcentajes breves y ayudas ⓘ. Apariencia directa sin desplegables; Reposición del nigromante oculta en Estándar. Retirada Dificultad: filtros anteriores convertidos en selección individual al editar, sin añadir cartas ni modificar historial; persistencia solo al guardar. 406 pruebas y 13 originales, QA de cinco tamaños, borradores, guardado, cuota y offline aprobados. Detalle: [CONFIGURACION_EN_FILAS.md](CONFIGURACION_EN_FILAS.md). Se acumula con el lote anterior, sin publicar; revisión física pendiente.
+
+## Botones, derrotados y pausa inicial · 21/10/2026 · Solo local
+
+Ver/Ampliar/Mostrar derrotados comparten marco y texto celeste. Renombrada la franja Desfijados a Derrotados solo en presentación, conservando datos y reglas. SPAWN espera 400 ms desde la apertura de Aparición antes del primer volteo; reapertura, regeneración y movimiento reducido conservados. 405 pruebas y QA de cuatro tamaños/tres escalas, pausa medida de 401 ms y guardado intacto aprobados. Versión local del lote con protección `c989ca7874faba2d`. Sin publicar. Detalle: [AJUSTES_RITMO_Y_BOTONES.md](AJUSTES_RITMO_Y_BOTONES.md).
+
+## Solicitud de protección del almacenamiento · 21/10/2026 · Solo local
+
+Consulta/solicitud automática al abrir y botón de reintento en General. Estado real del navegador; soporte, rechazo y errores recuperables. Sin cambios en partida ni preferencia ficticia de protección. No fuerza diálogos nativos ni impide borrados manuales. 404 pruebas de aplicación y 13 originales, QA en cinco tamaños, guardado/offline y consulta real de Chrome aprobados; concesión probada mediante simulación y tablet física pendiente. Versión `af8660f6d0ae338f`. Sin publicar. Detalle: [PROTECCION_ALMACENAMIENTO.md](PROTECCION_ALMACENAMIENTO.md).
+
 ## Recuperación de paquete offline · 21/10/2026
 
 Incidente reportado con internet: pantalla Recurso offline no disponible. Condición reproducida con worker anterior y paquete ausente; causa específica en tablet no confirmada. Página autónoma `recuperar.html`, reparación de misma versión sin mezclar módulos ni borrar datos, explicación de recuperación sin red y verificación de versión durante instalación. 398 pruebas de aplicación y 13 originales, QA del rescate desde worker anterior y regresión de actualización aprobados. Versión `257f0abfd06e07b6`. Detalle: [RECUPERACION_OFFLINE.md](RECUPERACION_OFFLINE.md).
