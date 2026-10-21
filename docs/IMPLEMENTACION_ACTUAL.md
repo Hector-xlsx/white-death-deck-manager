@@ -1,5 +1,9 @@
 # Implementación actual
 
+## Recuperación de paquete offline · 21/10/2026
+
+Incidente reportado con internet: pantalla Recurso offline no disponible. Condición reproducida con worker anterior y paquete ausente; causa específica en tablet no confirmada. Página autónoma `recuperar.html`, reparación de misma versión sin mezclar módulos ni borrar datos, explicación de recuperación sin red y verificación de versión durante instalación. 398 pruebas de aplicación y 13 originales, QA del rescate desde worker anterior y regresión de actualización aprobados. Versión `257f0abfd06e07b6`. Detalle: [RECUPERACION_OFFLINE.md](RECUPERACION_OFFLINE.md).
+
 ## Máximo Daily por tanda · 21/10/2026 · Publicación autorizada
 
 Daily Spawn incorpora máximo general o por nivel, vacío sin límite, aplicable a independiente e integrado. Cupo congelado por tanda, pausa de intentos/incrementos, cancelación/regeneración y registro preservados; historial y configuraciones existentes sin máximo se conservan. 398 pruebas de aplicación y 13 originales, QA de Daily/Configuración/Especial y offline aprobados. Versión `20323e0d95b5b4e2`. El usuario autorizó subir y apagar el equipo tras verificar la publicación. Detalle: [DAILY_LIMITES.md](DAILY_LIMITES.md).
