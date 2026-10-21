@@ -1,5 +1,13 @@
 # Implementación actual
 
+## Autorización de carga conjunta · 21/10/2026
+
+El usuario autorizó subir el lote de pantalla principal compacta y selector por iconos a GitHub. Sustituye la indicación anterior de mantenerlo solo local. Se conserva el workflow de pruebas y publicación automática en `main`; no se añaden otros cambios funcionales.
+
+## Pantalla principal e iconos · 21/10/2026 · Solo local, sin subir
+
+Selector cíclico por iconos en Aparición; pantalla principal compacta con Historial agrupado, adrenalina sobre contador, En juego primero con muralla y Última tanda plegable después con corrupción. Última tanda cerrada inicialmente; Ver cartas disponible. Barra/rótulos secundarios retirados visualmente, estados internos conservados. Zoom principal independiente 75–125 %, 5 %, controles táctiles y diálogos sin escalar. 376 pruebas y QA de cinco tamaños/escalas, guardado/offline, iconos, marcos, exportación y pantalla completa aprobados. **El usuario pidió no subir a GitHub todavía; esperar autorización para una carga conjunta.** Detalle: [PANTALLA_PRINCIPAL_COMPACTA.md](PANTALLA_PRINCIPAL_COMPACTA.md).
+
 ## Aparición: vistas y detalles · 21/10/2026
 
 Acciones cuadradas con tamaño táctil constante, Anular tanda en cabecera, selector Adaptativa/Horizontal/Vertical y botón ⓘ para detalles históricos de Daily Spawn/Spawn especial y resultados. Nombres inferiores retirados solo de Aparición. Vista guardada en dispositivo, independiente de la partida; detalles ocultos inicialmente. No cambia sorteos ni reglas y conserva reserva uniforme de marcos. 376 pruebas y QA de tres modos/cinco tamaños, cinco escalas, anulación del formato vigente, probabilidades por carta/tanda, marcos y offline aprobados. Publicación autorizada para revisión en tablet. Detalle y límite del verificador histórico: [APARICION_VISTAS_Y_DETALLES.md](APARICION_VISTAS_Y_DETALLES.md).

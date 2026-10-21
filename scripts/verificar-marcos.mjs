@@ -44,7 +44,7 @@ try{
  const context=await browser.newContext({reducedMotion:'reduce'});await context.addInitScript(({key,semilla})=>{if(!localStorage.getItem(key))localStorage.setItem(key,JSON.stringify(semilla));},{key,semilla});
  const p=await context.newPage();p.on('pageerror',e=>{errores.push(e.message);console.error(e.message);});await p.goto(process.env.MAZO_URL||'http://127.0.0.1:8080/mazo/');
  await p.locator('#offline-status').filter({hasText:'Disponible offline'}).waitFor({timeout:90000});
- assert.equal(await p.locator('#last-preview .enemy-frame').count(),2);assert.equal(await p.locator('#pins .enemy-frame').count(),0);
+ if(await p.locator('#toggle-ultima-tanda').count()&&await p.locator('#toggle-ultima-tanda').getAttribute('aria-expanded')==='false')await p.locator('#toggle-ultima-tanda').click();assert.equal(await p.locator('#last-preview .enemy-frame').count(),2);assert.equal(await p.locator('#pins .enemy-frame').count(),0);
  await p.locator('#reopen').click();assert.equal(await p.locator('#batch-grid .enemy-frame').count(),2);
  for(const [nombre,width,height] of [['escritorio',1440,900],['horizontal',844,390],['vertical',390,844],['estrecho',320,568],['tablet',1024,768]]){
   await p.setViewportSize({width,height});await comprobarFilas(p,'#batch-grid .draw-card');

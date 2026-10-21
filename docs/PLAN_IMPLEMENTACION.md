@@ -1,5 +1,13 @@
 # Plan de implementación por capas
 
+## Carga conjunta autorizada · 21/10/2026
+
+El usuario autorizó subir el lote de pantalla principal e iconos. Registrar el commit, verificar GitHub Actions y comprobar la versión publicada. La espera de autorización descrita abajo corresponde al estado previo y queda levantada.
+
+## Lote local pendiente de subida · 21/10/2026
+
+Implementados y verificados iconos de distribución y ajustes de pantalla principal: compactación, adrenalina, Historial, zoom, intercambio de secciones y plegado de Última tanda. Mantener el lote local, sin commit/push/publicación en esta entrega, por indicación del usuario de reunir cambios antes de una sola carga. Revisar y completar otros ajustes que indique; publicar únicamente cuando lo solicite. [PANTALLA_PRINCIPAL_COMPACTA.md](PANTALLA_PRINCIPAL_COMPACTA.md).
+
 ## Distribución y diagnóstico de Aparición · 21/10/2026
 
 Tres vistas, acciones cuadradas, anulación en cabecera y detalles de probabilidades implementados/verificados; publicar para feedback físico según autorización vigente. Modernización de la batería antigua de anulación pendiente; cancelar/restaurar desde cabecera se verificó con semilla actual. Continúan pendientes los cambios de pantalla principal. Véase [APARICION_VISTAS_Y_DETALLES.md](APARICION_VISTAS_Y_DETALLES.md).

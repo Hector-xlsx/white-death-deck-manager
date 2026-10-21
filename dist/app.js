@@ -1,4 +1,5 @@
 import {iniciarPantallaCompleta} from './pantalla-completa.js';
+import {iniciarVistaMesa} from './vista-mesa.js';
 import {iniciarPantallaEncendida} from './pantalla-encendida.js';
 import {iniciarEscalaAparicion} from './escala-aparicion.js';
 import {detallesProbabilidadesHTML,detallesTandaHTML} from './detalles-aparicion.js';
@@ -519,6 +520,7 @@ $('confirm-dialog').addEventListener('close',()=>{anulacionPendiente=false;});
 window.addEventListener('storage',e=>{if(e.key===KEY&&anulacionPendiente){confirmAction=null;closeDialog('confirm-dialog');anulacionPendiente=false;}});
 window.addEventListener('storage',e=>{if(e.key!==KEY)return;terminarVolteos();guardadoObservado=e.newValue;try{if(!e.newValue)throw new Error('Guardado eliminado');let incoming=JSON.parse(e.newValue);if(!isValid(incoming))throw new Error('Guardado inválido');if(incoming.revisionReglas!==REVISION_REGLAS){incoming=guardarAccion(incoming,s=>actualizarPartidaDePrueba(s),localStorage,{esperado:e.newValue});guardadoObservado=JSON.stringify(incoming);}state=incoming;storageBlocked=false;$('status-alert').hidden=true;render();if(state.openBatch)showBatch();else closeDialog('batch-dialog');toast('Partida actualizada desde otra pestaña.');}catch{storageBlocked=true;$('status-alert').hidden=false;$('status-alert').textContent='El guardado cambió y no pudo recuperarse. El progreso anterior sigue visible.';render();}});
 const observadorEnJuego=new ResizeObserver(distribuirEnJuego);observadorEnJuego.observe($('inplay-gallery'));
+iniciarVistaMesa();
 iniciarPantallaCompleta($('pantalla-completa'),toast);
 iniciarPantallaEncendida($('mantener-pantalla'),$('pantalla-estado'));
 iniciarEscalaAparicion(toast);

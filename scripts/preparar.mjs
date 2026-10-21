@@ -93,7 +93,7 @@ archivos.push('./revelacion.js');
 archivos.push('./acciones-enemigos.js');
 archivos.push('./acciones-independientes.js','./revelacion-ui.js');
 archivos.push('./daily.js','./especial.js','./especial-config.js','./especial-ui.js','./configuracion-ui.js');
-archivos.push('./adrenalina.js','./pantalla-completa.js','./exportacion.js','./pantalla-encendida.js','./escala-aparicion.js','./detalles-aparicion.js');
+archivos.push('./adrenalina.js','./pantalla-completa.js','./exportacion.js','./pantalla-encendida.js','./escala-aparicion.js','./detalles-aparicion.js','./vista-mesa.js');
 archivos.push('./limites.js');
 archivos.push('./modos-enemigos.js');
 archivos.push('./configuracion-partida.js');

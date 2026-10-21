@@ -1,5 +1,13 @@
 # Decisiones pendientes y propuestas
 
+## Subida del lote autorizada · 21/10/2026
+
+El usuario solicitó subir a GitHub la pantalla principal compacta y el selector por iconos ya verificados. Queda levantada la espera de publicación de este lote; los demás pendientes conservan su alcance.
+
+## Pantalla principal: decisiones cerradas · 21/10/2026 · Solo local
+
+El usuario seleccionó intercambiar En juego/Última tanda y hacer Última tanda plegable, junto a compactación, adrenalina, Historial, zoom principal y selector de Aparición por iconos. Implementado/verificado localmente. Pendiente revisión y autorización de carga conjunta; no publicar todavía. Protección de datos del dispositivo sigue propuesta futura. Detalle: [PANTALLA_PRINCIPAL_COMPACTA.md](PANTALLA_PRINCIPAL_COMPACTA.md).
+
 ## Aparición: distribución y detalles · 21/10/2026
 
 Seleccionadas e implementadas las vistas Horizontal, Vertical y Adaptativa para Aparición, acciones cuadradas y diagnóstico plegable con probabilidades guardadas. Ya no son propuestas pendientes de esa ventana. La distribución/zoom de la pantalla principal, plegado/intercambio de Última tanda y protección de datos permanecen pendientes. Revisión física después de la publicación autorizada; [APARICION_VISTAS_Y_DETALLES.md](APARICION_VISTAS_Y_DETALLES.md).

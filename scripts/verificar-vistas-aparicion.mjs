@@ -27,10 +27,11 @@ try{
  }
  await info.click();assert.equal(await info.getAttribute('aria-pressed'),'false');
  const vista=p.locator('#aparicion-vista'),scroll=p.locator('#batch-scroll');
+ const seleccionarVista=async modo=>{for(let i=0;i<3;i++){if(await vista.getAttribute('data-vista')===modo)return;await vista.click();}assert.equal(await vista.getAttribute('data-vista'),modo);};
  for(const [w,h] of [[1440,900],[960,600],[844,390],[390,844],[320,568]]){
   await p.setViewportSize({width:w,height:h});
   for(const modo of ['adaptativa','horizontal','vertical']){
-   await vista.selectOption(modo);
+   await seleccionarVista(modo);
    const posiciones=await p.locator('#batch-grid [data-extraccion]').evaluateAll(es=>es.map(e=>({x:e.getBoundingClientRect().x,y:e.getBoundingClientRect().y})));
    if(modo==='horizontal')assert.ok(posiciones.every(e=>Math.abs(e.y-posiciones[0].y)<1),'Una sola fila horizontal');
    if(modo==='vertical')assert.ok(posiciones.every(e=>Math.abs(e.x-posiciones[0].x)<1),'Una sola columna vertical');
@@ -39,7 +40,7 @@ try{
    if(modo==='horizontal'&&w<=390)assert.equal(await scroll.evaluate(e=>e.scrollWidth>e.clientWidth),true,'Desplazamiento lateral interno');
   }
  }
- await p.setViewportSize({width:960,height:600});await vista.selectOption('adaptativa');
+ await p.setViewportSize({width:960,height:600});await seleccionarVista('adaptativa');
  for(const porcentaje of [75,95,100,110,125]){
   let actual=Number((await p.locator('#aparicion-escala').textContent()).replace('%',''));
   while(actual!==porcentaje){await p.locator(actual>porcentaje?'#aparicion-alejar':'#aparicion-acercar').click();actual+=actual>porcentaje?-5:5;}
@@ -47,10 +48,10 @@ try{
   assert.ok(botones.every(b=>Math.abs(b.ancho-b.alto)<.2&&b.ancho>=43.8),'Acciones cuadradas y táctiles en todas las escalas');
  }
  await p.locator('#aparicion-alejar').click({clickCount:5});await info.click();await p.screenshot({path:'docs/verificacion/aparicion-detalles.png'});await info.click();
- await vista.selectOption('horizontal');await p.screenshot({path:'docs/verificacion/aparicion-horizontal.png'});
+ await seleccionarVista('horizontal');await p.screenshot({path:'docs/verificacion/aparicion-horizontal.png'});
  assert.equal(await p.evaluate(k=>localStorage.getItem(k),key),bytes);
- await p.reload();assert.equal(await vista.inputValue(),'horizontal');assert.equal(await info.getAttribute('aria-pressed'),'false');assert.equal(await p.evaluate(k=>localStorage.getItem(k),key),bytes);
- await p.locator('#batch-dialog [data-action="close"]').click();await p.locator('#offline-status').filter({hasText:'Disponible offline'}).waitFor({timeout:90000});await ctx.setOffline(true);await p.reload();await p.locator('#reopen').click();assert.equal(await vista.inputValue(),'horizontal');await info.click();
+ await p.reload();assert.equal(await vista.getAttribute('data-vista'),'horizontal');assert.equal(await info.getAttribute('aria-pressed'),'false');assert.equal(await p.evaluate(k=>localStorage.getItem(k),key),bytes);
+ await p.locator('#batch-dialog [data-action="close"]').click();await p.locator('#offline-status').filter({hasText:'Disponible offline'}).waitFor({timeout:90000});await ctx.setOffline(true);await p.reload();await p.locator('#reopen').click();assert.equal(await vista.getAttribute('data-vista'),'horizontal');await info.click();
  assert.deepEqual(errores,[]);await ctx.close();
  // Anulación desde cabecera: semilla vigente, cancelar intacto y confirmar restaura.
  const actual=newGame({easy:true,normal:true,threshold:0,selectedIds:['caminantes-normal'],modoNigromantes:'sin-reposicion',reglaNigromantes:'personalizado',reglaAbominaciones:'personalizado'},1);spawn(actual,()=>0);
