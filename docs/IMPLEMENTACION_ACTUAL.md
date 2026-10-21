@@ -1,5 +1,9 @@
 # Implementación actual
 
+## Aparición compacta y General · 20/10/2026
+
+Encabezado compacto, explicación permanente retirada y reserva uniforme de marcos reducida a 36/40 px manteniendo cartas de 155 px al 100 %. Escala de Aparición 75–125 %, pasos de 5 %, controles táctiles conservados. Nueva pestaña General: actualización directa con descripción lateral y preferencia de pantalla encendida con detección de soporte, estados y recuperación al volver a la página. No cambia partidas ni reglas. 373 pruebas y QA de Configuración, actualización, marcos y seis tamaños con copia aislada de la partida facilitada, incluido offline. Wake lock simulado; validación física pendiente. Publicación autorizada. Detalle y propuestas futuras: [COMPACTACION_APARICION_Y_GENERAL.md](COMPACTACION_APARICION_Y_GENERAL.md). Este traslado de actualización prevalece sobre su ubicación anterior en Apariencia.
+
 ## Subida autorizada · 20/10/2026
 
 El usuario autorizó subir la exportación JSON y el control de actualización desde Apariencia al repositorio conectado, rama `main`, con publicación automática mediante el workflow existente. Las secciones siguientes registran las verificaciones locales previas. No se implementan propuestas de compactación, zoom ni cambio de orden de secciones. Los datos guardados en localhost y Pages siguen separados por origen.

@@ -1,5 +1,9 @@
 # Decisiones pendientes y propuestas
 
+## Primera revisión visual autorizada · 20/10/2026
+
+Compactación de Aparición con reserva uniforme para marcos, escala independiente, General con actualización directa y pantalla encendida implementados para revisión física tras la publicación autorizada. Pendientes: acceso a ajustes/protección de datos del dispositivo y propuestas de pantalla principal (intercambio/plegado, compactación, zoom y modos). No extender automáticamente este trabajo a esos puntos. Véase [COMPACTACION_APARICION_Y_GENERAL.md](COMPACTACION_APARICION_Y_GENERAL.md).
+
 ## Feedback de primera partida · 20/10/2026
 
 Usuario prioriza exportar JSON de partida/configuración: implementado y verificado localmente, sin publicar. Revisión visual posterior: compactación horizontal, eliminación de información secundaria, adrenalina visible, modos de distribución y zoom independiente. Añade dos opciones pendientes: intercambiar En juego y Última tanda, y plegar Última tanda. No se ha elegido distribución ni se autorizaron esos cambios de interfaz. Registro completo y límites en [EXPORTACION_Y_FEEDBACK_PRIMERA_PARTIDA.md](EXPORTACION_Y_FEEDBACK_PRIMERA_PARTIDA.md).

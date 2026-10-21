@@ -1,4 +1,6 @@
 import {iniciarPantallaCompleta} from './pantalla-completa.js';
+import {iniciarPantallaEncendida} from './pantalla-encendida.js';
+import {iniciarEscalaAparicion} from './escala-aparicion.js';
 import {prepararExportacion,descargarExportacion} from './exportacion.js';
 import {iniciarConfiguracionUI,actualizarConfiguracionUI,leerElegiblesDailyUI} from './configuracion-ui.js';
 import {configuracionRevelacionActual} from './acciones-independientes.js';
@@ -514,6 +516,8 @@ window.addEventListener('storage',e=>{if(e.key===KEY&&anulacionPendiente){confir
 window.addEventListener('storage',e=>{if(e.key!==KEY)return;terminarVolteos();guardadoObservado=e.newValue;try{if(!e.newValue)throw new Error('Guardado eliminado');let incoming=JSON.parse(e.newValue);if(!isValid(incoming))throw new Error('Guardado inválido');if(incoming.revisionReglas!==REVISION_REGLAS){incoming=guardarAccion(incoming,s=>actualizarPartidaDePrueba(s),localStorage,{esperado:e.newValue});guardadoObservado=JSON.stringify(incoming);}state=incoming;storageBlocked=false;$('status-alert').hidden=true;render();if(state.openBatch)showBatch();else closeDialog('batch-dialog');toast('Partida actualizada desde otra pestaña.');}catch{storageBlocked=true;$('status-alert').hidden=false;$('status-alert').textContent='El guardado cambió y no pudo recuperarse. El progreso anterior sigue visible.';render();}});
 const observadorEnJuego=new ResizeObserver(distribuirEnJuego);observadorEnJuego.observe($('inplay-gallery'));
 iniciarPantallaCompleta($('pantalla-completa'),toast);
+iniciarPantallaEncendida($('mantener-pantalla'),$('pantalla-estado'));
+iniciarEscalaAparicion();
 iniciarInformacion();render();if(state.openBatch&&state.history.length)showBatch();
 prepararOffline($('offline-status'),{puedeActualizar:()=>!storageBlocked&&!document.querySelector('dialog[open]'),puedeActualizarConfiguracion:()=>!storageBlocked&&!hayCambiosConfiguracion()&&![...document.querySelectorAll('dialog[open]')].some(d=>d.id!=='settings-dialog')});
 

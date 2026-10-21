@@ -42,7 +42,7 @@ export function iniciarConfiguracionUI(){
  // Mover los nodos conserva nombres, valores y manejadores de los controles originales.
  const nav=document.createElement('div');nav.id='config-tabs';nav.className='config-tabs';nav.setAttribute('role','tablist');nav.setAttribute('aria-label','Secciones de configuración');
  const panels=document.createElement('div');panels.id='config-panels';panels.className='config-panels';
- for(const [id,titulo] of [['contenido','Contenido'],['mazos','Mazos'],['apariencia','Apariencia']]){
+ for(const [id,titulo] of [['general','General'],['contenido','Contenido'],['mazos','Mazos'],['apariencia','Apariencia']]){
   const tab=document.createElement('button');tab.type='button';tab.id=`config-tab-${id}`;tab.dataset.pestana=id;tab.textContent=titulo;tab.setAttribute('role','tab');tab.setAttribute('aria-controls',`config-panel-${id}`);nav.append(tab);
   const panel=document.createElement('section');panel.id=`config-panel-${id}`;panel.setAttribute('role','tabpanel');panel.setAttribute('aria-labelledby',tab.id);panels.append(panel);
  }
@@ -52,9 +52,9 @@ export function iniciarConfiguracionUI(){
  const general=seccion('general','Mazo general y mazo especial',[$('especial-config'),reinicio]);
  $('config-panel-mazos').append(general,seccion('nigromantes','Nigromantes',[nigromantes]),seccion('abominaciones','Abominaciones',[abominaciones]),seccion('daily','Daily Spawn',[$('daily-config')]));
  $('config-panel-apariencia').append(seccion('apariciones','Apariciones adicionales',[campo('Apariciones adicionales')]),seccion('puntaje','Marcador de puntaje',[campo('Marcador de puntaje')]));
- const actualizacion=document.createElement('fieldset');
- actualizacion.innerHTML='<legend>Actualización de la aplicación</legend><p class="field-note">Busca una versión nueva y la aplica en esta pestaña conservando la partida. Guarda los cambios de configuración antes de actualizar.</p><button id="buscar-actualizacion" type="button" class="secondary-button" aria-describedby="actualizacion-estado">Buscar y aplicar actualización</button><p id="actualizacion-estado" class="field-note" role="status" aria-live="polite"></p>';
- $('config-panel-apariencia').append(seccion('actualizacion','Actualizar aplicación',[actualizacion]));
+ const generalDispositivo=document.createElement('div');generalDispositivo.className='config-general';
+ generalDispositivo.innerHTML='<div id="config-actualizacion" class="config-general-row"><button id="buscar-actualizacion" type="button" class="secondary-button" aria-describedby="actualizacion-descripcion actualizacion-estado">Buscar y aplicar actualización</button><div><p id="actualizacion-descripcion">Busca una versión nueva y la aplica en esta pestaña conservando la partida. Guarda los cambios de configuración antes de actualizar.</p><p id="actualizacion-estado" class="field-note" role="status" aria-live="polite"></p></div></div><div class="config-general-row"><label class="check-row"><input id="mantener-pantalla" type="checkbox" aria-describedby="pantalla-descripcion pantalla-estado"><span>Mantener pantalla encendida</span></label><div><p id="pantalla-descripcion">Evita el bloqueo automático mientras esta página esté visible, si el navegador lo permite. La preferencia se guarda en este dispositivo.</p><p id="pantalla-estado" class="field-note" role="status" aria-live="polite"></p></div></div>';
+ $('config-panel-general').append(generalDispositivo);
  notaDaily=$('daily-nota-probabilidad');
  const integrado=document.createElement('div');integrado.id='config-daily-integrado';integrado.innerHTML='<p class="field-note">Daily participa en el mazo especial. Sus cantidades y reposición se configuran allí; cada zombi Daily puede estar una sola vez en juego.</p><button type="button" class="text-button">Ir a Spawn Especial</button>';
  integrado.querySelector('button').addEventListener('click',()=>{mostrarPestanaConfiguracion('mazos');general.open=true;general.scrollIntoView({block:'start'});$('especial-config').querySelector('select').focus();});$('daily-config').append(integrado);

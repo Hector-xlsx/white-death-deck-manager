@@ -1,5 +1,9 @@
 # Plan de implementación por capas
 
+## Aparición compacta y General · 20/10/2026
+
+Compactación con marcos uniformes, escala de Aparición y opciones directas de actualización/pantalla encendida en General implementadas y verificadas. Publicación autorizada para revisión en tablet; confirmar visualización y bloqueo real antes de extender el ajuste a la pantalla principal. Próximo alcance por elegir a partir del feedback físico. Detalle: [COMPACTACION_APARICION_Y_GENERAL.md](COMPACTACION_APARICION_Y_GENERAL.md).
+
 ## Exportación y feedback de mesa · 20/10/2026
 
 Exportación JSON de partida/configuración y actualización manual desde Apariencia completadas y verificadas. Subida a GitHub y publicación automática autorizadas el 20/10/2026. Siguiente paso: comprobar el despliegue, extraer el archivo desde la tablet cuando esté disponible el botón, revisarlo junto a la imagen y elegir un ajuste visual concreto. Compactación, zoom independiente, intercambio de secciones y Última tanda plegable continúan como propuestas. Detalle en [EXPORTACION_Y_FEEDBACK_PRIMERA_PARTIDA.md](EXPORTACION_Y_FEEDBACK_PRIMERA_PARTIDA.md).
