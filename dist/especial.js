@@ -2,6 +2,7 @@ import {CATALOG,componer,idsSecundarios,enColeccion} from './catalogo.js';
 import {opcionesEspecial,especialActivo,dailyIntegrado,cantidadEspecial,esCartaConfigurable,ID_DISPARADOR,destinoCartaEspecial} from './especial-config.js';
 import {disponiblesSecundario,recalcularSecundario,robarSecundario,anularSecundaria} from './secundarios.js';
 import {prepararReglasCarta} from './reglas-cartas.js';
+import {cupoDailyDisponible} from './daily.js';
 
 const suma=m=>Object.values(m).reduce((a,b)=>a+b,0);
 const configTanda=s=>s.history.at(-1)?.configEspecial??s.config;
@@ -40,14 +41,14 @@ function azarValido(rng){const n=rng();if(!Number.isFinite(n)||n<0||n>=1)throw n
 export function candidatosEspecial(s){
  if(!s.especial)return [];
  const config=configTanda(s),o=opcionesEspecial(config),m=s.especial;
- const integrado=dailyIntegrado(config)&&s.daily;
+ const integrado=dailyIntegrado(config)&&s.daily&&cupoDailyDisponible(s);
  const dailyDisponibles=integrado?disponiblesSecundario(s,'daily').length:0;
  if(!suma(m.remaining)&&!dailyDisponibles){
   if(integrado)recalcularSecundario(s,'daily',{reiniciarIntegrado:true});
   if(suma(m.initial)){m.remaining={...m.initial};m.cycle++;}
  }
  const candidatos=Object.entries(m.remaining).filter(([,q])=>q>0).map(([id,q])=>({id,q,daily:false}));
- if(dailyIntegrado(config)&&s.daily){
+ if(integrado){
   recalcularSecundario(s,'daily');
   for(const c of disponiblesSecundario(s,'daily'))candidatos.push({id:c.id,q:o.cantidades[c.id]??1,daily:true});
  }

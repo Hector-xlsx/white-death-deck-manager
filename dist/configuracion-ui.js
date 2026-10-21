@@ -4,6 +4,17 @@ import {iniciarRevelacionUI,actualizarRevelacionUI} from './revelacion-ui.js';
 import {opcionesEspecial,dailyIntegrado} from './especial-config.js';
 
 const $=id=>document.getElementById(id);
+const nivelesLimiteDaily=['azul','amarillo','naranja','rojo'];
+export function cargarLimitesDailyUI(config){
+ $('daily-limite-tipo').value=config.dailyLimitesPorNivel?'nivel':'general';$('daily-limite').value=config.dailyLimite??'';
+ for(const n of nivelesLimiteDaily)$(`daily-limite-${n}`).value=config.dailyLimitesPorNivel?.[n]??'';
+}
+export function leerLimitesDailyUI(){
+ const valor=id=>$(id).value===''?null:Number($(id).value),resultado={dailyLimite:valor('daily-limite')};
+ if($('daily-limite-tipo').value==='nivel')resultado.dailyLimitesPorNivel=Object.fromEntries(nivelesLimiteDaily.map(n=>[n,valor(`daily-limite-${n}`)]));
+ else resultado.dailyLimitesPorNivel=undefined;
+ return resultado;
+}
 const secciones={};
 let pestanaActual='contenido',notaDaily;
 function seccion(id,titulo,nodos){
@@ -22,6 +33,9 @@ export function mostrarPestanaConfiguracion(nombre,{enfocar=false}={}){
 export function iniciarConfiguracionUI(){
  const form=$('settings-form'),dialog=$('settings-dialog'),campos=[...form.querySelectorAll(':scope>fieldset')];
  const campo=nombre=>campos.find(f=>f.querySelector('legend')?.textContent===nombre);
+ const limitesDaily=document.createElement('div');limitesDaily.id='daily-limites';
+ limitesDaily.innerHTML='<label>Límite de apariciones por tanda<select id="daily-limite-tipo"><option value="general">Mismo límite para todos los niveles</option><option value="nivel">Un límite por nivel de adrenalina</option></select></label><div id="daily-limite-general" class="enemy-mode-row"><label>Máximo por tanda (vacío: sin límite)<input id="daily-limite" type="number" min="1" step="1" aria-label="Máximo Daily por tanda"></label></div><table id="daily-limites-nivel" class="especial-perfiles"><thead><tr><th>Nivel</th><th>Máximo por tanda<br><small>Vacío: sin límite</small></th></tr></thead><tbody>'+nivelesLimiteDaily.map(n=>`<tr><th>${n[0].toUpperCase()+n.slice(1)}</th><td><input id="daily-limite-${n}" type="number" min="1" step="1" aria-label="Máximo Daily en ${n}"></td></tr>`).join('')+'</tbody></table><p class="field-note">Al alcanzar el máximo se suspenden los intentos Daily y sus incrementos durante esa tanda. El cupo se libera al cancelar una aparición. Si Daily está integrado, también se respeta el máximo del mazo especial.</p>';
+ $('daily-config').querySelector('.daily-settings').before(limitesDaily);cargarLimitesDailyUI({});
  const dificultad=campo('Dificultad'),contenido=campo('Contenido'),nigromantes=campo('Mazo de nigromantes'),abominaciones=campo('Mazo de abominaciones'),reinicio=campo('Reiniciar mazo general de forma anticipada');
  const titulo=dialog.querySelector('h2');titulo.id='config-title';dialog.setAttribute('aria-labelledby',titulo.id);
  const coleccion=form.querySelector('.collection-section');
@@ -74,6 +88,8 @@ export function iniciarConfiguracionUI(){
  mostrarPestanaConfiguracion(pestanaActual);
 }
 export function actualizarConfiguracionUI(config){
+ const porNivel=$('daily-limite-tipo').value==='nivel';$('daily-limite-general').hidden=porNivel;$('daily-limites-nivel').hidden=!porNivel;
+ for(const e of $('daily-limites').querySelectorAll('input,select')){const oculto=e.closest('[hidden]');e.disabled=!config.dailyHabilitado||Boolean(oculto&&$('daily-limites').contains(oculto));}
  actualizarRevelacionUI(config);
  for(const nota of $('especial-config').querySelectorAll('p.field-note:not(#especial-composicion):not([data-especial-descripcion])')){if(nota.closest('.config-help')||nota.closest('#especial-cartas'))continue;const ayuda=document.createElement('details');ayuda.className='config-help';const summary=document.createElement('summary');summary.textContent=nota.textContent.startsWith('Daily integrado')?'Sobre Daily integrado':'Cómo funciona';ayuda.append(summary);nota.before(ayuda);ayuda.append(nota);}
 

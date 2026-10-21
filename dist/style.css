@@ -151,7 +151,8 @@ label.content-row{cursor:pointer}
 @media(min-width:640px){.settings-dialog .content-filters{grid-template-columns:repeat(5,minmax(0,1fr))}}
 .daily-settings{display:grid;gap:12px;margin-top:12px}
 .daily-settings label{display:flex;flex-direction:column;gap:8px;font-size:.875rem;min-width:0}
-.daily-settings input,.daily-settings select,.limit-settings input{box-sizing:border-box;width:100%;min-width:0;min-height:44px;border:1px solid var(--line);border-radius:6px;padding:8px;background:var(--panel);color:var(--text);font:inherit}
+.daily-settings input,.daily-settings select,.limit-settings input,#daily-limites input,#daily-limites select{box-sizing:border-box;width:100%;min-width:0;min-height:44px;border:1px solid var(--line);border-radius:6px;padding:8px;background:var(--panel);color:var(--text);font:inherit}
+#daily-limites{margin:12px 0}#daily-limites label{display:grid;gap:6px}
 .daily-status{margin:0;color:var(--muted);font-size:.875rem}
 .daily-rules{line-height:1.5}
 body.revelacion-procedural #daily-active-status{visibility:hidden}

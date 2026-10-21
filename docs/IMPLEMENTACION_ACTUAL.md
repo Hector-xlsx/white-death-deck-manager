@@ -1,5 +1,9 @@
 # Implementación actual
 
+## Máximo Daily por tanda · 21/10/2026 · Publicación autorizada
+
+Daily Spawn incorpora máximo general o por nivel, vacío sin límite, aplicable a independiente e integrado. Cupo congelado por tanda, pausa de intentos/incrementos, cancelación/regeneración y registro preservados; historial y configuraciones existentes sin máximo se conservan. 398 pruebas de aplicación y 13 originales, QA de Daily/Configuración/Especial y offline aprobados. Versión `20323e0d95b5b4e2`. El usuario autorizó subir y apagar el equipo tras verificar la publicación. Detalle: [DAILY_LIMITES.md](DAILY_LIMITES.md).
+
 ## Publicación del lote autorizada · 21/10/2026
 
 El usuario autorizó subir a GitHub el lote local acumulado: lanzadores, feedback de mesa, registro exportable, actualización desde General, etiquetas Base/Avanzado, destinos y cantidades del Core/expansiones y nuevos valores iniciales. Esta autorización sustituye las indicaciones de mantenerlo local que figuran en los apartados históricos inferiores. Se utiliza `main` y su workflow existente de pruebas y publicación en Pages. Validación local vigente: 390 pruebas de aplicación y 13 originales; QA descrito en los documentos de cada ajuste. Versión preparada `1a752bc0680f2356`.

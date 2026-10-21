@@ -62,6 +62,7 @@ export function spawn(s,rng=Math.random) {
  s.respaldoTanda={numero:s.history.length+1,estado:structuredClone(sinRespaldo)};
  aplicarConfiguracionPendiente(s);
  const batch={number:s.history.length+1,date:Date.now(),normal:s.normal,necro:s.necro,nivelAdrenalina:nivelAdrenalina(s),slots:[]};
+ if(s.config.dailyLimite!==undefined||s.config.dailyLimitesPorNivel!==undefined)batch.configLimitesDaily={dailyLimite:s.config.dailyLimite??null,...(s.config.dailyLimitesPorNivel?{dailyLimitesPorNivel:structuredClone(s.config.dailyLimitesPorNivel)}:{})};
  if(s.config.limitesPorAdrenalina)batch.limitesEnemigos=topesDelNivel(s.config.limitesPorAdrenalina,batch.nivelAdrenalina);
  const cola=[];
  if(s.config.reglaNigromantes!==undefined){

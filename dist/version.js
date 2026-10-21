@@ -1,1 +1,1 @@
-export const VERSION_APP='1a752bc0680f2356';
+export const VERSION_APP='20323e0d95b5b4e2';

@@ -4,7 +4,7 @@ import {iniciarPantallaEncendida} from './pantalla-encendida.js';
 import {iniciarEscalaAparicion} from './escala-aparicion.js';
 import {detallesProbabilidadesHTML,detallesTandaHTML} from './detalles-aparicion.js';
 import {prepararExportacion,descargarExportacion} from './exportacion.js';
-import {iniciarConfiguracionUI,actualizarConfiguracionUI,leerElegiblesDailyUI} from './configuracion-ui.js';
+import {iniciarConfiguracionUI,actualizarConfiguracionUI,leerElegiblesDailyUI,cargarLimitesDailyUI,leerLimitesDailyUI} from './configuracion-ui.js';
 import {configuracionRevelacionActual} from './acciones-independientes.js';
 import {cargarRevelacionUI,leerRevelacionUI} from './revelacion-ui.js';
 import {iniciarEspecialUI,leerEspecialUI,actualizarEspecialUI} from './especial-ui.js';
@@ -409,7 +409,7 @@ function settings(){
  $('daily-elegibles').replaceChildren();$('daily-elegibles').dataset.firma='';
  f.elements.temaPuntaje.value=(state.proximaConfig.ocultarPuntaje??state.config.ocultarPuntaje??false)?'oculto':state.proximaConfig.temaPuntaje??state.config.temaPuntaje??'kang';
  for(const nivel of NIVELES_ADRENALINA){const p=parametrosDailyFormulario(state.proximaConfig,nivel);f.elements[`dailyBase-${nivel}`].value=p.base;f.elements[`dailyIncremento-${nivel}`].value=p.incremento;}
- f.elements.dailyIncrementoPor.value=state.proximaConfig.dailyIncrementoPor??'tanda';
+ f.elements.dailyIncrementoPor.value=state.proximaConfig.dailyIncrementoPor??'tanda';cargarLimitesDailyUI(state.proximaConfig);
  document.querySelector('[name="filtro-contenido"][value="zombies"]').checked=true;
  renderContenido();updateSettings();firmaConfiguracionInicial=firmaContenido(draftConfig());openDialog('settings-dialog');
 }
@@ -417,7 +417,7 @@ function draftConfig(){
  const f=$('settings-form'),valor=n=>f.elements[n].value===''?NaN:Number(f.elements[n].value);
  const dailyPorNivel=Object.fromEntries(NIVELES_ADRENALINA.map(nivel=>[nivel,{base:valor(`dailyBase-${nivel}`),incremento:valor(`dailyIncremento-${nivel}`)}]));
  const limitesPorAdrenalina=Object.fromEntries(FAMILIAS_LIMITES.map(mazo=>[mazo,Object.fromEntries(NIVELES_ADRENALINA.map(nivel=>[nivel,valor(`limite-${mazo}-${nivel}`)]))]));
- return normalizarConfig({...borradorContenido,revelacionEnemigos:leerRevelacionUI(),dailyElegibles:leerElegiblesDailyUI(borradorContenido),spawnEspecial:leerEspecialUI(borradorContenido),easy:f.elements.easy.checked,normal:f.elements.normal.checked,threshold:Number(f.elements.threshold.value),modoAbominaciones:f.elements.modoAbominaciones.value,modoNigromantes:f.elements.modoNigromantes.value,reglaNigromantes:f.elements.reglaNigromantes.value,reglaAbominaciones:f.elements.reglaAbominaciones.value,abominacionEstandarId:f.elements.abominacionEstandarId.value,dailyHabilitado:f.elements.dailyHabilitado.checked,modoDaily:f.elements.modoDaily.value,modoAparicionAdicional:f.elements.modoAparicionAdicional.value,temaPuntaje:f.elements.temaPuntaje.value==='oculto'?(state.proximaConfig.temaPuntaje??state.config.temaPuntaje??'kang'):f.elements.temaPuntaje.value,ocultarPuntaje:f.elements.temaPuntaje.value==='oculto',dailyPorNivel,dailyIncrementoPor:f.elements.dailyIncrementoPor.value,limitesPorAdrenalina});
+ return normalizarConfig({...borradorContenido,...leerLimitesDailyUI(),revelacionEnemigos:leerRevelacionUI(),dailyElegibles:leerElegiblesDailyUI(borradorContenido),spawnEspecial:leerEspecialUI(borradorContenido),easy:f.elements.easy.checked,normal:f.elements.normal.checked,threshold:Number(f.elements.threshold.value),modoAbominaciones:f.elements.modoAbominaciones.value,modoNigromantes:f.elements.modoNigromantes.value,reglaNigromantes:f.elements.reglaNigromantes.value,reglaAbominaciones:f.elements.reglaAbominaciones.value,abominacionEstandarId:f.elements.abominacionEstandarId.value,dailyHabilitado:f.elements.dailyHabilitado.checked,modoDaily:f.elements.modoDaily.value,modoAparicionAdicional:f.elements.modoAparicionAdicional.value,temaPuntaje:f.elements.temaPuntaje.value==='oculto'?(state.proximaConfig.temaPuntaje??state.config.temaPuntaje??'kang'):f.elements.temaPuntaje.value,ocultarPuntaje:f.elements.temaPuntaje.value==='oculto',dailyPorNivel,dailyIncrementoPor:f.elements.dailyIncrementoPor.value,limitesPorAdrenalina});
 }
 function actualizarAbominacionEstandar(){
  const selector=$('abominacion-estandar'),actual=selector.value||borradorContenido.abominacionEstandarId;
@@ -470,6 +470,7 @@ $('settings-dialog').addEventListener('close',()=>{if(!$('settings-dialog').open
 $('threshold').addEventListener('input',updateSettings);
  $('especial-config').addEventListener('input',e=>{if(e.target.matches('input'))updateSettings();});
 for(const input of document.querySelectorAll('.daily-settings input'))input.addEventListener('input',updateSettings);
+for(const input of document.querySelectorAll('#daily-limites input'))input.addEventListener('input',updateSettings);
 for(const input of document.querySelectorAll('.limit-settings input'))input.addEventListener('input',updateSettings);
 $('content-selector').addEventListener('click',e=>{if(e.target.closest('[name="caja-contenido"]'))e.stopPropagation();});
 $('settings-form').addEventListener('change',e=>{
