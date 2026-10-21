@@ -1,5 +1,9 @@
 # Implementación actual
 
+## Aparición: vistas y detalles · 21/10/2026
+
+Acciones cuadradas con tamaño táctil constante, Anular tanda en cabecera, selector Adaptativa/Horizontal/Vertical y botón ⓘ para detalles históricos de Daily Spawn/Spawn especial y resultados. Nombres inferiores retirados solo de Aparición. Vista guardada en dispositivo, independiente de la partida; detalles ocultos inicialmente. No cambia sorteos ni reglas y conserva reserva uniforme de marcos. 376 pruebas y QA de tres modos/cinco tamaños, cinco escalas, anulación del formato vigente, probabilidades por carta/tanda, marcos y offline aprobados. Publicación autorizada para revisión en tablet. Detalle y límite del verificador histórico: [APARICION_VISTAS_Y_DETALLES.md](APARICION_VISTAS_Y_DETALLES.md).
+
 ## Aparición compacta y General · 20/10/2026
 
 Encabezado compacto, explicación permanente retirada y reserva uniforme de marcos reducida a 36/40 px manteniendo cartas de 155 px al 100 %. Escala de Aparición 75–125 %, pasos de 5 %, controles táctiles conservados. Nueva pestaña General: actualización directa con descripción lateral y preferencia de pantalla encendida con detección de soporte, estados y recuperación al volver a la página. No cambia partidas ni reglas. 373 pruebas y QA de Configuración, actualización, marcos y seis tamaños con copia aislada de la partida facilitada, incluido offline. Wake lock simulado; validación física pendiente. Publicación autorizada. Detalle y propuestas futuras: [COMPACTACION_APARICION_Y_GENERAL.md](COMPACTACION_APARICION_Y_GENERAL.md). Este traslado de actualización prevalece sobre su ubicación anterior en Apariencia.

@@ -1,5 +1,9 @@
 # Plan de implementación por capas
 
+## Distribución y diagnóstico de Aparición · 21/10/2026
+
+Tres vistas, acciones cuadradas, anulación en cabecera y detalles de probabilidades implementados/verificados; publicar para feedback físico según autorización vigente. Modernización de la batería antigua de anulación pendiente; cancelar/restaurar desde cabecera se verificó con semilla actual. Continúan pendientes los cambios de pantalla principal. Véase [APARICION_VISTAS_Y_DETALLES.md](APARICION_VISTAS_Y_DETALLES.md).
+
 ## Aparición compacta y General · 20/10/2026
 
 Compactación con marcos uniformes, escala de Aparición y opciones directas de actualización/pantalla encendida en General implementadas y verificadas. Publicación autorizada para revisión en tablet; confirmar visualización y bloqueo real antes de extender el ajuste a la pantalla principal. Próximo alcance por elegir a partir del feedback físico. Detalle: [COMPACTACION_APARICION_Y_GENERAL.md](COMPACTACION_APARICION_Y_GENERAL.md).

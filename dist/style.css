@@ -522,3 +522,31 @@ body:has(#actualizacion-disponible:not([hidden])){padding-bottom:120px}
 #batch-grid .card-media,#batch-grid .zone-group .card-media{margin:36px auto 40px}
 #batch-grid .card-actions button{min-height:calc(44px / var(--escala-aparicion,1));min-width:calc(44px / var(--escala-aparicion,1));padding:6px}
 @media(max-width:480px){#batch-dialog{padding:10px}.batch-heading{gap:6px}.batch-heading .eyebrow{padding-right:6px}#batch-dialog .batch-heading h2{font-size:.9rem}}
+
+/* Las acciones conservan su lado físico: nunca se estiran para llenar la fila. */
+#batch-grid .card-actions{display:flex;justify-content:center;gap:6px;width:219px;max-width:100%}
+#batch-grid .card-actions button{--lado-accion:calc(44px / var(--escala-aparicion,1));box-sizing:border-box;flex:0 0 var(--lado-accion);width:var(--lado-accion);height:var(--lado-accion);min-width:var(--lado-accion);max-width:var(--lado-accion);min-height:var(--lado-accion);max-height:var(--lado-accion);padding:0;aspect-ratio:1}
+#batch-dialog[open]{display:flex;flex-direction:column;overflow:hidden}
+#batch-dialog .batch-header{flex-shrink:0;align-items:center}
+.batch-scroll{min-height:0;overflow:auto;overscroll-behavior:contain;flex:1;padding-bottom:4px}
+.batch-tools{flex-wrap:wrap;justify-content:flex-end;min-width:0;max-width:100%}
+#aparicion-vista{min-height:44px;max-width:140px;min-width:0;padding:7px;border:1px solid var(--line);border-radius:8px;color:var(--text);background:var(--panel);font:inherit;font-size:.85rem}
+#aparicion-detalles{flex:0 0 44px;width:44px;height:44px;padding:0;font-size:1.3rem}
+#aparicion-detalles[aria-pressed=true]{border-color:var(--ice);color:var(--ice);background:#244655}
+#batch-dialog #anular-tanda{width:auto;min-height:44px;margin:0;padding:7px 10px;font-size:.85rem}
+#batch-dialog .extra-zones:not(:has(.extra-zone-buttons>div:not([hidden]))){display:none}
+#batch-dialog .extra-zones{flex-shrink:0;margin-top:6px;padding-top:6px}
+#batch-dialog[data-detalles=false] .appearance-details{display:none}
+.appearance-details{font-size:.8rem;line-height:1.45;margin:6px auto 0;max-width:219px;color:var(--muted)}
+.appearance-details .probability-detail{margin:4px 0}.appearance-details .resolution-tag{font-size:inherit}
+.batch-probabilities{max-width:none;margin:0 4px 10px}.batch-probabilities:empty{display:none}
+#batch-grid[data-vista=horizontal]{display:flex;flex-wrap:nowrap;container-type:normal;width:max-content;min-width:100%;overflow:clip;gap:18px;align-items:flex-start}
+#batch-grid[data-vista=horizontal] .reveal-pair{display:flex;flex-wrap:nowrap;flex:0 0 auto;width:max-content;gap:18px}
+#batch-grid[data-vista=horizontal] .reveal-pair>.draw-card:first-child .card-media::after{display:block}
+#batch-grid[data-vista=horizontal] .reveal-pair>.draw-card:first-child::after{display:none}
+#batch-grid[data-vista=vertical]{display:grid;grid-template-columns:219px;justify-content:center;width:100%;overflow:clip}
+#batch-grid[data-vista=vertical] .reveal-pair{grid-column:span 1;grid-template-columns:219px}
+#batch-grid[data-vista=vertical] .reveal-pair>.draw-card:first-child .card-media::after{display:none}
+#batch-grid[data-vista=vertical] .reveal-pair>.draw-card:first-child::after{display:block}
+@media(max-width:560px){.batch-tools{justify-content:flex-start}.batch-heading{width:100%}#aparicion-vista{max-width:125px}}
+#batch-grid .por-revelar .appearance-details,#batch-grid .volteando .appearance-details,body.revelacion-procedural .batch-probabilities{visibility:hidden}

@@ -1,6 +1,7 @@
 import {iniciarPantallaCompleta} from './pantalla-completa.js';
 import {iniciarPantallaEncendida} from './pantalla-encendida.js';
 import {iniciarEscalaAparicion} from './escala-aparicion.js';
+import {detallesProbabilidadesHTML,detallesTandaHTML} from './detalles-aparicion.js';
 import {prepararExportacion,descargarExportacion} from './exportacion.js';
 import {iniciarConfiguracionUI,actualizarConfiguracionUI,leerElegiblesDailyUI} from './configuracion-ui.js';
 import {configuracionRevelacionActual} from './acciones-independientes.js';
@@ -42,7 +43,7 @@ marcadorPuntaje.element.id='open-zombies';marcadorPuntaje.element.dataset.action
 let ultimoTemaPuntaje='kang',ultimoPuntaje=0;
 
 // Depuración temporal: desactivar antes de preparar la versión final.
-const DEBUG_DAILY_SPAWN=true;
+const DEBUG_DAILY_SPAWN=false;
 let catalog=Object.fromEntries(CATALOG.map(c=>[c.id,c]));
 let state=newGame(configuracionRevelacionActual({easy:true,normal:true,threshold:20,modoNigromantes:'sin-reposicion',reglaNigromantes:'personalizado',reglaAbominaciones:'personalizado',abominacionEstandarId:'enemigo-abominacion-kan',dailyPorNivel:perfilDailyInicial(),limitesPorAdrenalina:limitesIniciales(true)})),storageBlocked=false,guardadoObservado=null;
 try{guardadoObservado=localStorage.getItem(KEY);state=recuperar(localStorage)||state;guardadoObservado=localStorage.getItem(KEY);}
@@ -217,7 +218,10 @@ function cardHTML(c,zone='',actions=false,batch=0,slot=0,necro=false,zonaSlot=nu
  const debugDaily=DEBUG_DAILY_SPAWN&&actions==='batch'&&!porRevelar&&c.dailyIntento?`<span class="debug-daily" title="Probabilidad de Daily Spawn usada para esta carta"> - ${esc(c.dailyIntento.probabilidad.toLocaleString('es-CL',{maximumFractionDigits:2}))}%</span>`:'';
  const avisoLimite=c.activacionPorLimite!==undefined&&(visual!=='ninguno'||actions==='history')?`<p class="resolution-tag">${nigromante?'Máximo de nigromantes adicionales al Profanador en juego':'Máximo de abominaciones en juego'} alcanzado: ${esc(c.activacionPorLimite)}</p>`:'';
  const resultadoIndependiente=c.revelacionIndependiente&&!c.discarded&&!porRevelar?`<p class="resolution-tag">${c.resolucionNigromante==='sin-efecto'||c.resolucionAbominacion==='sin-efecto'?'Sin efecto':`${c.activaciones?.length??0} activaciones adicionales`}${c.revelacionIndependiente.spawn.resultado==='bloqueado'?` · Spawn bloqueado: ${c.revelacionIndependiente.spawn.motivo==='limite'?'máximo de enemigos en juego alcanzado':'sin cartas disponibles'}`:c.revelacionIndependiente.spawn.resultado==='fallo'?' · Sin Spawn adicional':''}</p>`:'';
- return `<article class="draw-card ${c.discarded?'discarded':''} ${visual==='spawn'||visual==='activacion'||c.transformacionDesde?'spawn-applied':''} ${volteando?'volteando':''} ${porRevelar?'por-revelar':''} ${bloqueada?'resolucion-bloqueada':''}" ${volteando||porRevelar?'inert':''} ${volteando?`style="--volteo-demora:${volteo.inicio-performance.now()}ms;--volteo-duracion:${volteo.duracion}ms"`:''} data-extraccion="${c.uid}">${zonaSlot?marcadorZonaHTML(zonaSlot,zone,c):''}<span class="zone-label visually-hidden ${necro?'necro-zone':''}" ${visual==='spawn'||visual==='activacion'?'title="Efecto aplicado"':''}>${esc(zone)}</span><div class="card-media"><div class="reveal-front"><button class="card-image" data-action="zoom" data-uid="${c.referenciaUid??c.uid}" aria-label="Ampliar ${esc(card.name)}"><img src="${esc(imagenCarta(c))}" alt="${esc(card.name)}" loading="${volteando?'eager':'lazy'}">${actions==='batch'?marcoEnemigo(c):''}${actions==='batch'||c.referenciaBakeDanuki?banderinDailyHTML(c):''}${c.discarded?'<span class="discard-cross" aria-hidden="true">×</span>':''}${sello}</button>${eleccion}</div><div class="reveal-back" aria-hidden="true"></div></div>${controls}<p class="card-label">${esc(card.name)}${c.spawnEspecial?' · Spawn Especial':''}${c.referenciaActivacion?' · Activación':''}${debugDaily}${resultadoBakeHTML(c)}</p>${avisoLimite}${resultadoIndependiente}${c.sinCandidatos?'<p class="resolution-tag">Sin enemigos disponibles · Sin nueva aparición</p>':''}${c.discarded?`<p class="discard-tag">${c.anulada?secundaria?'Anulada · Devuelta al mazo':'Anulada · Sin efecto':'Descartada · Sin efecto'}</p>`:''}</article>`;
+ const pieCarta=actions==='batch'?
+ `<div class="appearance-details">${!porRevelar?detallesProbabilidadesHTML(c):''}${resultadoBakeHTML(c)}${avisoLimite}${resultadoIndependiente}${c.sinCandidatos?'<p class="resolution-tag">Sin enemigos disponibles · Sin nueva aparición</p>':''}</div>`:
+ `<p class="card-label">${esc(card.name)}${c.spawnEspecial?' · Spawn Especial':''}${c.referenciaActivacion?' · Activación':''}${debugDaily}${resultadoBakeHTML(c)}</p>${avisoLimite}${resultadoIndependiente}${c.sinCandidatos?'<p class="resolution-tag">Sin enemigos disponibles · Sin nueva aparición</p>':''}`;
+ return `<article class="draw-card ${c.discarded?'discarded':''} ${visual==='spawn'||visual==='activacion'||c.transformacionDesde?'spawn-applied':''} ${volteando?'volteando':''} ${porRevelar?'por-revelar':''} ${bloqueada?'resolucion-bloqueada':''}" ${volteando||porRevelar?'inert':''} ${volteando?`style="--volteo-demora:${volteo.inicio-performance.now()}ms;--volteo-duracion:${volteo.duracion}ms"`:''} data-extraccion="${c.uid}">${zonaSlot?marcadorZonaHTML(zonaSlot,zone,c):''}<span class="zone-label visually-hidden ${necro?'necro-zone':''}" ${visual==='spawn'||visual==='activacion'?'title="Efecto aplicado"':''}>${esc(zone)}</span><div class="card-media"><div class="reveal-front"><button class="card-image" data-action="zoom" data-uid="${c.referenciaUid??c.uid}" aria-label="Ampliar ${esc(card.name)}"><img src="${esc(imagenCarta(c))}" alt="${esc(card.name)}" loading="${volteando?'eager':'lazy'}">${actions==='batch'?marcoEnemigo(c):''}${actions==='batch'||c.referenciaBakeDanuki?banderinDailyHTML(c):''}${c.discarded?'<span class="discard-cross" aria-hidden="true">×</span>':''}${sello}</button>${eleccion}</div><div class="reveal-back" aria-hidden="true"></div></div>${controls}${pieCarta}${c.discarded?`<p class="discard-tag">${c.anulada?secundaria?'Anulada · Devuelta al mazo':'Anulada · Sin efecto':'Descartada · Sin efecto'}</p>`:''}</article>`;
 }
 const DISTINTIVOS_ENEMIGOS={abominaciones:{archivo:'Banderín rojo de abominación-2.png',nombre:'Abominación'},nigromantes:{archivo:'Estandarte esmeralda del nigromante-1.png',nombre:'Nigromante'},caminantes:{archivo:'Estandarte del caminante zombi.png',nombre:'Caminante'},brutos:{archivo:'Zombi barrigón en estandarte morado.png',nombre:'Bruto'},corredores:{archivo:'Estandarte ámbar del zombi corredor.png',nombre:'Corredor'}};
 function savedCardHTML(reference,archived=false){
@@ -321,7 +325,7 @@ function render(){
  if($('batch-dialog').open)renderBatch();if($('history-dialog').open)renderHistory();
 
 }
-function renderBatch(){const b=state.history.find(b=>b.number===visibleBatch)||state.history.at(-1);if(!b)return;visibleBatch=b.number;$('batch-dialog').dataset.revelacion=revelacion?.fase??'lista';$('batch-title').textContent=`Tanda ${b.number} · ${b.normal+b.necro} zonas iniciales`;$('batch-grid').innerHTML=cartasHTML(b);programarVolteos();const anular=$('anular-tanda');anular.disabled=storageBlocked||!puedeAnularTanda(state,b.number);anular.title=anular.disabled?'Esta tanda no tiene un respaldo anterior disponible':'Volver al estado anterior a SPAWN';}
+function renderBatch(){const b=state.history.find(b=>b.number===visibleBatch)||state.history.at(-1);if(!b)return;visibleBatch=b.number;$('batch-dialog').dataset.revelacion=revelacion?.fase??'lista';$('batch-title').textContent=`Tanda ${b.number} · ${b.normal+b.necro} zonas iniciales`;$('batch-grid').innerHTML=cartasHTML(b);$('batch-detalles-tanda').innerHTML=detallesTandaHTML(b);programarVolteos();const anular=$('anular-tanda');anular.disabled=storageBlocked||!puedeAnularTanda(state,b.number);anular.title=anular.disabled?'Esta tanda no tiene un respaldo anterior disponible':'Volver al estado anterior a SPAWN';}
 function programarVolteos(){
  clearTimeout(temporizadorRevelacion);
  if(revelacion&&revelacion.espera===null)temporizadorRevelacion=setTimeout(()=>{avanzarPresentacion();if($('batch-dialog').open)renderBatch();},Math.max(0,revelacion.hasta-performance.now()));
@@ -517,7 +521,7 @@ window.addEventListener('storage',e=>{if(e.key!==KEY)return;terminarVolteos();gu
 const observadorEnJuego=new ResizeObserver(distribuirEnJuego);observadorEnJuego.observe($('inplay-gallery'));
 iniciarPantallaCompleta($('pantalla-completa'),toast);
 iniciarPantallaEncendida($('mantener-pantalla'),$('pantalla-estado'));
-iniciarEscalaAparicion();
+iniciarEscalaAparicion(toast);
 iniciarInformacion();render();if(state.openBatch&&state.history.length)showBatch();
 prepararOffline($('offline-status'),{puedeActualizar:()=>!storageBlocked&&!document.querySelector('dialog[open]'),puedeActualizarConfiguracion:()=>!storageBlocked&&!hayCambiosConfiguracion()&&![...document.querySelectorAll('dialog[open]')].some(d=>d.id!=='settings-dialog')});
 

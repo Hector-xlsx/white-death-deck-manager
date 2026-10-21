@@ -1,5 +1,9 @@
 # Decisiones pendientes y propuestas
 
+## Aparición: distribución y detalles · 21/10/2026
+
+Seleccionadas e implementadas las vistas Horizontal, Vertical y Adaptativa para Aparición, acciones cuadradas y diagnóstico plegable con probabilidades guardadas. Ya no son propuestas pendientes de esa ventana. La distribución/zoom de la pantalla principal, plegado/intercambio de Última tanda y protección de datos permanecen pendientes. Revisión física después de la publicación autorizada; [APARICION_VISTAS_Y_DETALLES.md](APARICION_VISTAS_Y_DETALLES.md).
+
 ## Primera revisión visual autorizada · 20/10/2026
 
 Compactación de Aparición con reserva uniforme para marcos, escala independiente, General con actualización directa y pantalla encendida implementados para revisión física tras la publicación autorizada. Pendientes: acceso a ajustes/protección de datos del dispositivo y propuestas de pantalla principal (intercambio/plegado, compactación, zoom y modos). No extender automáticamente este trabajo a esos puntos. Véase [COMPACTACION_APARICION_Y_GENERAL.md](COMPACTACION_APARICION_Y_GENERAL.md).
